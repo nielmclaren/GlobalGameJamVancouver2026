@@ -1,10 +1,19 @@
-[gd_scene load_steps=9 format=3 uid="uid://cvee3n6hgph3k"]
+[gd_scene load_steps=14 format=4 uid="uid://cvee3n6hgph3k"]
 
 [ext_resource type="Script" uid="uid://ba7k16ft3tklp" path="res://game.gd" id="1_80nbo"]
 [ext_resource type="Script" uid="uid://b6xjkpxjv77pk" path="res://ui/dev_bar.gd" id="2_e2o6t"]
 [ext_resource type="Texture2D" uid="uid://bc5dy87gargdl" path="res://assets/art/tiles.png" id="2_feb5d"]
 [ext_resource type="Texture2D" uid="uid://cqitgsdv0lj0o" path="res://assets/art/tiles128.png" id="3_fc0e3"]
 [ext_resource type="PackedScene" uid="uid://sv3ef6geyb32" path="res://characters/player.tscn" id="4_7jktm"]
+[ext_resource type="PackedScene" uid="uid://b1uaili0kp6u1" path="res://game_objects/mask.tscn" id="6_ryrav"]
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_ryrav"]
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_eow3j"]
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_j5wjh"]
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_vef74"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_fc0e3"]
 texture = ExtResource("2_feb5d")
@@ -40,9 +49,45 @@ script = ExtResource("1_80nbo")
 
 [node name="Level" type="Node2D" parent="."]
 
+[node name="Bounds" type="Node2D" parent="Level"]
+
+[node name="TopBound" type="StaticBody2D" parent="Level/Bounds"]
+position = Vector2(256, 0)
+rotation = 3.1415927
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Level/Bounds/TopBound"]
+shape = SubResource("WorldBoundaryShape2D_ryrav")
+
+[node name="BottomBound" type="StaticBody2D" parent="Level/Bounds"]
+position = Vector2(256, 512)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Level/Bounds/BottomBound"]
+shape = SubResource("WorldBoundaryShape2D_eow3j")
+
+[node name="LeftBound" type="StaticBody2D" parent="Level/Bounds"]
+position = Vector2(0, 256)
+rotation = 1.5707964
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Level/Bounds/LeftBound"]
+shape = SubResource("WorldBoundaryShape2D_j5wjh")
+
+[node name="RightBound" type="StaticBody2D" parent="Level/Bounds"]
+position = Vector2(512, 256)
+rotation = -1.5707964
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Level/Bounds/RightBound"]
+shape = SubResource("WorldBoundaryShape2D_vef74")
+
 [node name="TileMapLayer" type="TileMapLayer" parent="Level"]
 unique_name_in_owner = true
+tile_map_data = PackedByteArray("AAAAAAAAAQAAAAAAAAABAAAAAQAAAAAAAAACAAAAAQAAAAAAAAADAAAAAQAAAAAAAAADAAEAAQAAAAAAAAADAAIAAQAAAAAAAAADAAMAAQAAAAAAAAACAAMAAQAAAAAAAAABAAMAAQAAAAAAAAAAAAMAAQAAAAAAAAAAAAIAAQAAAAAAAAAAAAEAAQAAAAAAAAABAAEAAQAAAAAAAAACAAEAAQAAAAAAAAACAAIAAQAAAAAAAAABAAIAAQAAAAAAAAA=")
 tile_set = SubResource("TileSet_7jktm")
+
+[node name="Mask" parent="Level" instance=ExtResource("6_ryrav")]
+position = Vector2(456, 318)
+
+[node name="Mask2" parent="Level" instance=ExtResource("6_ryrav")]
+position = Vector2(201, 440)
 
 [node name="Player0" parent="Level" instance=ExtResource("4_7jktm")]
 position = Vector2(161, 75)

@@ -72,7 +72,6 @@ func _abandon() -> void:
 	_game = game_scene.instantiate()
 	game_container.add_child(_game)
 
-
 	if _game:
 		_game.queue_free()
 		_game = null
