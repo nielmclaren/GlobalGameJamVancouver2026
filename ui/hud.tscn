@@ -1,0 +1,46 @@
+[gd_scene load_steps=3 format=3 uid="uid://dwah34itfrr6d"]
+
+[ext_resource type="Script" uid="uid://ebl54786htof" path="res://ui/hud.gd" id="1_rbyyf"]
+[ext_resource type="LabelSettings" uid="uid://cghkt10hcxvb6" path="res://ui/score_label_settings.tres" id="2_276te"]
+
+[node name="Hud" type="CanvasLayer"]
+script = ExtResource("1_rbyyf")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LeftContainer" type="MarginContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CenterContainer" type="CenterContainer" parent="HBoxContainer/LeftContainer"]
+layout_mode = 2
+
+[node name="ScoreLabel0" type="Label" parent="HBoxContainer/LeftContainer/CenterContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "99 Points"
+label_settings = ExtResource("2_276te")
+
+[node name="Control" type="Control" parent="HBoxContainer"]
+custom_minimum_size = Vector2(1080, 1080)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="RightContainer" type="MarginContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CenterContainer" type="CenterContainer" parent="HBoxContainer/RightContainer"]
+layout_mode = 2
+
+[node name="ScoreLabel1" type="Label" parent="HBoxContainer/RightContainer/CenterContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "99 Points"
+label_settings = ExtResource("2_276te")

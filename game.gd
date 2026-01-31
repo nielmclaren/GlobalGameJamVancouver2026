@@ -8,6 +8,7 @@ extends Node2D
 @onready var _goal_container: Node2D = %GoalContainer
 @onready var _mask_container: Node2D = %MaskContainer
 @onready var _tilemap: TileMapLayer = %TileMapLayer
+@onready var _hud: Hud = %Hud
 
 var _mask_scene: PackedScene = load("res://game_objects/mask.tscn")
 var _goal_scene: PackedScene = load("res://game_objects/goal.tscn")
@@ -16,6 +17,7 @@ var _player_scene: PackedScene = load("res://characters/player.tscn")
 var _players: Array[Player]
 var _masks: Array[Mask]
 var _goal: Goal
+var _scores: Array[int]
 
 
 func _ready() -> void:
@@ -49,6 +51,10 @@ func clear() -> void:
 	for mask: Mask in _masks:
 		mask.queue_free()
 	_masks.clear()
+
+	_scores.clear()
+	_scores.append(0)
+	_scores.append(0)
 
 
 func _randomize_tiles() -> void:
@@ -124,6 +130,9 @@ func _try_spawn_goal() -> bool:
 
 func _goal_scored(player: Player) -> void:
 	print("Player %d scored!" % player.player_num)
+	_scores[player.player_num] += 1
+	_hud.set_score(player.player_num, _scores[player.player_num])
+
 	_goal = null
 
 	_delay_spawn_goal()

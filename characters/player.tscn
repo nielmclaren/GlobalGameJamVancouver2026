@@ -171,11 +171,9 @@ polygon = PackedVector2Array(24, 0, -24, -16, -16, 0, -24, 16)
 unique_name_in_owner = true
 visible = false
 
-[node name="Sprite2D" type="Sprite2D" parent="AttackArt"]
-modulate = Color(1, 0, 0, 0.75686276)
-position = Vector2(48, 0)
-scale = Vector2(0.6646052, 0.6646052)
-texture = ExtResource("2_3eadt")
+[node name="Line2D" type="Line2D" parent="AttackArt"]
+points = PackedVector2Array(40, 0, 88, 0)
+default_color = Color(1, 0, 0, 1)
 
 [node name="AttackArea" type="Area2D" parent="."]
 unique_name_in_owner = true
@@ -198,3 +196,8 @@ unique_name_in_owner = true
 libraries = {
 &"": SubResource("AnimationLibrary_x0jl3")
 }
+
+[node name="Weapon" type="Node2D" parent="."]
+
+[node name="Line2D" type="Line2D" parent="Weapon"]
+points = PackedVector2Array(40, 0, 88, 0)
