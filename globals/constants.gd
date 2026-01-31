@@ -9,3 +9,5 @@ var COLORS: Array[Color] = [
 
 const NUM_COLS: int = 4
 const NUM_ROWS: int = 4
+
+const NUM_MASKS: int = 2

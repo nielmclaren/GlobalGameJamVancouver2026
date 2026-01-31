@@ -16,5 +16,5 @@ func _process(_delta: float) -> void:
 	for body: Node2D in bodies:
 		if body is Player:
 			var player: Player = body
-			player.pickup_mask(self )
+			player.pickup_mask(self)
 			queue_free()

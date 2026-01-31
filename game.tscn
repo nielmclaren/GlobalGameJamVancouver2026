@@ -1,11 +1,9 @@
-[gd_scene load_steps=14 format=4 uid="uid://cvee3n6hgph3k"]
+[gd_scene load_steps=12 format=4 uid="uid://cvee3n6hgph3k"]
 
 [ext_resource type="Script" uid="uid://ba7k16ft3tklp" path="res://game.gd" id="1_80nbo"]
 [ext_resource type="Script" uid="uid://b6xjkpxjv77pk" path="res://ui/dev_bar.gd" id="2_e2o6t"]
 [ext_resource type="Texture2D" uid="uid://bc5dy87gargdl" path="res://assets/art/tiles.png" id="2_feb5d"]
 [ext_resource type="Texture2D" uid="uid://cqitgsdv0lj0o" path="res://assets/art/tiles128.png" id="3_fc0e3"]
-[ext_resource type="PackedScene" uid="uid://sv3ef6geyb32" path="res://characters/player.tscn" id="4_7jktm"]
-[ext_resource type="PackedScene" uid="uid://b1uaili0kp6u1" path="res://game_objects/mask.tscn" id="6_ryrav"]
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_ryrav"]
 
@@ -83,18 +81,11 @@ unique_name_in_owner = true
 tile_map_data = PackedByteArray("AAAAAAAAAQAAAAAAAAABAAAAAQAAAAAAAAACAAAAAQAAAAAAAAADAAAAAQAAAAAAAAADAAEAAQAAAAAAAAADAAIAAQAAAAAAAAADAAMAAQAAAAAAAAACAAMAAQAAAAAAAAABAAMAAQAAAAAAAAAAAAMAAQAAAAAAAAAAAAIAAQAAAAAAAAAAAAEAAQAAAAAAAAABAAEAAQAAAAAAAAACAAEAAQAAAAAAAAACAAIAAQAAAAAAAAABAAIAAQAAAAAAAAA=")
 tile_set = SubResource("TileSet_7jktm")
 
-[node name="Mask" parent="Level" instance=ExtResource("6_ryrav")]
-position = Vector2(456, 318)
+[node name="MaskContainer" type="Node2D" parent="Level"]
+unique_name_in_owner = true
 
-[node name="Mask2" parent="Level" instance=ExtResource("6_ryrav")]
-position = Vector2(201, 440)
-
-[node name="Player0" parent="Level" instance=ExtResource("4_7jktm")]
-position = Vector2(161, 75)
-
-[node name="Player1" parent="Level" instance=ExtResource("4_7jktm")]
-position = Vector2(251, 195)
-player_num = 1
+[node name="PlayerContainer" type="Node2D" parent="Level"]
+unique_name_in_owner = true
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 

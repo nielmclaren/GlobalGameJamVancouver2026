@@ -22,6 +22,7 @@ PostHog="*res://addons/posthog/plugin.gd"
 Tracer="*res://addons/tracer/tracer.gd"
 uuid="*res://addons/uuid/uuid.gd"
 Constants="*res://globals/constants.gd"
+Utils="*res://globals/utils.gd"
 
 [debug]
 
