@@ -55,6 +55,7 @@ func clear() -> void:
 	_scores.clear()
 	_scores.append(0)
 	_scores.append(0)
+	_scores_changed()
 
 
 func _randomize_tiles() -> void:
@@ -86,6 +87,7 @@ func _spawn_player(player_num: int, coord: Vector2i) -> void:
 
 	player.masked.connect(_mask_player.bind(player))
 	player.unmasked.connect(_unmask_player.bind(player))
+	player.hitted.connect(_player_hitted.bind(player))
 
 	if player_num == 0:
 		_player_container0.add_child(player)
@@ -101,6 +103,11 @@ func _mask_player(player: Player) -> void:
 
 func _unmask_player(player: Player) -> void:
 	_reveal_clip_tilemap(player)
+
+
+func _player_hitted(player: Player) -> void:
+	_scores[player.player_num] = 0
+	_scores_changed()
 
 
 func _delay_spawn_goal() -> void:
@@ -131,11 +138,16 @@ func _try_spawn_goal() -> bool:
 func _goal_scored(player: Player) -> void:
 	print("Player %d scored!" % player.player_num)
 	_scores[player.player_num] += 1
-	_hud.set_score(player.player_num, _scores[player.player_num])
+	_scores_changed()
 
 	_goal = null
 
 	_delay_spawn_goal()
+
+
+func _scores_changed() -> void:
+	_hud.set_score(0, _scores[0])
+	_hud.set_score(1, _scores[1])
 
 
 func _delay_spawn_mask() -> void:

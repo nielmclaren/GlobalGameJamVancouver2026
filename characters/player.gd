@@ -7,6 +7,9 @@ signal unmasked
 # Emitted when the player goes back into hiding, e.g., after attack.
 signal masked
 
+# Emitted when player gets hit.
+signal hitted
+
 const SPEED: float = 20000
 
 @onready var _base: Node2D = %Base
@@ -29,6 +32,7 @@ func pickup_mask(mask: Mask) -> void:
 func take_hit() -> void:
 	print("Player %d got hit." % player_num)
 	_animation.play("hit")
+	hitted.emit()
 
 
 func _ready() -> void:
