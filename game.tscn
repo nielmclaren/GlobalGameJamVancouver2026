@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=4 uid="uid://cvee3n6hgph3k"]
+[gd_scene load_steps=19 format=4 uid="uid://cvee3n6hgph3k"]
 
 [ext_resource type="Script" uid="uid://ba7k16ft3tklp" path="res://game.gd" id="1_80nbo"]
 [ext_resource type="Script" uid="uid://b6xjkpxjv77pk" path="res://ui/dev_bar.gd" id="2_e2o6t"]
@@ -65,12 +65,6 @@ sources/1 = SubResource("TileSetAtlasSource_7jktm")
 viewport_path = NodePath("Level/SubViewportPlayer0")
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_ryrav"]
-viewport_path = NodePath("Level/SubViewportPlayer1")
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_eow3j"]
-viewport_path = NodePath("Level/SubViewportPlayer0")
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_j5wjh"]
 viewport_path = NodePath("Level/SubViewportPlayer1")
 
 [node name="Game" type="Node2D"]
@@ -143,16 +137,6 @@ unique_name_in_owner = true
 
 [node name="GoalContainer" type="Node2D" parent="Level"]
 unique_name_in_owner = true
-
-[node name="ClipMaskDebugPlayer0" type="Sprite2D" parent="Level"]
-position = Vector2(568, 40)
-texture = SubResource("ViewportTexture_eow3j")
-centered = false
-
-[node name="ClipMaskDebugPlayer1" type="Sprite2D" parent="Level"]
-position = Vector2(1128, 72)
-texture = SubResource("ViewportTexture_j5wjh")
-centered = false
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 

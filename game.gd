@@ -76,7 +76,7 @@ func _randomize_tiles() -> void:
 func _spawn_player(player_num: int, coord: Vector2i) -> void:
 	var player: Player = _player_scene.instantiate()
 	player.player_num = player_num
-	player.global_position = _tilemap.map_to_local(coord)
+	player.position = _tilemap.map_to_local(coord)
 
 	player.masked.connect(_mask_player.bind(player))
 	player.unmasked.connect(_unmask_player.bind(player))
@@ -101,7 +101,7 @@ func _spawn_goal() -> void:
 	var coord: Vector2i = Vector2i(3, randi() % Constants.NUM_ROWS)
 	var goal: Goal = _goal_scene.instantiate()
 	goal.scored.connect(_goal_scored)
-	goal.global_position = _tilemap.map_to_local(coord)
+	goal.position = _tilemap.map_to_local(coord)
 	_goal_container.add_child(goal)
 	_goal = goal
 
@@ -117,7 +117,7 @@ func _spawn_mask() -> void:
 	var mask: Mask = _mask_scene.instantiate()
 	mask.color = _get_next_mask_color()
 	mask.picked_up.connect(_mask_picked_up.bind(mask))
-	mask.global_position = _tilemap.map_to_local(coord)
+	mask.position = _tilemap.map_to_local(coord)
 	_mask_container.add_child(mask)
 	_masks.append(mask)
 
@@ -149,14 +149,14 @@ func _get_empty_coord() -> Vector2i:
 
 func _is_coord_empty(coord: Vector2i) -> bool:
 	for player: Player in _players:
-		if _tilemap.local_to_map(player.global_position) == coord:
+		if _tilemap.local_to_map(player.position) == coord:
 			return false
 
 	for mask: Mask in _masks:
-		if _tilemap.local_to_map(mask.global_position) == coord:
+		if _tilemap.local_to_map(mask.position) == coord:
 			return false
 
-	if _goal and _tilemap.local_to_map(_goal.global_position) == coord:
+	if _goal and _tilemap.local_to_map(_goal.position) == coord:
 		return false
 
 	return true
