@@ -9,6 +9,8 @@ const SPEED: float = 20000
 
 var color: Color
 
+var _dir: Vector2
+
 
 func pickup_mask(mask: Mask) -> void:
 	color = mask.color
@@ -16,9 +18,12 @@ func pickup_mask(mask: Mask) -> void:
 
 
 func _process(delta: float) -> void:
-	var dir: Vector2 = _get_input_vector()
-	velocity = dir * SPEED * delta
+	_dir = _get_input_vector()
+	velocity = _dir * SPEED * delta
 	move_and_slide()
+
+	if !_dir.is_zero_approx():
+		global_rotation = _dir.angle()
 
 
 func _get_input_vector() -> Vector2:
