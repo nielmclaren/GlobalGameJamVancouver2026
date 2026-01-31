@@ -14,6 +14,7 @@ const SPEED: float = 20000
 @onready var _animation: AnimationPlayer = %AnimationPlayer
 
 @export var player_num: int = 0
+@export var is_stunned: bool = false
 
 var color: Color
 
@@ -31,9 +32,10 @@ func take_hit() -> void:
 
 
 func _process(delta: float) -> void:
-	_dir = _get_input_vector()
-	velocity = _dir * SPEED * delta
-	move_and_slide()
+	if !is_stunned:
+		_dir = _get_input_vector()
+		velocity = _dir * SPEED * delta
+		move_and_slide()
 
 	if !_dir.is_zero_approx():
 		global_rotation = _dir.angle()
