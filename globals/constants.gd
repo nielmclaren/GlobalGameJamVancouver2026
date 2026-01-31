@@ -12,3 +12,9 @@ const NUM_COLS: int = 4
 const NUM_ROWS: int = 4
 
 const NUM_MASKS: int = 2
+
+# How long to wait after a mask is picked up.
+const MASK_SPAWN_DELAY_S: float = 1.
+
+# How long to wait after spawning a mask failed (due to no available spaces).
+const MASK_SPAWN_RETRY_S: float = 0.2

@@ -34,7 +34,7 @@ func reset() -> void:
 
 	# Spawn masks last in remaining empty spaces.
 	for i: int in range(Constants.NUM_MASKS):
-		_spawn_mask()
+		_try_spawn_mask()
 
 
 func clear() -> void:
@@ -98,7 +98,7 @@ func _unmask_player(player: Player) -> void:
 
 
 func _spawn_goal() -> void:
-	var coord: Vector2i = Vector2i(3, randi() % Constants.NUM_ROWS)
+	var coord: Vector2i = _get_empty_coord()
 	var goal: Goal = _goal_scene.instantiate()
 	goal.scored.connect(_goal_scored)
 	goal.position = _tilemap.map_to_local(coord)
@@ -110,9 +110,24 @@ func _goal_scored(player: Player) -> void:
 	print("Player %d scored!" % player.player_num)
 	_goal = null
 
+	_spawn_goal()
 
-func _spawn_mask() -> void:
-	var coord: Vector2i = _get_empty_coord()
+
+func _delay_spawn_mask() -> void:
+	await get_tree().create_timer(Constants.MASK_SPAWN_DELAY_S).timeout
+
+	var success: bool = false
+	while !success:
+		success = _try_spawn_mask()
+		await get_tree().create_timer(Constants.MASK_SPAWN_RETRY_S).timeout
+
+
+func _try_spawn_mask() -> bool:
+	var available_coords: Array[Vector2i] = _get_yonder_coords()
+	if available_coords.is_empty():
+		return false
+
+	var coord: Vector2i = available_coords.pick_random()
 
 	var mask: Mask = _mask_scene.instantiate()
 	mask.color = _get_next_mask_color()
@@ -120,6 +135,8 @@ func _spawn_mask() -> void:
 	mask.position = _tilemap.map_to_local(coord)
 	_mask_container.add_child(mask)
 	_masks.append(mask)
+
+	return true
 
 
 func _get_next_mask_color() -> Color:
@@ -135,9 +152,44 @@ func _get_next_mask_color() -> Color:
 
 func _mask_picked_up(player: Player, mask: Mask) -> void:
 	_masks.erase(mask)
-	_spawn_mask()
+
+	_delay_spawn_mask()
 
 	_update_clip_tilemap(player)
+
+
+# Return empty coords that aren't too close to either player.
+func _get_yonder_coords() -> Array[Vector2i]:
+	var result: Array[Vector2i]
+	for c: int in range(Constants.NUM_COLS):
+		for r: int in range(Constants.NUM_ROWS):
+			var coord: Vector2i = Vector2i(c, r)
+			if !_is_coord_empty(coord):
+				continue
+			if _is_coord_near_player(coord):
+				continue
+			result.append(coord)
+	return result
+
+
+func _is_coord_near_player(coord: Vector2i) -> bool:
+	var neighbors: Array[TileSet.CellNeighbor] = [
+		TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_SIDE,
+		TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_RIGHT_CORNER,
+		TileSet.CellNeighbor.CELL_NEIGHBOR_RIGHT_SIDE,
+		TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER,
+		TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_SIDE,
+		TileSet.CellNeighbor.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER,
+		TileSet.CellNeighbor.CELL_NEIGHBOR_LEFT_SIDE,
+		TileSet.CellNeighbor.CELL_NEIGHBOR_TOP_LEFT_CORNER,
+	]
+
+	for player: Player in _players:
+		var player_coord: Vector2i = _tilemap.local_to_map(player.position)
+		for neighbor: TileSet.CellNeighbor in neighbors:
+			if _tilemap.get_neighbor_cell(player_coord, neighbor) == coord:
+				return true
+	return false
 
 
 func _get_empty_coord() -> Vector2i:
