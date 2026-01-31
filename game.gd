@@ -20,6 +20,21 @@ func _ready() -> void:
 
 
 func reset() -> void:
+	clear()
+
+	_randomize_tiles()
+
+	_spawn_player(0, Vector2i(0, 0))
+	_spawn_player(1, Vector2i(0, 3))
+
+	_spawn_goal()
+
+	# Spawn masks last in remaining empty spaces.
+	for i: int in range(Constants.NUM_MASKS):
+		_spawn_mask()
+
+
+func clear() -> void:
 	for player: Player in _players:
 		player.queue_free()
 	_players.clear()
@@ -32,6 +47,8 @@ func reset() -> void:
 		mask.queue_free()
 	_masks.clear()
 
+
+func _randomize_tiles() -> void:
 	# Build a list of tile atlas positions with an equal number of each tile.
 	var tiles: Array[Vector2i]
 	for i: int in range(Constants.NUM_ROWS * Constants.NUM_COLS):
@@ -42,14 +59,6 @@ func reset() -> void:
 		for r: int in range(Constants.NUM_ROWS):
 			var tile: Vector2i = tiles.pop_back()
 			_tilemap.set_cell(Vector2i(c, r), 1, tile)
-
-	_spawn_player(0, Vector2i(0, 0))
-	_spawn_player(1, Vector2i(0, 3))
-
-	_spawn_goal()
-
-	for i: int in range(Constants.NUM_MASKS):
-		_spawn_mask()
 
 
 func _spawn_player(player_num: int, coord: Vector2i) -> void:
@@ -63,33 +72,37 @@ func _spawn_player(player_num: int, coord: Vector2i) -> void:
 func _spawn_goal() -> void:
 	var coord: Vector2i = Vector2i(3, randi() % Constants.NUM_ROWS)
 	var goal: Goal = _goal_scene.instantiate()
-	goal.tree_exited.connect(_goal_tree_exited)
 	goal.scored.connect(_goal_scored)
 	goal.global_position = _tilemap.map_to_local(coord)
 	_goal_container.add_child(goal)
 	_goal = goal
 
 
-func _goal_tree_exited() -> void:
+func _goal_scored(player: Player) -> void:
+	print("Player %d scored!" % player.player_num)
 	_goal = null
 
 
-func _goal_scored(player: Player) -> void:
-	print("Player %d scored!" % player.player_num)
-
-
 func _spawn_mask() -> void:
-	var coord: Vector2i = Vector2i(randi() % Constants.NUM_COLS, randi() % Constants.NUM_ROWS)
+	var coord: Vector2i = _get_empty_coord()
+
 	var mask: Mask = _mask_scene.instantiate()
-	mask.tree_exited.connect(_mask_tree_exited.bind(mask))
+	mask.picked_up.connect(_mask_picked_up.bind(mask))
 	mask.global_position = _tilemap.map_to_local(coord)
 	_mask_container.add_child(mask)
 	_masks.append(mask)
 
 
-func _mask_tree_exited(mask: Mask) -> void:
+func _mask_picked_up(mask: Mask) -> void:
 	_masks.erase(mask)
 	_spawn_mask()
+
+
+func _get_empty_coord() -> Vector2i:
+	var result: Vector2i = _get_random_coord()
+	while !_is_coord_empty(result):
+		result = _get_random_coord()
+	return result
 
 
 func _is_coord_empty(coord: Vector2i) -> bool:
@@ -105,6 +118,10 @@ func _is_coord_empty(coord: Vector2i) -> bool:
 		return false
 
 	return true
+
+
+func _get_random_coord() -> Vector2i:
+	return Vector2i(randi() % Constants.NUM_COLS, randi() % Constants.NUM_ROWS)
 
 
 func _input(event: InputEvent) -> void:
