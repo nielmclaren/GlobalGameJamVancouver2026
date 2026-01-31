@@ -84,6 +84,9 @@ tile_set = SubResource("TileSet_7jktm")
 [node name="MaskContainer" type="Node2D" parent="Level"]
 unique_name_in_owner = true
 
+[node name="GoalContainer" type="Node2D" parent="Level"]
+unique_name_in_owner = true
+
 [node name="PlayerContainer" type="Node2D" parent="Level"]
 unique_name_in_owner = true
 
