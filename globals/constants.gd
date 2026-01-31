@@ -1,5 +1,6 @@
 extends Node
 
+# Order must match the tileset left-to-right.
 var COLORS: Array[Color] = [
 	Color.from_string("#6ab2e4", Color.RED),
 	Color.from_string("#ca6ae4", Color.RED),

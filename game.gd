@@ -1,7 +1,10 @@
 class_name Game
 extends Node2D
 
-@onready var _player_container: Node2D = %PlayerContainer
+@onready var _clip_tilemap_player0: TileMapLayer = %ClipTileMapPlayer0
+@onready var _player_container0: Node2D = %ClipMaskPlayer0
+@onready var _clip_tilemap_player1: TileMapLayer = %ClipTileMapPlayer1
+@onready var _player_container1: Node2D = %ClipMaskPlayer1
 @onready var _goal_container: Node2D = %GoalContainer
 @onready var _mask_container: Node2D = %MaskContainer
 @onready var _tilemap: TileMapLayer = %TileMapLayer
@@ -58,14 +61,28 @@ func _randomize_tiles() -> void:
 	for c: int in range(Constants.NUM_COLS):
 		for r: int in range(Constants.NUM_ROWS):
 			var tile: Vector2i = tiles.pop_back()
-			_tilemap.set_cell(Vector2i(c, r), 1, tile)
+			var coord: Vector2i = Vector2i(c, r)
+			_tilemap.set_cell(coord, 1, tile)
+
+	# Enable all clip tiles.
+	var atlas_coord: Vector2i = Vector2i(0, 0)
+	for c: int in range(Constants.NUM_COLS):
+		for r: int in range(Constants.NUM_ROWS):
+			var coord: Vector2i = Vector2i(c, r)
+			_clip_tilemap_player0.set_cell(coord, 0, atlas_coord)
+			_clip_tilemap_player1.set_cell(coord, 0, atlas_coord)
 
 
 func _spawn_player(player_num: int, coord: Vector2i) -> void:
 	var player: Player = _player_scene.instantiate()
 	player.player_num = player_num
 	player.global_position = _tilemap.map_to_local(coord)
-	_player_container.add_child(player)
+
+	if player_num == 0:
+		_player_container0.add_child(player)
+	else:
+		_player_container1.add_child(player)
+
 	_players.append(player)
 
 
@@ -93,9 +110,11 @@ func _spawn_mask() -> void:
 	_masks.append(mask)
 
 
-func _mask_picked_up(mask: Mask) -> void:
+func _mask_picked_up(player: Player, mask: Mask) -> void:
 	_masks.erase(mask)
 	_spawn_mask()
+
+	_update_clip_tilemap(player)
 
 
 func _get_empty_coord() -> Vector2i:
@@ -122,6 +141,31 @@ func _is_coord_empty(coord: Vector2i) -> bool:
 
 func _get_random_coord() -> Vector2i:
 	return Vector2i(randi() % Constants.NUM_COLS, randi() % Constants.NUM_ROWS)
+
+
+func _update_clip_tilemap(player: Player) -> void:
+	var clip_tilemap: TileMapLayer
+	if player.player_num == 0:
+		clip_tilemap = _clip_tilemap_player0
+	else:
+		clip_tilemap = _clip_tilemap_player1
+
+	for c: int in range(Constants.NUM_COLS):
+		for r: int in range(Constants.NUM_ROWS):
+			var coord: Vector2i = Vector2i(c, r)
+			if _get_coord_color(coord) == player.color:
+				# Erase the cell.
+				clip_tilemap.set_cell(coord, -1)
+			else:
+				clip_tilemap.set_cell(coord, 0, Vector2i(0, 0))
+
+
+func _get_coord_color(coord: Vector2i) -> Color:
+	var atlas_coord: Vector2i = _tilemap.get_cell_atlas_coords(coord)
+	return Constants.COLORS[atlas_coord.x]
+
+	# iterate through base tilemap
+	#  if the tile colour doesn't match player colour then set the tile, otherwise unset it
 
 
 func _input(event: InputEvent) -> void:

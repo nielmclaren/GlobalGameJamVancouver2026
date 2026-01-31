@@ -1,7 +1,7 @@
 class_name Mask
 extends Area2D
 
-signal picked_up
+signal picked_up(player: Player)
 
 @onready var _base: Node2D = %Base
 
@@ -19,5 +19,5 @@ func _process(_delta: float) -> void:
 		if body is Player:
 			var player: Player = body
 			player.pickup_mask(self)
-			picked_up.emit()
+			picked_up.emit(player)
 			queue_free()

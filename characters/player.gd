@@ -1,14 +1,17 @@
 class_name Player
 extends CharacterBody2D
 
-@onready var _base: Node2D = %Base
-
 const SPEED: float = 20000
+
+@onready var _base: Node2D = %Base
 
 @export var player_num: int = 0
 
+var color: Color
+
 
 func pickup_mask(mask: Mask) -> void:
+	color = mask.color
 	_base.modulate = mask.color
 
 
