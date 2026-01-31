@@ -115,10 +115,22 @@ func _spawn_mask() -> void:
 	var coord: Vector2i = _get_empty_coord()
 
 	var mask: Mask = _mask_scene.instantiate()
+	mask.color = _get_next_mask_color()
 	mask.picked_up.connect(_mask_picked_up.bind(mask))
 	mask.global_position = _tilemap.map_to_local(coord)
 	_mask_container.add_child(mask)
 	_masks.append(mask)
+
+
+func _get_next_mask_color() -> Color:
+	var available_colors: Array[Color]
+	for color: Color in Constants.COLORS:
+		if _masks.any(func(mask: Mask) -> bool: return mask.color == color):
+			continue
+		if _players.any(func(player: Player) -> bool: return player.color == color):
+			continue
+		available_colors.append(color)
+	return available_colors.pick_random()
 
 
 func _mask_picked_up(player: Player, mask: Mask) -> void:

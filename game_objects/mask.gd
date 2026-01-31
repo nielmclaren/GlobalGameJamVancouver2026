@@ -9,7 +9,6 @@ var color: Color
 
 
 func _ready() -> void:
-	color = Constants.COLORS[randi() % Constants.COLORS.size()]
 	_base.modulate = color
 
 
