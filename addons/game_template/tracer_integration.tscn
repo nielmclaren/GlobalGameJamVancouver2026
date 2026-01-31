@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cwwohlv3l1b4u"]
+
+[ext_resource type="Script" uid="uid://62w6uokir7fp" path="res://addons/game_template/tracer_integration.gd" id="1_7qfh6"]
+
+[node name="TracerIntegration" type="Node"]
+script = ExtResource("1_7qfh6")

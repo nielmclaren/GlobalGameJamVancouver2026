@@ -1,0 +1,80 @@
+[gd_scene load_steps=4 format=3 uid="uid://1jfy80jul1w0"]
+
+[ext_resource type="Script" uid="uid://7srngd7gbyqc" path="res://ui/title_screen.gd" id="1_7xhpk"]
+[ext_resource type="PackedScene" uid="uid://cc4701uyf5r76" path="res://ui/audio_controls.tscn" id="2_bor1v"]
+[ext_resource type="Theme" uid="uid://b8rvlvfehdp6a" path="res://ui/ui_theme.tres" id="2_qer0c"]
+
+[node name="TitleScreen" type="Node2D"]
+script = ExtResource("1_7xhpk")
+
+[node name="Control" type="Control" parent="."]
+custom_minimum_size = Vector2(1920, 1080)
+layout_mode = 3
+anchors_preset = 0
+
+[node name="ColorRect" type="ColorRect" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="Control"]
+layout_mode = 0
+offset_right = 1920.0
+offset_bottom = 1088.0
+theme = ExtResource("2_qer0c")
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Control/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Title"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ButtonVBox" type="VBoxContainer" parent="Control/MarginContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="PlayButton" type="Button" parent="Control/MarginContainer/VBoxContainer/VBoxContainer/ButtonVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Play"
+
+[node name="CreditsButton" type="Button" parent="Control/MarginContainer/VBoxContainer/VBoxContainer/ButtonVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Credits"
+
+[node name="ExitButton" type="Button" parent="Control/MarginContainer/VBoxContainer/VBoxContainer/ButtonVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Exit"
+
+[node name="AudioControls" parent="Control/MarginContainer/VBoxContainer/VBoxContainer" instance=ExtResource("2_bor1v")]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="ButtonVBox2" type="VBoxContainer" parent="Control/MarginContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="FullscreenButton" type="Button" parent="Control/MarginContainer/VBoxContainer/VBoxContainer/ButtonVBox2"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Fullscreen"

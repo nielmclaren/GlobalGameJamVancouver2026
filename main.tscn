@@ -1,0 +1,27 @@
+[gd_scene load_steps=6 format=3 uid="uid://de8cif78hkx40"]
+
+[ext_resource type="Script" uid="uid://dgyt60s4iammr" path="res://main.gd" id="1_ig7tw"]
+[ext_resource type="PackedScene" uid="uid://cwcqneccd8g4g" path="res://ui/pause_menu.tscn" id="2_0xm2m"]
+[ext_resource type="PackedScene" uid="uid://fi441li6sa4l" path="res://ui/credits_screen.tscn" id="3_h2yge"]
+[ext_resource type="PackedScene" uid="uid://1jfy80jul1w0" path="res://ui/title_screen.tscn" id="4_1bvp3"]
+[ext_resource type="PackedScene" uid="uid://6v1t5ga1bu11" path="res://managers/audio_manager.tscn" id="5_lquwl"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_ig7tw")
+
+[node name="GameContainer" type="Node2D" parent="."]
+unique_name_in_owner = true
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = 100
+
+[node name="PauseMenu" parent="CanvasLayer" instance=ExtResource("2_0xm2m")]
+unique_name_in_owner = true
+
+[node name="TitleScreen" parent="CanvasLayer" instance=ExtResource("4_1bvp3")]
+unique_name_in_owner = true
+
+[node name="CreditsScreen" parent="CanvasLayer" instance=ExtResource("3_h2yge")]
+unique_name_in_owner = true
+
+[node name="AudioManager" parent="." instance=ExtResource("5_lquwl")]
