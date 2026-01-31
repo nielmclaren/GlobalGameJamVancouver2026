@@ -196,9 +196,6 @@ func _get_coord_color(coord: Vector2i) -> Color:
 	var atlas_coord: Vector2i = _tilemap.get_cell_atlas_coords(coord)
 	return Constants.COLORS[atlas_coord.x]
 
-	# iterate through base tilemap
-	#  if the tile colour doesn't match player colour then set the tile, otherwise unset it
-
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("reset"):

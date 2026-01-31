@@ -10,7 +10,6 @@ signal masked
 const SPEED: float = 20000
 
 @onready var _base: Node2D = %Base
-@onready var _attack_art: Node2D = %AttackArt
 @onready var _attack_area: Area2D = %AttackArea
 @onready var _animation: AnimationPlayer = %AnimationPlayer
 
@@ -55,16 +54,17 @@ func _input(event: InputEvent) -> void:
 
 
 func _try_attack() -> void:
-	_flash_attack_art()
+	if !_animation.is_playing():
+		_animation.play("attack")
+		_perform_attack()
+
+
+func _perform_attack() -> void:
 	var bodies: Array[Node2D] = _attack_area.get_overlapping_bodies()
 	for body: Node2D in bodies:
 		if body is Player and body != self:
 			var player: Player = body
 			player.take_hit()
-
-
-func _flash_attack_art() -> void:
-	_animation.play("attack")
 
 
 func _unmask() -> void:
