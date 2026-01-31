@@ -31,6 +31,15 @@ func take_hit() -> void:
 	_animation.play("hit")
 
 
+func _ready() -> void:
+	_attack_area.body_entered.connect(_attack_area_body_entered)
+
+
+func _attack_area_body_entered(body: Node2D) -> void:
+	if body is Player:
+		_try_attack()
+
+
 func _process(delta: float) -> void:
 	if !is_stunned:
 		_dir = _get_input_vector()
