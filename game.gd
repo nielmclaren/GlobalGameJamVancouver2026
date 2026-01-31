@@ -30,7 +30,7 @@ func reset() -> void:
 	_spawn_player(0, Vector2i(0, 0))
 	_spawn_player(1, Vector2i(0, 3))
 
-	_spawn_goal()
+	_try_spawn_goal()
 
 	# Spawn masks last in remaining empty spaces.
 	for i: int in range(Constants.NUM_MASKS):
@@ -97,20 +97,36 @@ func _unmask_player(player: Player) -> void:
 	_reveal_clip_tilemap(player)
 
 
-func _spawn_goal() -> void:
-	var coord: Vector2i = _get_empty_coord()
+func _delay_spawn_goal() -> void:
+	await get_tree().create_timer(Constants.GOAL_SPAWN_DELAY_S).timeout
+
+	var success: bool = false
+	while !success:
+		success = _try_spawn_goal()
+		await get_tree().create_timer(Constants.GOAL_SPAWN_RETRY_S).timeout
+
+
+func _try_spawn_goal() -> bool:
+	var available_coords: Array[Vector2i] = _get_yonder_coords()
+	if available_coords.is_empty():
+		return false
+
+	var coord: Vector2i = available_coords.pick_random()
+
 	var goal: Goal = _goal_scene.instantiate()
 	goal.scored.connect(_goal_scored)
 	goal.position = _tilemap.map_to_local(coord)
 	_goal_container.add_child(goal)
 	_goal = goal
 
+	return true
+
 
 func _goal_scored(player: Player) -> void:
 	print("Player %d scored!" % player.player_num)
 	_goal = null
 
-	_spawn_goal()
+	_delay_spawn_goal()
 
 
 func _delay_spawn_mask() -> void:
