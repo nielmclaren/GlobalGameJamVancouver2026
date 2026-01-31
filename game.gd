@@ -78,12 +78,23 @@ func _spawn_player(player_num: int, coord: Vector2i) -> void:
 	player.player_num = player_num
 	player.global_position = _tilemap.map_to_local(coord)
 
+	player.masked.connect(_mask_player.bind(player))
+	player.unmasked.connect(_unmask_player.bind(player))
+
 	if player_num == 0:
 		_player_container0.add_child(player)
 	else:
 		_player_container1.add_child(player)
 
 	_players.append(player)
+
+
+func _mask_player(player: Player) -> void:
+	_update_clip_tilemap(player)
+
+
+func _unmask_player(player: Player) -> void:
+	_reveal_clip_tilemap(player)
 
 
 func _spawn_goal() -> void:
@@ -143,13 +154,16 @@ func _get_random_coord() -> Vector2i:
 	return Vector2i(randi() % Constants.NUM_COLS, randi() % Constants.NUM_ROWS)
 
 
-func _update_clip_tilemap(player: Player) -> void:
-	var clip_tilemap: TileMapLayer
-	if player.player_num == 0:
-		clip_tilemap = _clip_tilemap_player0
-	else:
-		clip_tilemap = _clip_tilemap_player1
+func _reveal_clip_tilemap(player: Player) -> void:
+	var clip_tilemap: TileMapLayer = _get_clip_tilemap(player)
+	for c: int in range(Constants.NUM_COLS):
+		for r: int in range(Constants.NUM_ROWS):
+			var coord: Vector2i = Vector2i(c, r)
+			clip_tilemap.set_cell(coord, 0, Vector2i(0, 0))
 
+
+func _update_clip_tilemap(player: Player) -> void:
+	var clip_tilemap: TileMapLayer = _get_clip_tilemap(player)
 	for c: int in range(Constants.NUM_COLS):
 		for r: int in range(Constants.NUM_ROWS):
 			var coord: Vector2i = Vector2i(c, r)
@@ -158,6 +172,12 @@ func _update_clip_tilemap(player: Player) -> void:
 				clip_tilemap.set_cell(coord, -1)
 			else:
 				clip_tilemap.set_cell(coord, 0, Vector2i(0, 0))
+
+
+func _get_clip_tilemap(player: Player) -> TileMapLayer:
+	if player.player_num == 0:
+		return _clip_tilemap_player0
+	return _clip_tilemap_player1
 
 
 func _get_coord_color(coord: Vector2i) -> Color:
