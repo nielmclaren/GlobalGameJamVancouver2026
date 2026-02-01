@@ -25,10 +25,6 @@ const SPEED: float = 20000
 	set(v):
 		if v != _is_stealthed:
 			_is_stealthed = v
-			set_collision_layer_value(Constants.ATTACK_LAYER, !v)
-			set_collision_mask_value(Constants.ATTACK_LAYER, !v)
-			_attack_area.monitoring = !v
-			_attack_area.monitorable = !v
 			if _is_stealthed:
 				_animation.play("stealth")
 			else:
@@ -114,3 +110,18 @@ func _unmask() -> void:
 
 func _mask() -> void:
 	masked.emit()
+
+
+func _activate_stealth_mode() -> void:
+	_set_stealth_mode(true)
+
+
+func _deactivate_stealth_mode() -> void:
+	_set_stealth_mode(false)
+
+
+func _set_stealth_mode(v: bool) -> void:
+	set_collision_layer_value(Constants.ATTACK_LAYER, !v)
+	set_collision_mask_value(Constants.ATTACK_LAYER, !v)
+	_attack_area.monitoring = !v
+	_attack_area.monitorable = !v
