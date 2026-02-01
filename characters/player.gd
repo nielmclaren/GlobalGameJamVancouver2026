@@ -13,6 +13,7 @@ signal hitted
 const SPEED: float = 30000
 
 @onready var _art: Node2D = %Art
+@onready var _animated_sprite: AnimatedSprite2D = %AnimatedSprite2D
 @onready var _attack_area: Area2D = %AttackArea
 @onready var _animation: AnimationPlayer = %AnimationPlayer
 @onready var _weapon: Node2D = %Weapon
@@ -45,7 +46,6 @@ func setup(game: Game) -> Player:
 
 func pickup_mask(mask: Mask) -> void:
 	color_index = mask.color_index
-	_art.modulate = Constants.COLORS[color_index]
 
 
 func take_hit() -> void:
@@ -76,9 +76,19 @@ func _process(delta: float) -> void:
 		_weapon.global_rotation = _dir.angle()
 
 		if _dir.x < 0:
-			_art.scale.x = 1
-		elif _dir.x > 0:
 			_art.scale.x = -1
+		elif _dir.x > 0:
+			_art.scale.x = 1
+
+	var player_form: String = "base"
+	if color_index >= 0:
+		player_form = Constants.PLAYER_FORMS[color_index]
+	var target_animation: String = "%s_walk" % player_form
+	if _dir.is_zero_approx():
+		target_animation = "%s_idle" % player_form
+
+	if _animated_sprite.animation != target_animation:
+		_animated_sprite.play(target_animation)
 
 
 func _get_input_vector() -> Vector2:

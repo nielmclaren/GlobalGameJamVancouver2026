@@ -20,3 +20,4 @@ output/*
 
 # Krita files
 *-autosave.kra
+*.png~

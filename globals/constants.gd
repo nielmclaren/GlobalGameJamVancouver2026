@@ -8,6 +8,8 @@ var COLORS: Array[Color] = [
 	Color.from_string("#e4bf6a", Color.RED),
 ]
 
+var PLAYER_FORMS: Array[String] = ["water", "fire", "grass", "wood"]
+
 const NUM_COLS: int = 4
 const NUM_ROWS: int = 4
 
