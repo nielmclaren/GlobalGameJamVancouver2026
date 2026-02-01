@@ -23,8 +23,12 @@ const SPEED: float = 20000
 		return _is_stealthed
 	set(v):
 		if v != _is_stealthed:
-			_is_stealthed = v
 			visible = !v
+			_is_stealthed = v
+			set_collision_layer_value(Constants.ATTACK_LAYER, !v)
+			set_collision_mask_value(Constants.ATTACK_LAYER, !v)
+			_attack_area.monitoring = !v
+			_attack_area.monitorable = !v
 			print("Stealthed %d: " % player_num, _is_stealthed)
 
 var color_index: int = -1
@@ -55,7 +59,7 @@ func _ready() -> void:
 
 
 func _attack_area_body_entered(body: Node2D) -> void:
-	if body is Player:
+	if body is Player and body != self:
 		_try_attack()
 
 
@@ -66,7 +70,7 @@ func _process(delta: float) -> void:
 			velocity = _dir * SPEED * delta
 			move_and_slide()
 
-			is_stealthed = _game.is_in_stealth_tile(self )
+			is_stealthed = _game.is_in_stealth_tile(self)
 
 	if !_dir.is_zero_approx():
 		global_rotation = _dir.angle()

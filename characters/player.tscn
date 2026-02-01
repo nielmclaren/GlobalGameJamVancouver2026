@@ -147,6 +147,8 @@ _data = {
 }
 
 [node name="Player" type="CharacterBody2D"]
+collision_layer = 7
+collision_mask = 7
 script = ExtResource("1_dnjla")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -177,6 +179,8 @@ default_color = Color(1, 0, 0, 1)
 
 [node name="AttackArea" type="Area2D" parent="."]
 unique_name_in_owner = true
+collision_layer = 4
+collision_mask = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
 position = Vector2(48, 0)
@@ -197,7 +201,7 @@ libraries = {
 &"": SubResource("AnimationLibrary_x0jl3")
 }
 
-[node name="Weapon" type="Node2D" parent="."]
+[node name="WeaponArt" type="Node2D" parent="."]
 
-[node name="Line2D" type="Line2D" parent="Weapon"]
+[node name="Line2D" type="Line2D" parent="WeaponArt"]
 points = PackedVector2Array(40, 0, 88, 0)
