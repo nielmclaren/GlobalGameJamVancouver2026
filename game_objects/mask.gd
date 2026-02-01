@@ -5,11 +5,11 @@ signal picked_up(player: Player)
 
 @onready var _base: Node2D = %Base
 
-var color: Color
+var color_index: int
 
 
 func _ready() -> void:
-	_base.modulate = color
+	_base.modulate = Constants.COLORS[color_index]
 
 
 func _process(_delta: float) -> void:

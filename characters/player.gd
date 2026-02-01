@@ -18,15 +18,30 @@ const SPEED: float = 20000
 
 @export var player_num: int = 0
 @export var is_stunned: bool = false
+@export var is_stealthed: bool = false:
+	get():
+		return _is_stealthed
+	set(v):
+		if v != _is_stealthed:
+			_is_stealthed = v
+			visible = !v
+			print("Stealthed %d: " % player_num, _is_stealthed)
 
-var color: Color
+var color_index: int = -1
 
+var _game: Game
 var _dir: Vector2
+var _is_stealthed: bool = false
+
+
+func setup(game: Game) -> Player:
+	_game = game
+	return self
 
 
 func pickup_mask(mask: Mask) -> void:
-	color = mask.color
-	_base.modulate = mask.color
+	color_index = mask.color_index
+	_base.modulate = Constants.COLORS[color_index]
 
 
 func take_hit() -> void:
@@ -47,8 +62,11 @@ func _attack_area_body_entered(body: Node2D) -> void:
 func _process(delta: float) -> void:
 	if !is_stunned:
 		_dir = _get_input_vector()
-		velocity = _dir * SPEED * delta
-		move_and_slide()
+		if !_dir.is_zero_approx():
+			velocity = _dir * SPEED * delta
+			move_and_slide()
+
+			is_stealthed = _game.is_in_stealth_tile(self )
 
 	if !_dir.is_zero_approx():
 		global_rotation = _dir.angle()

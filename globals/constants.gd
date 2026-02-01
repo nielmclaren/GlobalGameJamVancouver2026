@@ -24,3 +24,6 @@ const GOAL_SPAWN_DELAY_S: float = 3.
 
 # How long to wait after spawning a goal failed (due to no available spaces).
 const GOAL_SPAWN_RETRY_S: float = 0.2
+
+const TILE_SIZE: int = 128
+const TILE_HALF_SIZE: int = 64

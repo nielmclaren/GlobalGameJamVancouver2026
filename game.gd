@@ -58,6 +58,36 @@ func clear() -> void:
 	_scores_changed()
 
 
+func is_in_stealth_tile(player: Player) -> bool:
+	for c: int in range(Constants.NUM_COLS):
+		for r: int in range(Constants.NUM_ROWS):
+			var coord: Vector2i = Vector2i(c, r)
+			var atlas_coord: Vector2i = _tilemap.get_cell_atlas_coords(coord)
+			var color_index: int = Utils.atlas_coord_to_color_index(atlas_coord)
+			if color_index == player.color_index:
+				if _is_player_tile_overlap(player, coord):
+					return true
+	return false
+
+
+func _is_player_tile_overlap(player: Player, coord: Vector2i) -> bool:
+	var circle_pos: Vector2 = player.position # center
+	var radius: float = 30
+	var square_pos: Vector2 = _tilemap.map_to_local(coord) # center
+	var half_size: float = Constants.TILE_HALF_SIZE
+
+	var x: float = absf(circle_pos.x - square_pos.x) - half_size
+	var y: float = absf(circle_pos.y - square_pos.y) - half_size
+	if x > 0:
+		if y > 0:
+			var result: bool = x * x + y * y < radius * radius
+			return result
+		else:
+			return x < radius
+	else:
+		return y < radius
+
+
 func _randomize_tiles() -> void:
 	# Build a list of tile atlas positions with an equal number of each tile.
 	var tiles: Array[Vector2i]
@@ -82,6 +112,7 @@ func _randomize_tiles() -> void:
 
 func _spawn_player(player_num: int, coord: Vector2i) -> void:
 	var player: Player = _player_scene.instantiate()
+	player.setup(self )
 	player.player_num = player_num
 	player.position = _tilemap.map_to_local(coord)
 
@@ -167,7 +198,7 @@ func _try_spawn_mask() -> bool:
 	var coord: Vector2i = available_coords.pick_random()
 
 	var mask: Mask = _mask_scene.instantiate()
-	mask.color = _get_next_mask_color()
+	mask.color_index = _get_next_mask_color_index()
 	mask.picked_up.connect(_mask_picked_up.bind(mask))
 	mask.position = _tilemap.map_to_local(coord)
 	_mask_container.add_child(mask)
@@ -176,15 +207,15 @@ func _try_spawn_mask() -> bool:
 	return true
 
 
-func _get_next_mask_color() -> Color:
-	var available_colors: Array[Color]
-	for color: Color in Constants.COLORS:
-		if _masks.any(func(mask: Mask) -> bool: return mask.color == color):
+func _get_next_mask_color_index() -> int:
+	var available_indices: Array[int]
+	for color_index: int in range(Constants.COLORS.size()):
+		if _masks.any(func(mask: Mask) -> bool: return mask.color_index == color_index):
 			continue
-		if _players.any(func(player: Player) -> bool: return player.color == color):
+		if _players.any(func(player: Player) -> bool: return player.color_index == color_index):
 			continue
-		available_colors.append(color)
-	return available_colors.pick_random()
+		available_indices.append(color_index)
+	return available_indices.pick_random()
 
 
 func _mask_picked_up(player: Player, mask: Mask) -> void:
@@ -268,7 +299,7 @@ func _update_clip_tilemap(player: Player) -> void:
 	for c: int in range(Constants.NUM_COLS):
 		for r: int in range(Constants.NUM_ROWS):
 			var coord: Vector2i = Vector2i(c, r)
-			if _get_coord_color(coord) == player.color:
+			if _get_coord_color_index(coord) == player.color_index:
 				# Erase the cell.
 				clip_tilemap.set_cell(coord, -1)
 			else:
@@ -279,6 +310,11 @@ func _get_clip_tilemap(player: Player) -> TileMapLayer:
 	if player.player_num == 0:
 		return _clip_tilemap_player0
 	return _clip_tilemap_player1
+
+
+func _get_coord_color_index(coord: Vector2i) -> int:
+	var atlas_coord: Vector2i = _tilemap.get_cell_atlas_coords(coord)
+	return atlas_coord.x
 
 
 func _get_coord_color(coord: Vector2i) -> Color:

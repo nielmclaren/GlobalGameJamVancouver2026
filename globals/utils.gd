@@ -26,3 +26,11 @@ func get_ancestor_by_type(node: Node, type: Variant) -> Node:
 
 func lerpf(v: float, in_low: float, in_high: float, out_low: float, out_high: float) -> float:
 	return out_low + (v - in_low) * (out_high - out_low) / (in_high - in_low)
+
+
+func color_index_to_atlas_coord(index: int) -> Vector2i:
+	return Vector2i(index, 0)
+
+
+func atlas_coord_to_color_index(coord: Vector2i) -> int:
+	return coord.x
