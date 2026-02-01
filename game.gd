@@ -195,10 +195,14 @@ func _try_spawn_mask() -> bool:
 	if available_coords.is_empty():
 		return false
 
+	var available_mask_color_indices: Array[int] = _get_available_mask_color_indices()
+	if available_mask_color_indices.is_empty():
+		return false
+
 	var coord: Vector2i = available_coords.pick_random()
 
 	var mask: Mask = _mask_scene.instantiate()
-	mask.color_index = _get_next_mask_color_index()
+	mask.color_index = available_mask_color_indices.pick_random()
 	mask.picked_up.connect(_mask_picked_up.bind(mask))
 	mask.position = _tilemap.map_to_local(coord)
 	_mask_container.add_child(mask)
@@ -207,15 +211,15 @@ func _try_spawn_mask() -> bool:
 	return true
 
 
-func _get_next_mask_color_index() -> int:
-	var available_indices: Array[int]
+func _get_available_mask_color_indices() -> Array[int]:
+	var result: Array[int]
 	for color_index: int in range(Constants.COLORS.size()):
 		if _masks.any(func(mask: Mask) -> bool: return mask.color_index == color_index):
 			continue
 		if _players.any(func(player: Player) -> bool: return player.color_index == color_index):
 			continue
-		available_indices.append(color_index)
-	return available_indices.pick_random()
+		result.append(color_index)
+	return result
 
 
 func _mask_picked_up(player: Player, mask: Mask) -> void:

@@ -23,12 +23,15 @@ const SPEED: float = 20000
 		return _is_stealthed
 	set(v):
 		if v != _is_stealthed:
-			visible = !v
 			_is_stealthed = v
 			set_collision_layer_value(Constants.ATTACK_LAYER, !v)
 			set_collision_mask_value(Constants.ATTACK_LAYER, !v)
 			_attack_area.monitoring = !v
 			_attack_area.monitorable = !v
+			if _is_stealthed:
+				_animation.play("stealth")
+			else:
+				_animation.play("destealth")
 			print("Stealthed %d: " % player_num, _is_stealthed)
 
 var color_index: int = -1
@@ -83,11 +86,6 @@ func _get_input_vector() -> Vector2:
 		"move_up%d" % player_num,
 		"move_down%d" % player_num
 	)
-
-
-func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("attack%d" % player_num):
-		_try_attack()
 
 
 func _try_attack() -> void:
