@@ -5,6 +5,9 @@ extends Node2D
 @onready var credits_screen: CreditsScreen = %CreditsScreen
 @onready var game_container: Node2D = %GameContainer
 @onready var pause_menu: PauseMenu = %PauseMenu
+@onready var title_music: AudioStreamPlayer = %TitleMusic
+@onready var gameplay_music: AudioStreamPlayer = %GameplayMusic
+@onready var pause_sound: AudioStreamPlayer = %PauseSound
 
 var game_scene: PackedScene
 
@@ -57,7 +60,24 @@ func _play() -> void:
 	credits_screen.hide()
 
 	_game = game_scene.instantiate()
+	_game.game_started.connect(_game_started)
+	_game.game_completed.connect(_game_completed)
 	game_container.add_child(_game)
+
+	title_music.stop()
+
+
+func _game_started() -> void:
+	title_music.stop()
+	if !gameplay_music.playing:
+		gameplay_music.play()
+		pause_sound.play()
+
+
+func _game_completed() -> void:
+	gameplay_music.stop()
+	if !title_music.playing:
+		title_music.play()
 
 
 func _abandon() -> void:
@@ -68,9 +88,6 @@ func _abandon() -> void:
 
 	title_screen.hide()
 	credits_screen.hide()
-
-	_game = game_scene.instantiate()
-	game_container.add_child(_game)
 
 	if _game:
 		_game.queue_free()
@@ -83,6 +100,10 @@ func _abandon() -> void:
 	_is_pause_menu = false
 	_prev_paused = false
 	get_tree().paused = false
+
+	gameplay_music.stop()
+	if !title_music.playing:
+		title_music.play()
 
 
 func _show_credits() -> void:
@@ -139,12 +160,23 @@ func _toggle_pause_menu() -> void:
 		get_tree().paused = _prev_paused
 		_is_pause_menu = false
 
+		if _game.is_playing_game:
+			title_music.stop()
+			if !gameplay_music.playing:
+				gameplay_music.play()
+				pause_sound.play()
+		# else: Leave the title music.
+
 	else:
 		Tracer.trace("Pausing.")
 		pause_menu.show()
 		_prev_paused = get_tree().paused
 		get_tree().paused = true
 		_is_pause_menu = true
+
+		gameplay_music.stop()
+		if !title_music.playing:
+			title_music.play()
 
 
 func _toggle_fullscreen() -> void:

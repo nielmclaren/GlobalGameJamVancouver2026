@@ -1,6 +1,11 @@
 class_name Game
 extends Node2D
 
+signal game_started
+signal game_completed
+
+var is_playing_game: bool = true
+
 @onready var _clip_tilemap_player0: TileMapLayer = %ClipTileMapPlayer0
 @onready var _player_container0: Node2D = %ClipMaskPlayer0
 @onready var _clip_tilemap_player1: TileMapLayer = %ClipTileMapPlayer1
@@ -70,6 +75,9 @@ func reset() -> void:
 	_spawn_first_masks()
 
 	_map_regen_timer.start()
+
+	game_started.emit()
+	is_playing_game = true
 
 
 func clear() -> void:
@@ -243,6 +251,9 @@ func _show_winner(winner: Player, loser: Player) -> void:
 	_loser_animated_sprite.play(loser_form)
 
 	_winner_screen.show()
+
+	game_completed.emit()
+	is_playing_game = false
 
 
 func _scores_changed() -> void:
