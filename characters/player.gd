@@ -34,6 +34,12 @@ const SPEED: float = 30000
 			print("Stealthed %d: " % player_num, _is_stealthed)
 
 var color_index: int = -1
+var score: int = 0:
+	get():
+		return score
+	set(v):
+		score = v
+		_crown_animated_sprite.visible = v > 0
 
 var _game: Game
 var _dir: Vector2
@@ -71,7 +77,7 @@ func _process(delta: float) -> void:
 			velocity = _dir * SPEED * delta
 			move_and_slide()
 
-			is_stealthed = _game.is_in_stealth_tile(self)
+			is_stealthed = _game.is_in_stealth_tile(self )
 
 	if !_dir.is_zero_approx():
 		_weapon.global_rotation = _dir.angle()
