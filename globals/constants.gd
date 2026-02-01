@@ -31,3 +31,6 @@ const TILE_HALF_SIZE: int = 64
 const COLLISION_LAYER: int = 1
 const PICKUP_LAYER: int = 2
 const ATTACK_LAYER: int = 3
+
+# Number of points needed to win.
+const MAX_SCORE: int = 3

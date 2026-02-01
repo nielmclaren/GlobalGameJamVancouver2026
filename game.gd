@@ -10,6 +10,8 @@ extends Node2D
 @onready var _tilemap: TileMapLayer = %TileMapLayer
 @onready var _hud: Hud = %Hud
 @onready var _map_regen_timer: Timer = %MapRegenTimer
+@onready var _winner_screen: Node2D = %WinnerScreen
+@onready var _winner_label: Label = %WinnerLabel
 
 var _mask_scene: PackedScene = load("res://game_objects/mask.tscn")
 var _goal_scene: PackedScene = load("res://game_objects/goal.tscn")
@@ -19,6 +21,9 @@ var _players: Array[Player]
 var _masks: Array[Mask]
 var _goal: Goal
 var _scores: Array[int]
+
+# Used to discard timeouts from old timers.
+var _reset_index: int = 0
 
 
 func _ready() -> void:
@@ -35,6 +40,8 @@ func _map_regen_timeout() -> void:
 
 
 func reset() -> void:
+	_reset_index += 1
+
 	clear()
 
 	_randomize_tiles()
@@ -154,12 +161,19 @@ func _player_hitted(player: Player) -> void:
 
 
 func _delay_spawn_goal() -> void:
+	var reset_index: int = _reset_index
 	await get_tree().create_timer(Constants.GOAL_SPAWN_DELAY_S).timeout
+
+	if _reset_index != reset_index:
+		return
 
 	var success: bool = false
 	while !success:
 		success = _try_spawn_goal()
 		await get_tree().create_timer(Constants.GOAL_SPAWN_RETRY_S).timeout
+
+		if _reset_index != reset_index:
+			return
 
 
 func _try_spawn_goal(is_first_spawn: bool = false) -> bool:
@@ -190,6 +204,10 @@ func _goal_scored(player: Player) -> void:
 
 	_goal = null
 
+	if _scores[player.player_num] >= Constants.MAX_SCORE:
+		_winner_label.text = "Player %d wins!" % player.player_num
+		_winner_screen.show()
+
 	_delay_spawn_goal()
 
 
@@ -199,12 +217,19 @@ func _scores_changed() -> void:
 
 
 func _delay_spawn_mask() -> void:
+	var reset_index: int = _reset_index
 	await get_tree().create_timer(Constants.MASK_SPAWN_DELAY_S).timeout
+
+	if _reset_index != reset_index:
+		return
 
 	var success: bool = false
 	while !success:
 		success = _try_spawn_mask()
 		await get_tree().create_timer(Constants.MASK_SPAWN_RETRY_S).timeout
+
+		if _reset_index != reset_index:
+			return
 
 
 func _try_spawn_mask() -> bool:
@@ -352,6 +377,10 @@ func _get_coord_color(coord: Vector2i) -> Color:
 
 func _input(event: InputEvent) -> void:
 	if !OS.has_feature("template") and event.is_action_pressed("reset"):
+		reset()
+
+	if _winner_screen.visible and event.is_action_pressed("proceed"):
+		_winner_screen.hide()
 		reset()
 
 	# Quickly quit if this is the root scene. Normally this scene would have Main as a parent.

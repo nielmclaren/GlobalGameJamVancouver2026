@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=4 uid="uid://cvee3n6hgph3k"]
+[gd_scene load_steps=21 format=4 uid="uid://cvee3n6hgph3k"]
 
 [ext_resource type="Script" uid="uid://ba7k16ft3tklp" path="res://game.gd" id="1_80nbo"]
 [ext_resource type="Script" uid="uid://b6xjkpxjv77pk" path="res://ui/dev_bar.gd" id="2_e2o6t"]
@@ -67,6 +67,9 @@ viewport_path = NodePath("Level/SubViewportPlayer0")
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_ryrav"]
 viewport_path = NodePath("Level/SubViewportPlayer1")
+
+[sub_resource type="LabelSettings" id="LabelSettings_ryrav"]
+font_size = 64
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_80nbo")
@@ -146,31 +149,37 @@ unique_name_in_owner = true
 unique_name_in_owner = true
 wait_time = 30.0
 
-[node name="WinnerScreen" type="Node2D" parent="."]
-unique_name_in_owner = true
-visible = false
-
-[node name="ColorRect" type="ColorRect" parent="WinnerScreen"]
-offset_right = 1920.0
-offset_bottom = 1088.0
-color = Color(0.32544088, 0.3254409, 0.32544088, 1)
-
-[node name="CenterContainer" type="CenterContainer" parent="WinnerScreen"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="WinnerLabel" type="Label" parent="WinnerScreen/CenterContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Player X Wins!"
-
 [node name="Hud" parent="." instance=ExtResource("5_ryrav")]
 unique_name_in_owner = true
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="WinnerScreen" type="Node2D" parent="CanvasLayer"]
+unique_name_in_owner = true
+visible = false
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/WinnerScreen"]
+offset_right = 1920.0
+offset_bottom = 1088.0
+color = Color(0.32544088, 0.3254409, 0.32544088, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="CanvasLayer/WinnerScreen"]
+custom_minimum_size = Vector2(1920, 1080)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 1920.0
+offset_bottom = 1080.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="WinnerLabel" type="Label" parent="CanvasLayer/WinnerScreen/CenterContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Player X Wins!"
+label_settings = SubResource("LabelSettings_ryrav")
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="DevBar" type="Node2D" parent="CanvasLayer"]
 script = ExtResource("2_e2o6t")

@@ -10,7 +10,7 @@ signal masked
 # Emitted when player gets hit.
 signal hitted
 
-const SPEED: float = 20000
+const SPEED: float = 30000
 
 @onready var _art: Node2D = %Art
 @onready var _attack_area: Area2D = %AttackArea
