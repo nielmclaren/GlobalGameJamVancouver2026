@@ -14,6 +14,7 @@ const SPEED: float = 30000
 
 @onready var _art: Node2D = %Art
 @onready var _animated_sprite: AnimatedSprite2D = %AnimatedSprite2D
+@onready var _crown_animated_sprite: AnimatedSprite2D = %CrownAnimatedSprite
 @onready var _attack_area: Area2D = %AttackArea
 @onready var _animation: AnimationPlayer = %AnimationPlayer
 @onready var _weapon: Node2D = %Weapon
@@ -89,6 +90,11 @@ func _process(delta: float) -> void:
 
 	if _animated_sprite.animation != target_animation:
 		_animated_sprite.play(target_animation)
+
+		if _dir.is_zero_approx():
+			_crown_animated_sprite.play("default")
+		else:
+			_crown_animated_sprite.play("walk")
 
 
 func _get_input_vector() -> Vector2:

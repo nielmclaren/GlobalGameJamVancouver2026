@@ -1,10 +1,61 @@
-[gd_scene load_steps=4 format=3 uid="uid://b1uaili0kp6u1"]
+[gd_scene load_steps=9 format=3 uid="uid://b1uaili0kp6u1"]
 
 [ext_resource type="Script" uid="uid://p4fjqjucqti4" path="res://game_objects/mask.gd" id="1_7oty3"]
-[ext_resource type="Texture2D" uid="uid://3ms8y3mdkhc8" path="res://assets/art/circle.svg" id="1_fwgb8"]
+[ext_resource type="Texture2D" uid="uid://dtpoo8b1d1n11" path="res://assets/art/MattSheet.png" id="2_7oty3"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_emyr1"]
 radius = 42.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3n6ma"]
+atlas = ExtResource("2_7oty3")
+region = Rect2(120, 144, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_g8pl1"]
+atlas = ExtResource("2_7oty3")
+region = Rect2(96, 144, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qb6og"]
+atlas = ExtResource("2_7oty3")
+region = Rect2(144, 144, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0jnui"]
+atlas = ExtResource("2_7oty3")
+region = Rect2(168, 144, 24, 24)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_kdtim"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3n6ma")
+}],
+"loop": true,
+"name": &"fire",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_g8pl1")
+}],
+"loop": true,
+"name": &"grass",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qb6og")
+}],
+"loop": true,
+"name": &"water",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0jnui")
+}],
+"loop": true,
+"name": &"wood",
+"speed": 5.0
+}]
 
 [node name="Mask" type="Area2D"]
 collision_layer = 2
@@ -14,26 +65,8 @@ script = ExtResource("1_7oty3")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_emyr1")
 
-[node name="Outline" type="Sprite2D" parent="."]
-modulate = Color(0, 0, 0, 1)
-position = Vector2(0.49999893, 5.9604645e-07)
-scale = Vector2(0.7783358, 0.39881667)
-texture = ExtResource("1_fwgb8")
-
-[node name="Base" type="Sprite2D" parent="."]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(0.5, 0)
-scale = Vector2(0.74156404, 0.37997496)
-texture = ExtResource("1_fwgb8")
-
-[node name="Circle" type="Sprite2D" parent="."]
-modulate = Color(0, 0, 0, 1)
-position = Vector2(-18.999996, 0)
-scale = Vector2(0.19841439, 0.19228572)
-texture = ExtResource("1_fwgb8")
-
-[node name="Circle2" type="Sprite2D" parent="."]
-modulate = Color(0, 0, 0, 1)
-position = Vector2(19.999996, 0)
-scale = Vector2(0.19841439, 0.19228572)
-texture = ExtResource("1_fwgb8")
+scale = Vector2(4, 4)
+sprite_frames = SubResource("SpriteFrames_kdtim")
+animation = &"wood"

@@ -3,13 +3,13 @@ extends Area2D
 
 signal picked_up(player: Player)
 
-@onready var _base: Node2D = %Base
+@onready var _animated_sprite: AnimatedSprite2D = %AnimatedSprite2D
 
 var color_index: int
 
 
 func _ready() -> void:
-	_base.modulate = Constants.COLORS[color_index]
+	_animated_sprite.play(Constants.PLAYER_FORMS[color_index])
 
 
 func _process(_delta: float) -> void:
