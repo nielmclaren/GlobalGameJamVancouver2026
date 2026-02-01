@@ -51,9 +51,7 @@ func reset() -> void:
 
 	_try_spawn_goal(true)
 
-	# Spawn masks last in remaining empty spaces.
-	for i: int in range(Constants.NUM_MASKS):
-		_try_spawn_mask()
+	_spawn_first_masks()
 
 	_map_regen_timer.start()
 
@@ -216,6 +214,24 @@ func _scores_changed() -> void:
 	_hud.set_score(1, _scores[1])
 
 
+func _spawn_first_masks() -> void:
+	var available_mask_color_indices: Array[int] = _get_available_mask_color_indices()
+	if available_mask_color_indices.is_empty():
+		push_error("Available mask color indices was empty on first mask spawn!?")
+	available_mask_color_indices.shuffle()
+
+	var coord: Vector2i
+	var color_index: int
+
+	coord = [Vector2i(0, Constants.NUM_ROWS - 2), Vector2i(1, Constants.NUM_ROWS - 1)].pick_random()
+	color_index = available_mask_color_indices.pop_back()
+	_spawn_mask_at(coord, color_index)
+
+	coord = [Vector2i(Constants.NUM_COLS - 2, 0), Vector2i(Constants.NUM_COLS - 1, 1)].pick_random()
+	color_index = available_mask_color_indices.pop_back()
+	_spawn_mask_at(coord, color_index)
+
+
 func _delay_spawn_mask() -> void:
 	var reset_index: int = _reset_index
 	await get_tree().create_timer(Constants.MASK_SPAWN_DELAY_S).timeout
@@ -242,15 +258,20 @@ func _try_spawn_mask() -> bool:
 		return false
 
 	var coord: Vector2i = available_coords.pick_random()
+	var color_index: int = available_mask_color_indices.pick_random()
 
+	_spawn_mask_at(coord, color_index)
+
+	return true
+
+
+func _spawn_mask_at(coord: Vector2i, color_index: int) -> void:
 	var mask: Mask = _mask_scene.instantiate()
-	mask.color_index = available_mask_color_indices.pick_random()
+	mask.color_index = color_index
 	mask.picked_up.connect(_mask_picked_up.bind(mask))
 	mask.position = _tilemap.map_to_local(coord)
 	_mask_container.add_child(mask)
 	_masks.append(mask)
-
-	return true
 
 
 func _get_available_mask_color_indices() -> Array[int]:

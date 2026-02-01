@@ -20,7 +20,7 @@ const MASK_SPAWN_DELAY_S: float = 1.
 const MASK_SPAWN_RETRY_S: float = 0.2
 
 # How long to wait after a goal is picked up.
-const GOAL_SPAWN_DELAY_S: float = 3.
+const GOAL_SPAWN_DELAY_S: float = 2.
 
 # How long to wait after spawning a goal failed (due to no available spaces).
 const GOAL_SPAWN_RETRY_S: float = 0.2
