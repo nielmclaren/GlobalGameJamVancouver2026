@@ -1,4 +1,7 @@
-[gd_resource type="LabelSettings" format=3 uid="uid://cghkt10hcxvb6"]
+[gd_resource type="LabelSettings" load_steps=2 format=3 uid="uid://cghkt10hcxvb6"]
+
+[ext_resource type="FontFile" uid="uid://bp0ifce0t6njh" path="res://assets/fonts/nine-pin/Nine Pin.ttf" id="1_uajy0"]
 
 [resource]
-font_size = 64
+font = ExtResource("1_uajy0")
+font_size = 256

@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://d2m6wlksjofdk" path="res://assets/art/one_tile128.png" id="4_ryrav"]
 [ext_resource type="PackedScene" uid="uid://dwah34itfrr6d" path="res://ui/hud.tscn" id="5_ryrav"]
 [ext_resource type="Texture2D" uid="uid://midrd8nyfk00" path="res://assets/art/win_lose_sheet.png" id="6_eow3j"]
+[ext_resource type="LabelSettings" uid="uid://dh5nkilieny34" path="res://ui/player_one_two_wins.tres" id="7_j5wjh"]
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_ryrav"]
 
@@ -195,15 +196,17 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="LabelSettings" id="LabelSettings_ryrav"]
-font_size = 64
-
 [node name="Game" type="Node2D"]
 script = ExtResource("1_80nbo")
 
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_right = 1920.0
+offset_bottom = 1088.0
+color = Color(0.23816907, 0.12059707, 0.31600368, 1)
+
 [node name="Level" type="Node2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(408, 8)
+position = Vector2(416, 0)
 scale = Vector2(2.1158304, 2.1158304)
 
 [node name="Bounds" type="Node2D" parent="Level"]
@@ -312,24 +315,34 @@ animation = &"base"
 [node name="WinnerLabel0" type="Label" parent="CanvasLayer/WinnerScreen"]
 unique_name_in_owner = true
 offset_left = 1152.0
-offset_top = 224.0
-offset_right = 1654.0
-offset_bottom = 312.0
-text = "Player one wins!"
-label_settings = SubResource("LabelSettings_ryrav")
+offset_top = 256.0
+offset_right = 1786.0
+offset_bottom = 491.0
+text = "Player one
+wins!"
+label_settings = ExtResource("7_j5wjh")
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="WinnerLabel1" type="Label" parent="CanvasLayer/WinnerScreen"]
 unique_name_in_owner = true
-offset_left = 256.0
-offset_top = 224.0
-offset_right = 758.0
-offset_bottom = 312.0
-text = "Player two wins!"
-label_settings = SubResource("LabelSettings_ryrav")
+offset_left = 128.0
+offset_top = 256.0
+offset_right = 781.0
+offset_bottom = 491.0
+text = "Player two
+wins!"
+label_settings = ExtResource("7_j5wjh")
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="ContinueButton" type="Button" parent="CanvasLayer/WinnerScreen"]
+unique_name_in_owner = true
+offset_left = 1600.0
+offset_top = 928.0
+offset_right = 1856.0
+offset_bottom = 1024.0
+text = "Continue"
 
 [node name="DevBar" type="Node2D" parent="CanvasLayer"]
 script = ExtResource("2_e2o6t")

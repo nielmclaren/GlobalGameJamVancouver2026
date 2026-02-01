@@ -13,4 +13,4 @@ func _ready() -> void:
 
 
 func set_score(player_num: int, score: int) -> void:
-	_score_labels[player_num].text = "%d Points" % score
+	_score_labels[player_num].text = str(score)

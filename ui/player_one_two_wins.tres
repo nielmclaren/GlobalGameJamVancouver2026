@@ -1,0 +1,11 @@
+[gd_resource type="LabelSettings" load_steps=2 format=3 uid="uid://dh5nkilieny34"]
+
+[ext_resource type="FontFile" uid="uid://ca3crl5mj5o1k" path="res://assets/fonts/alpha-beta/alphbeta.ttf" id="1_p2sdd"]
+
+[resource]
+font = ExtResource("1_p2sdd")
+font_size = 128
+font_color = Color(1, 1, 0.5372549, 1)
+shadow_size = 12
+shadow_color = Color(0, 0, 0, 0.78431374)
+shadow_offset = Vector2(8, 8)

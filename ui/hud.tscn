@@ -1,10 +1,17 @@
-[gd_scene load_steps=3 format=3 uid="uid://dwah34itfrr6d"]
+[gd_scene load_steps=6 format=3 uid="uid://dwah34itfrr6d"]
 
 [ext_resource type="Script" uid="uid://ebl54786htof" path="res://ui/hud.gd" id="1_rbyyf"]
+[ext_resource type="Texture2D" uid="uid://bu4ubst660wph" path="res://assets/art/gameplay_background.png" id="2_7ihmi"]
 [ext_resource type="LabelSettings" uid="uid://cghkt10hcxvb6" path="res://ui/score_label_settings.tres" id="2_276te"]
+[ext_resource type="LabelSettings" uid="uid://fbrkfwa5eaik" path="res://ui/crowns_label_settings.tres" id="3_546lt"]
+[ext_resource type="LabelSettings" uid="uid://nwd5qg8vbt3j" path="res://ui/player_one_two_label_settings.tres" id="3_en2x2"]
 
 [node name="Hud" type="CanvasLayer"]
 script = ExtResource("1_rbyyf")
+
+[node name="BackgroundSprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_7ihmi")
+centered = false
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 anchors_preset = 15
@@ -17,14 +24,9 @@ grow_vertical = 2
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="CenterContainer" type="CenterContainer" parent="HBoxContainer/LeftContainer"]
+[node name="ColorRect" type="ColorRect" parent="HBoxContainer/LeftContainer"]
 layout_mode = 2
-
-[node name="ScoreLabel0" type="Label" parent="HBoxContainer/LeftContainer/CenterContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "99 Points"
-label_settings = ExtResource("2_276te")
+color = Color(0.23921569, 0.12156863, 0.31764707, 1)
 
 [node name="Control" type="Control" parent="HBoxContainer"]
 custom_minimum_size = Vector2(1080, 1080)
@@ -36,11 +38,61 @@ mouse_filter = 2
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="CenterContainer" type="CenterContainer" parent="HBoxContainer/RightContainer"]
+[node name="ColorRect2" type="ColorRect" parent="HBoxContainer/RightContainer"]
 layout_mode = 2
+color = Color(0.23921569, 0.12156863, 0.31764707, 1)
 
-[node name="ScoreLabel1" type="Label" parent="HBoxContainer/RightContainer/CenterContainer"]
+[node name="PlayerOneLabel" type="Label" parent="."]
+offset_top = 136.0
+offset_right = 416.0
+offset_bottom = 283.0
+text = "PLAYER
+ONE"
+label_settings = ExtResource("3_en2x2")
+horizontal_alignment = 1
+
+[node name="PlayerTwoLabel" type="Label" parent="."]
+offset_left = 1504.0
+offset_top = 128.0
+offset_right = 1920.0
+offset_bottom = 275.0
+text = "PLAYER
+TWO"
+label_settings = ExtResource("3_en2x2")
+horizontal_alignment = 1
+
+[node name="ScoreLabel0" type="Label" parent="."]
 unique_name_in_owner = true
-layout_mode = 2
-text = "99 Points"
+offset_top = 528.0
+offset_right = 416.0
+offset_bottom = 778.0
+text = "10"
 label_settings = ExtResource("2_276te")
+horizontal_alignment = 1
+
+[node name="ScoreLabel1" type="Label" parent="."]
+unique_name_in_owner = true
+offset_left = 1504.0
+offset_top = 520.0
+offset_right = 1920.0
+offset_bottom = 770.0
+text = "10"
+label_settings = ExtResource("2_276te")
+horizontal_alignment = 1
+
+[node name="Crowns0" type="Label" parent="."]
+offset_top = 816.0
+offset_right = 416.0
+offset_bottom = 910.0
+text = "Crowns"
+label_settings = ExtResource("3_546lt")
+horizontal_alignment = 1
+
+[node name="Crowns1" type="Label" parent="."]
+offset_left = 1504.0
+offset_top = 816.0
+offset_right = 1920.0
+offset_bottom = 926.0
+text = "Crowns"
+label_settings = ExtResource("3_546lt")
+horizontal_alignment = 1
