@@ -63,6 +63,7 @@ func take_hit() -> void:
 
 func _ready() -> void:
 	_attack_area.body_entered.connect(_attack_area_body_entered)
+	_crown_animated_sprite.visible = false
 
 
 func _attack_area_body_entered(body: Node2D) -> void:
@@ -77,7 +78,7 @@ func _process(delta: float) -> void:
 			velocity = _dir * SPEED * delta
 			move_and_slide()
 
-			is_stealthed = _game.is_in_stealth_tile(self )
+			is_stealthed = _game.is_in_stealth_tile(self)
 
 	if !_dir.is_zero_approx():
 		_weapon.global_rotation = _dir.angle()

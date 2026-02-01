@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=4 uid="uid://cvee3n6hgph3k"]
+[gd_scene load_steps=34 format=4 uid="uid://cvee3n6hgph3k"]
 
 [ext_resource type="Script" uid="uid://ba7k16ft3tklp" path="res://game.gd" id="1_80nbo"]
 [ext_resource type="Script" uid="uid://b6xjkpxjv77pk" path="res://ui/dev_bar.gd" id="2_e2o6t"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://cqitgsdv0lj0o" path="res://assets/art/tiles128.png" id="3_fc0e3"]
 [ext_resource type="Texture2D" uid="uid://d2m6wlksjofdk" path="res://assets/art/one_tile128.png" id="4_ryrav"]
 [ext_resource type="PackedScene" uid="uid://dwah34itfrr6d" path="res://ui/hud.tscn" id="5_ryrav"]
+[ext_resource type="Texture2D" uid="uid://midrd8nyfk00" path="res://assets/art/win_lose_sheet.png" id="6_eow3j"]
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_ryrav"]
 
@@ -67,6 +68,132 @@ viewport_path = NodePath("Level/SubViewportPlayer0")
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_ryrav"]
 viewport_path = NodePath("Level/SubViewportPlayer1")
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_eow3j"]
+atlas = ExtResource("6_eow3j")
+region = Rect2(168, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j5wjh"]
+atlas = ExtResource("6_eow3j")
+region = Rect2(24, 72, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hve3p"]
+atlas = ExtResource("6_eow3j")
+region = Rect2(168, 120, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mfdv2"]
+atlas = ExtResource("6_eow3j")
+region = Rect2(168, 24, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_215e1"]
+atlas = ExtResource("6_eow3j")
+region = Rect2(120, 96, 24, 24)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_j5wjh"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_eow3j")
+}],
+"loop": true,
+"name": &"base",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_j5wjh")
+}],
+"loop": true,
+"name": &"fire",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hve3p")
+}],
+"loop": true,
+"name": &"grass",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mfdv2")
+}],
+"loop": true,
+"name": &"water",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_215e1")
+}],
+"loop": true,
+"name": &"wood",
+"speed": 5.0
+}]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vef74"]
+atlas = ExtResource("6_eow3j")
+region = Rect2(0, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lc2xo"]
+atlas = ExtResource("6_eow3j")
+region = Rect2(120, 48, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e8heu"]
+atlas = ExtResource("6_eow3j")
+region = Rect2(0, 120, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iotsf"]
+atlas = ExtResource("6_eow3j")
+region = Rect2(48, 24, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rvswv"]
+atlas = ExtResource("6_eow3j")
+region = Rect2(168, 72, 24, 24)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_boyg6"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vef74")
+}],
+"loop": true,
+"name": &"base",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lc2xo")
+}],
+"loop": true,
+"name": &"fire",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_e8heu")
+}],
+"loop": true,
+"name": &"grass",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iotsf")
+}],
+"loop": true,
+"name": &"water",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rvswv")
+}],
+"loop": true,
+"name": &"wood",
+"speed": 5.0
+}]
 
 [sub_resource type="LabelSettings" id="LabelSettings_ryrav"]
 font_size = 64
@@ -156,27 +283,50 @@ unique_name_in_owner = true
 
 [node name="WinnerScreen" type="Node2D" parent="CanvasLayer"]
 unique_name_in_owner = true
-visible = false
 
 [node name="ColorRect" type="ColorRect" parent="CanvasLayer/WinnerScreen"]
 offset_right = 1920.0
 offset_bottom = 1088.0
-color = Color(0.32544088, 0.3254409, 0.32544088, 1)
+color = Color(0.61320245, 0.3909905, 0.76664364, 1)
 
-[node name="CenterContainer" type="CenterContainer" parent="CanvasLayer/WinnerScreen"]
-custom_minimum_size = Vector2(1920, 1080)
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_right = 1920.0
-offset_bottom = 1080.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="WinnerLabel" type="Label" parent="CanvasLayer/WinnerScreen/CenterContainer"]
+[node name="WinnerLoserArt" type="Node2D" parent="CanvasLayer/WinnerScreen"]
 unique_name_in_owner = true
-layout_mode = 2
-text = "Player X Wins!"
+position = Vector2(960, 0)
+rotation = 3.1415927
+scale = Vector2(1, -1)
+
+[node name="WinnerAnimatedSprite" type="AnimatedSprite2D" parent="CanvasLayer/WinnerScreen/WinnerLoserArt"]
+unique_name_in_owner = true
+position = Vector2(-448, 640)
+scale = Vector2(48, 48)
+sprite_frames = SubResource("SpriteFrames_j5wjh")
+animation = &"base"
+
+[node name="LoserAnimatedSprite" type="AnimatedSprite2D" parent="CanvasLayer/WinnerScreen/WinnerLoserArt"]
+unique_name_in_owner = true
+position = Vector2(608, 736)
+scale = Vector2(16, 16)
+sprite_frames = SubResource("SpriteFrames_boyg6")
+animation = &"base"
+
+[node name="WinnerLabel0" type="Label" parent="CanvasLayer/WinnerScreen"]
+unique_name_in_owner = true
+offset_left = 1152.0
+offset_top = 224.0
+offset_right = 1654.0
+offset_bottom = 312.0
+text = "Player one wins!"
+label_settings = SubResource("LabelSettings_ryrav")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="WinnerLabel1" type="Label" parent="CanvasLayer/WinnerScreen"]
+unique_name_in_owner = true
+offset_left = 256.0
+offset_top = 224.0
+offset_right = 758.0
+offset_bottom = 312.0
+text = "Player two wins!"
 label_settings = SubResource("LabelSettings_ryrav")
 horizontal_alignment = 1
 vertical_alignment = 1

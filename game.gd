@@ -11,7 +11,12 @@ extends Node2D
 @onready var _hud: Hud = %Hud
 @onready var _map_regen_timer: Timer = %MapRegenTimer
 @onready var _winner_screen: Node2D = %WinnerScreen
-@onready var _winner_label: Label = %WinnerLabel
+@onready var _winner_label0: Label = %WinnerLabel0
+@onready var _winner_label1: Label = %WinnerLabel1
+
+@onready var _winner_loser_art: Node2D = %WinnerLoserArt
+@onready var _winner_animated_sprite: AnimatedSprite2D = %WinnerAnimatedSprite
+@onready var _loser_animated_sprite: AnimatedSprite2D = %LoserAnimatedSprite
 
 var _mask_scene: PackedScene = load("res://game_objects/mask.tscn")
 var _goal_scene: PackedScene = load("res://game_objects/goal.tscn")
@@ -28,6 +33,8 @@ var _reset_index: int = 0
 
 func _ready() -> void:
 	_map_regen_timer.timeout.connect(_map_regen_timeout)
+	_winner_screen.hide()
+
 	reset()
 
 
@@ -88,9 +95,9 @@ func is_in_stealth_tile(player: Player) -> bool:
 
 
 func _is_player_tile_overlap(player: Player, coord: Vector2i) -> bool:
-	var circle_pos: Vector2 = player.position # center
+	var circle_pos: Vector2 = player.position  # center
 	var radius: float = 10
-	var square_pos: Vector2 = _tilemap.map_to_local(coord) # center
+	var square_pos: Vector2 = _tilemap.map_to_local(coord)  # center
 	var half_size: float = Constants.TILE_HALF_SIZE
 
 	var x: float = absf(circle_pos.x - square_pos.x) - half_size
@@ -129,7 +136,7 @@ func _randomize_tiles() -> void:
 
 func _spawn_player(player_num: int, coord: Vector2i) -> void:
 	var player: Player = _player_scene.instantiate()
-	player.setup(self )
+	player.setup(self)
 	player.player_num = player_num
 	player.position = _tilemap.map_to_local(coord)
 
@@ -203,10 +210,30 @@ func _goal_scored(player: Player) -> void:
 	_goal = null
 
 	if _scores[player.player_num] >= Constants.MAX_SCORE:
-		_winner_label.text = "Player %d wins!" % player.player_num
-		_winner_screen.show()
+		var other_player: Player = _players[1 - player.player_num]
+		_show_winner(player, other_player)
 
-	_delay_spawn_goal()
+	else:
+		_delay_spawn_goal()
+
+
+func _show_winner(winner: Player, loser: Player) -> void:
+	_winner_label0.visible = winner.player_num == 0
+	_winner_label1.visible = winner.player_num == 1
+
+	_winner_loser_art.scale.x = -1 if winner.player_num == 0 else 1
+
+	var winner_form: String = "base"
+	if winner.color_index >= 0:
+		winner_form = Constants.PLAYER_FORMS[winner.color_index]
+	_winner_animated_sprite.play(winner_form)
+
+	var loser_form: String = "base"
+	if loser.color_index >= 0:
+		loser_form = Constants.PLAYER_FORMS[loser.color_index]
+	_loser_animated_sprite.play(loser_form)
+
+	_winner_screen.show()
 
 
 func _scores_changed() -> void:
