@@ -121,6 +121,8 @@ func _deactivate_stealth_mode() -> void:
 
 
 func _set_stealth_mode(v: bool) -> void:
+	set_collision_layer_value(Constants.COLLISION_LAYER, !v)
+	set_collision_mask_value(Constants.COLLISION_LAYER, !v)
 	set_collision_layer_value(Constants.ATTACK_LAYER, !v)
 	set_collision_mask_value(Constants.ATTACK_LAYER, !v)
 	_attack_area.monitoring = !v
