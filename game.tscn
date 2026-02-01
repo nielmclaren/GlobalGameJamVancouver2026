@@ -72,8 +72,8 @@ viewport_path = NodePath("Level/SubViewportPlayer1")
 script = ExtResource("1_80nbo")
 
 [node name="Level" type="Node2D" parent="."]
-position = Vector2(416, 0)
-scale = Vector2(2.1255784, 2.1255784)
+position = Vector2(408, 8)
+scale = Vector2(2.1158304, 2.1158304)
 
 [node name="Bounds" type="Node2D" parent="Level"]
 

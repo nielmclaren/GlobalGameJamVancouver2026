@@ -1,7 +1,8 @@
-[gd_scene load_steps=11 format=3 uid="uid://sv3ef6geyb32"]
+[gd_scene load_steps=12 format=3 uid="uid://sv3ef6geyb32"]
 
 [ext_resource type="Script" uid="uid://d0illkgwut2ge" path="res://characters/player.gd" id="1_dnjla"]
 [ext_resource type="Texture2D" uid="uid://3ms8y3mdkhc8" path="res://assets/art/circle.svg" id="2_3eadt"]
+[ext_resource type="Texture2D" uid="uid://rk02i2qxujvr" path="res://assets/art/player.png" id="3_tory2"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_3eadt"]
 radius = 36.013885
@@ -72,7 +73,7 @@ tracks/0/keys = {
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("AttackArt:visible")
+tracks/1/path = NodePath("Weapon/AttackArt:visible")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
@@ -112,7 +113,7 @@ step = 0.1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("AttackArt:visible")
+tracks/0/path = NodePath("Weapon/AttackArt:visible")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -202,36 +203,12 @@ script = ExtResource("1_dnjla")
 shape = SubResource("CircleShape2D_3eadt")
 
 [node name="Art" type="Node2D" parent="."]
-
-[node name="Outline" type="Sprite2D" parent="Art"]
-scale = Vector2(0.62965703, 0.62965703)
-texture = ExtResource("2_3eadt")
-
-[node name="Base" type="Sprite2D" parent="Art"]
 unique_name_in_owner = true
-scale = Vector2(0.6, 0.6)
-texture = ExtResource("2_3eadt")
 
-[node name="Polygon2D" type="Polygon2D" parent="Art"]
-color = Color(0, 0, 0, 1)
-polygon = PackedVector2Array(24, 0, -24, -16, -16, 0, -24, 16)
-
-[node name="AttackArt" type="Node2D" parent="."]
-unique_name_in_owner = true
-visible = false
-
-[node name="Line2D" type="Line2D" parent="AttackArt"]
-points = PackedVector2Array(40, 0, 88, 0)
-default_color = Color(1, 0, 0, 1)
-
-[node name="AttackArea" type="Area2D" parent="."]
-unique_name_in_owner = true
-collision_layer = 4
-collision_mask = 4
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
-position = Vector2(48, 0)
-shape = SubResource("CircleShape2D_tory2")
+[node name="Player" type="Sprite2D" parent="Art"]
+position = Vector2(0, 8)
+scale = Vector2(6, 6)
+texture = ExtResource("3_tory2")
 
 [node name="HitArt" type="Node2D" parent="."]
 unique_name_in_owner = true
@@ -242,10 +219,30 @@ modulate = Color(1, 0, 0, 0.6509804)
 scale = Vector2(0.6364891, 0.63568735)
 texture = ExtResource("2_3eadt")
 
-[node name="WeaponArt" type="Node2D" parent="."]
+[node name="Weapon" type="Node2D" parent="."]
+unique_name_in_owner = true
 
-[node name="Line2D" type="Line2D" parent="WeaponArt"]
+[node name="WeaponArt" type="Node2D" parent="Weapon"]
+
+[node name="Line2D" type="Line2D" parent="Weapon/WeaponArt"]
 points = PackedVector2Array(40, 0, 88, 0)
+
+[node name="AttackArt" type="Node2D" parent="Weapon"]
+unique_name_in_owner = true
+visible = false
+
+[node name="Line2D" type="Line2D" parent="Weapon/AttackArt"]
+points = PackedVector2Array(40, 0, 88, 0)
+default_color = Color(1, 0, 0, 1)
+
+[node name="AttackArea" type="Area2D" parent="Weapon"]
+unique_name_in_owner = true
+collision_layer = 4
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Weapon/AttackArea"]
+position = Vector2(48, 0)
+shape = SubResource("CircleShape2D_tory2")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 unique_name_in_owner = true

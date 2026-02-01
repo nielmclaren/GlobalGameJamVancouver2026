@@ -12,9 +12,10 @@ signal hitted
 
 const SPEED: float = 20000
 
-@onready var _base: Node2D = %Base
+@onready var _art: Node2D = %Art
 @onready var _attack_area: Area2D = %AttackArea
 @onready var _animation: AnimationPlayer = %AnimationPlayer
+@onready var _weapon: Node2D = %Weapon
 
 @export var player_num: int = 0
 @export var is_stunned: bool = false
@@ -48,7 +49,7 @@ func setup(game: Game) -> Player:
 
 func pickup_mask(mask: Mask) -> void:
 	color_index = mask.color_index
-	_base.modulate = Constants.COLORS[color_index]
+	_art.modulate = Constants.COLORS[color_index]
 
 
 func take_hit() -> void:
@@ -76,7 +77,12 @@ func _process(delta: float) -> void:
 			is_stealthed = _game.is_in_stealth_tile(self)
 
 	if !_dir.is_zero_approx():
-		global_rotation = _dir.angle()
+		_weapon.global_rotation = _dir.angle()
+
+		if _dir.x < 0:
+			_art.scale.x = 1
+		elif _dir.x > 0:
+			_art.scale.x = -1
 
 
 func _get_input_vector() -> Vector2:

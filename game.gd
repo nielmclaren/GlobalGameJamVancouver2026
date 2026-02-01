@@ -29,10 +29,10 @@ func reset() -> void:
 
 	_randomize_tiles()
 
-	_spawn_player(0, Vector2i(0, 0))
-	_spawn_player(1, Vector2i(0, 3))
+	_spawn_player(0, Vector2i(0, 3))
+	_spawn_player(1, Vector2i(3, 0))
 
-	_try_spawn_goal()
+	_try_spawn_goal(true)
 
 	# Spawn masks last in remaining empty spaces.
 	for i: int in range(Constants.NUM_MASKS):
@@ -150,8 +150,13 @@ func _delay_spawn_goal() -> void:
 		await get_tree().create_timer(Constants.GOAL_SPAWN_RETRY_S).timeout
 
 
-func _try_spawn_goal() -> bool:
-	var available_coords: Array[Vector2i] = _get_yonder_coords()
+func _try_spawn_goal(is_first_spawn: bool = false) -> bool:
+	var available_coords: Array[Vector2i] = _get_diagonal_coords()
+	if is_first_spawn:
+		available_coords = _get_diagonal_coords()
+	else:
+		available_coords = _get_yonder_coords()
+
 	if available_coords.is_empty():
 		return false
 
@@ -228,6 +233,13 @@ func _mask_picked_up(player: Player, mask: Mask) -> void:
 	_delay_spawn_mask()
 
 	_update_clip_tilemap(player)
+
+
+func _get_diagonal_coords() -> Array[Vector2i]:
+	var result: Array[Vector2i]
+	for i: int in range(min(Constants.NUM_COLS, Constants.NUM_ROWS)):
+		result.append(Vector2i(i, i))
+	return result
 
 
 # Return empty coords that aren't too close to either player.
