@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://1jfy80jul1w0"]
+[gd_scene load_steps=5 format=3 uid="uid://1jfy80jul1w0"]
 
 [ext_resource type="Script" uid="uid://7srngd7gbyqc" path="res://ui/title_screen.gd" id="1_7xhpk"]
 [ext_resource type="PackedScene" uid="uid://cc4701uyf5r76" path="res://ui/audio_controls.tscn" id="2_bor1v"]
 [ext_resource type="Theme" uid="uid://b8rvlvfehdp6a" path="res://ui/ui_theme.tres" id="2_qer0c"]
+[ext_resource type="Texture2D" uid="uid://dishn0faymi46" path="res://assets/art/VGGJ2026_Title.png" id="4_dk6f0"]
 
 [node name="TitleScreen" type="Node2D"]
 script = ExtResource("1_7xhpk")
@@ -19,7 +20,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 1)
+color = Color(0.6117647, 0.39215687, 0.7647059, 1)
 
 [node name="MarginContainer" type="MarginContainer" parent="Control"]
 layout_mode = 0
@@ -34,12 +35,9 @@ theme_override_constants/margin_bottom = 50
 [node name="VBoxContainer" type="VBoxContainer" parent="Control/MarginContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Control/MarginContainer/VBoxContainer"]
+[node name="Control" type="Control" parent="Control/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-text = "Title"
-horizontal_alignment = 1
-vertical_alignment = 1
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Control/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -78,3 +76,8 @@ size_flags_vertical = 4
 unique_name_in_owner = true
 layout_mode = 2
 text = "Fullscreen"
+
+[node name="Vggj2026Title" type="Sprite2D" parent="."]
+position = Vector2(960, 320)
+scale = Vector2(10, 10)
+texture = ExtResource("4_dk6f0")

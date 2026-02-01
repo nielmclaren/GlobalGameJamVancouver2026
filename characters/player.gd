@@ -10,7 +10,7 @@ signal masked
 # Emitted when player gets hit.
 signal hitted
 
-const SPEED: float = 30000
+const SPEED: float = 20000
 
 @onready var _art: Node2D = %Art
 @onready var _animated_sprite: AnimatedSprite2D = %AnimatedSprite2D

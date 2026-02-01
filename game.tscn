@@ -277,7 +277,7 @@ unique_name_in_owner = true
 
 [node name="MapRegenTimer" type="Timer" parent="."]
 unique_name_in_owner = true
-wait_time = 30.0
+wait_time = 5.0
 
 [node name="Hud" parent="." instance=ExtResource("5_ryrav")]
 unique_name_in_owner = true
@@ -286,6 +286,7 @@ unique_name_in_owner = true
 
 [node name="WinnerScreen" type="Node2D" parent="CanvasLayer"]
 unique_name_in_owner = true
+visible = false
 
 [node name="ColorRect" type="ColorRect" parent="CanvasLayer/WinnerScreen"]
 offset_right = 1920.0
