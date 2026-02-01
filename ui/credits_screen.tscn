@@ -1,9 +1,19 @@
-[gd_scene load_steps=6 format=3 uid="uid://fi441li6sa4l"]
+[gd_scene load_steps=10 format=3 uid="uid://fi441li6sa4l"]
 
 [ext_resource type="Script" uid="uid://duvuoxtqp8wex" path="res://ui/credits_screen.gd" id="1_ed0b0"]
 [ext_resource type="Texture2D" uid="uid://ba1gxg7j675ni" path="res://assets/art/EndScreenDithered_origina.png" id="2_3edf7"]
 [ext_resource type="Theme" uid="uid://dikqu2u0jnhof" path="res://ui/button_theme.tres" id="3_phwat"]
 [ext_resource type="FontFile" uid="uid://ca3crl5mj5o1k" path="res://assets/fonts/alpha-beta/alphbeta.ttf" id="3_ygnrc"]
+[ext_resource type="Texture2D" uid="uid://midrd8nyfk00" path="res://assets/art/win_lose_sheet.png" id="4_dglud"]
+[ext_resource type="Texture2D" uid="uid://dtpoo8b1d1n11" path="res://assets/art/MattSheet.png" id="4_f5300"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2tuqu"]
+atlas = ExtResource("4_dglud")
+region = Rect2(48, 24, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dglud"]
+atlas = ExtResource("4_f5300")
+region = Rect2(48, 144, 24, 24)
 
 [sub_resource type="LabelSettings" id="LabelSettings_phwat"]
 font = ExtResource("3_ygnrc")
@@ -44,43 +54,53 @@ offset_bottom = 1020.0
 theme = ExtResource("3_phwat")
 text = "Done"
 
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+position = Vector2(1664, 640)
+scale = Vector2(24, 24)
+texture = SubResource("AtlasTexture_2tuqu")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(992, 128)
+scale = Vector2(8, 8)
+texture = SubResource("AtlasTexture_dglud")
+
 [node name="Label" type="Label" parent="."]
 offset_left = 256.0
-offset_top = 288.0
+offset_top = 320.0
 offset_right = 1312.0
-offset_bottom = 346.0
+offset_bottom = 378.0
 text = "Designed by Reina Magica / MageX"
 label_settings = SubResource("LabelSettings_phwat")
 
 [node name="Label2" type="Label" parent="."]
 offset_left = 256.0
-offset_top = 448.0
+offset_top = 480.0
 offset_right = 1312.0
-offset_bottom = 506.0
+offset_bottom = 538.0
 text = "Programmed by Niel McLaren"
 label_settings = SubResource("LabelSettings_phwat")
 
 [node name="Label3" type="Label" parent="."]
 offset_left = 256.0
-offset_top = 608.0
+offset_top = 640.0
 offset_right = 1312.0
-offset_bottom = 666.0
+offset_bottom = 698.0
 text = "Art by Matt Froese"
 label_settings = SubResource("LabelSettings_phwat")
 
 [node name="Label4" type="Label" parent="."]
 offset_left = 256.0
-offset_top = 768.0
+offset_top = 800.0
 offset_right = 1402.0
-offset_bottom = 826.0
+offset_bottom = 858.0
 text = "Music by Brian Holt / Bad Bad Power"
 label_settings = SubResource("LabelSettings_phwat")
 
 [node name="LinkButton" type="LinkButton" parent="."]
 offset_left = 256.0
-offset_top = 352.0
-offset_right = 417.0
-offset_bottom = 392.0
+offset_top = 384.0
+offset_right = 762.0
+offset_bottom = 434.0
 theme_override_fonts/font = ExtResource("3_ygnrc")
 theme_override_font_sizes/font_size = 54
 text = "https://magex.itch.io"
@@ -88,9 +108,9 @@ uri = "https://magex.itch.io"
 
 [node name="LinkButton2" type="LinkButton" parent="."]
 offset_left = 256.0
-offset_top = 512.0
-offset_right = 762.0
-offset_bottom = 562.0
+offset_top = 544.0
+offset_right = 843.0
+offset_bottom = 594.0
 theme_override_fonts/font = ExtResource("3_ygnrc")
 theme_override_font_sizes/font_size = 54
 text = "https://nielmclaren.com"
@@ -98,9 +118,9 @@ uri = "https://nielmclaren.com"
 
 [node name="LinkButton3" type="LinkButton" parent="."]
 offset_left = 256.0
-offset_top = 672.0
-offset_right = 762.0
-offset_bottom = 722.0
+offset_top = 704.0
+offset_right = 1033.0
+offset_bottom = 754.0
 theme_override_fonts/font = ExtResource("3_ygnrc")
 theme_override_font_sizes/font_size = 54
 text = "https://mattfroeseart.carrd.co"
@@ -108,9 +128,9 @@ uri = "https://mattfroeseart.carrd.co/"
 
 [node name="LinkButton4" type="LinkButton" parent="."]
 offset_left = 256.0
-offset_top = 832.0
+offset_top = 864.0
 offset_right = 762.0
-offset_bottom = 882.0
+offset_bottom = 914.0
 theme_override_fonts/font = ExtResource("3_ygnrc")
 theme_override_font_sizes/font_size = 54
 text = "https://brianholt.ca"

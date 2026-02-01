@@ -24,6 +24,9 @@ var is_playing_game: bool = true
 @onready var _winner_animated_sprite: AnimatedSprite2D = %WinnerAnimatedSprite
 @onready var _loser_animated_sprite: AnimatedSprite2D = %LoserAnimatedSprite
 
+@onready var _score_sound: AudioStreamPlayer = %ScoreSound
+@onready var _win_sound: AudioStreamPlayer = %WinSound
+
 var _mask_scene: PackedScene = load("res://game_objects/mask.tscn")
 var _goal_scene: PackedScene = load("res://game_objects/goal.tscn")
 var _player_scene: PackedScene = load("res://characters/player.tscn")
@@ -38,6 +41,7 @@ var _reset_index: int = 0
 
 
 func _ready() -> void:
+	Tracer.trace("Game ready.")
 	_map_regen_timer.timeout.connect(_map_regen_timeout)
 	_winner_screen.hide()
 
@@ -53,6 +57,7 @@ func _continue_button_pressed() -> void:
 
 
 func _map_regen_timeout() -> void:
+	Tracer.trace("Map regen timeout.")
 	_randomize_tiles()
 
 	for player: Player in _players:
@@ -113,9 +118,9 @@ func is_in_stealth_tile(player: Player) -> bool:
 
 
 func _is_player_tile_overlap(player: Player, coord: Vector2i) -> bool:
-	var circle_pos: Vector2 = player.position # center
+	var circle_pos: Vector2 = player.position  # center
 	var radius: float = 10
-	var square_pos: Vector2 = _tilemap.map_to_local(coord) # center
+	var square_pos: Vector2 = _tilemap.map_to_local(coord)  # center
 	var half_size: float = Constants.TILE_HALF_SIZE
 
 	var x: float = absf(circle_pos.x - square_pos.x) - half_size
@@ -154,7 +159,7 @@ func _randomize_tiles() -> void:
 
 func _spawn_player(player_num: int, coord: Vector2i) -> void:
 	var player: Player = _player_scene.instantiate()
-	player.setup(self )
+	player.setup(self)
 	player.player_num = player_num
 	player.position = _tilemap.map_to_local(coord)
 
@@ -221,6 +226,7 @@ func _try_spawn_goal(is_first_spawn: bool = false) -> bool:
 
 
 func _goal_scored(player: Player) -> void:
+	Tracer.trace("Player %d scored!" % player.player_num)
 	print("Player %d scored!" % player.player_num)
 	_scores[player.player_num] += 1
 	_scores_changed()
@@ -231,11 +237,18 @@ func _goal_scored(player: Player) -> void:
 		var other_player: Player = _players[1 - player.player_num]
 		_show_winner(player, other_player)
 
+		if !_win_sound.playing:
+			_win_sound.play()
+
 	else:
 		_delay_spawn_goal()
 
+		if !_score_sound.playing:
+			_score_sound.play()
+
 
 func _show_winner(winner: Player, loser: Player) -> void:
+	Tracer.trace("Show winner.", {"winner": winner.player_num, "loser": loser.player_num})
 	_winner_label0.visible = winner.player_num == 0
 	_winner_label1.visible = winner.player_num == 1
 
@@ -452,6 +465,7 @@ func _input(event: InputEvent) -> void:
 		reset()
 
 	if _winner_screen.visible and event.is_action_pressed("proceed"):
+		Tracer.trace("Winner screen: proceed.")
 		_winner_screen.hide()
 		reset()
 

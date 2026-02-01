@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=4 uid="uid://cvee3n6hgph3k"]
+[gd_scene load_steps=36 format=4 uid="uid://cvee3n6hgph3k"]
 
 [ext_resource type="Script" uid="uid://ba7k16ft3tklp" path="res://game.gd" id="1_80nbo"]
 [ext_resource type="Script" uid="uid://b6xjkpxjv77pk" path="res://ui/dev_bar.gd" id="2_e2o6t"]
@@ -8,6 +8,8 @@
 [ext_resource type="PackedScene" uid="uid://dwah34itfrr6d" path="res://ui/hud.tscn" id="5_ryrav"]
 [ext_resource type="Texture2D" uid="uid://midrd8nyfk00" path="res://assets/art/win_lose_sheet.png" id="6_eow3j"]
 [ext_resource type="LabelSettings" uid="uid://dh5nkilieny34" path="res://ui/player_one_two_wins.tres" id="7_j5wjh"]
+[ext_resource type="AudioStream" uid="uid://c3cw6moq5hj87" path="res://assets/sfx/76234__jivatma07__level_up_3note2.wav" id="9_vef74"]
+[ext_resource type="AudioStream" uid="uid://vwbewj7g1kge" path="res://assets/music/Pause Effect.ogg" id="10_hve3p"]
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_ryrav"]
 
@@ -348,3 +350,13 @@ text = "Continue"
 [node name="DevBar" type="Node2D" parent="CanvasLayer"]
 script = ExtResource("2_e2o6t")
 metadata/_custom_type_script = "uid://b6xjkpxjv77pk"
+
+[node name="ScoreSound" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("9_vef74")
+bus = &"Sfx"
+
+[node name="WinSound" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("10_hve3p")
+bus = &"Sfx"

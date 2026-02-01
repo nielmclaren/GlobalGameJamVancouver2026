@@ -19,6 +19,7 @@ const SPEED: float = 20000
 @onready var _attack_area: Area2D = %AttackArea
 @onready var _animation: AnimationPlayer = %AnimationPlayer
 @onready var _weapon: Node2D = %Weapon
+@onready var _weapon_sound: AudioStreamPlayer2D = %WeaponSound
 
 @export var player_num: int = 0
 @export var is_stunned: bool = false
@@ -127,6 +128,8 @@ func _perform_attack() -> void:
 		if body is Player and body != self:
 			var player: Player = body
 			player.take_hit()
+
+	_weapon_sound.play()
 
 
 func _unmask() -> void:
