@@ -142,6 +142,10 @@ unique_name_in_owner = true
 [node name="GoalContainer" type="Node2D" parent="Level"]
 unique_name_in_owner = true
 
+[node name="MapRegenTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 30.0
+
 [node name="WinnerScreen" type="Node2D" parent="."]
 unique_name_in_owner = true
 visible = false

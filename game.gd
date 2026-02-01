@@ -9,6 +9,7 @@ extends Node2D
 @onready var _mask_container: Node2D = %MaskContainer
 @onready var _tilemap: TileMapLayer = %TileMapLayer
 @onready var _hud: Hud = %Hud
+@onready var _map_regen_timer: Timer = %MapRegenTimer
 
 var _mask_scene: PackedScene = load("res://game_objects/mask.tscn")
 var _goal_scene: PackedScene = load("res://game_objects/goal.tscn")
@@ -21,7 +22,16 @@ var _scores: Array[int]
 
 
 func _ready() -> void:
+	_map_regen_timer.timeout.connect(_map_regen_timeout)
 	reset()
+
+
+func _map_regen_timeout() -> void:
+	_randomize_tiles()
+
+	for player: Player in _players:
+		_update_clip_tilemap(player)
+		player.is_stealthed = is_in_stealth_tile(player)
 
 
 func reset() -> void:
@@ -37,6 +47,8 @@ func reset() -> void:
 	# Spawn masks last in remaining empty spaces.
 	for i: int in range(Constants.NUM_MASKS):
 		_try_spawn_mask()
+
+	_map_regen_timer.start()
 
 
 func clear() -> void:
@@ -339,7 +351,7 @@ func _get_coord_color(coord: Vector2i) -> Color:
 
 
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("reset"):
+	if !OS.has_feature("template") and event.is_action_pressed("reset"):
 		reset()
 
 	# Quickly quit if this is the root scene. Normally this scene would have Main as a parent.
