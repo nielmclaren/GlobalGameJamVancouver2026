@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="GlobalGameJamVancouver2026"
+config/name="SneakyElementals"
 config/version="0.0.1"
 run/main_scene="uid://cvee3n6hgph3k"
 config/features=PackedStringArray("4.5", "GL Compatibility")

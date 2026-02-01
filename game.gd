@@ -13,6 +13,7 @@ extends Node2D
 @onready var _winner_screen: Node2D = %WinnerScreen
 @onready var _winner_label0: Label = %WinnerLabel0
 @onready var _winner_label1: Label = %WinnerLabel1
+@onready var _continue_button: Button = %ContinueButton
 
 @onready var _winner_loser_art: Node2D = %WinnerLoserArt
 @onready var _winner_animated_sprite: AnimatedSprite2D = %WinnerAnimatedSprite
@@ -35,6 +36,14 @@ func _ready() -> void:
 	_map_regen_timer.timeout.connect(_map_regen_timeout)
 	_winner_screen.hide()
 
+	_continue_button.pressed.connect(_continue_button_pressed)
+
+	reset()
+
+
+func _continue_button_pressed() -> void:
+	Tracer.trace("Winner screen: continue button pressed.")
+	_winner_screen.hide()
 	reset()
 
 

@@ -27,8 +27,23 @@ static func _init_posthog_tracer() -> void:
 	PostHog.send_event_failed.connect(func() -> void: print("PostHog event FAILED."))
 
 	var Uuid: Resource = preload("res://addons/uuid/uuid.gd")
-	@warning_ignore("unsafe_method_access")
-	var distinct_id: String = Uuid.v4()
+
+	var distinct_id: String
+
+	var file_name: String = "user://tracer_integration_distinct_id.json"
+	if FileAccess.file_exists(file_name):
+		var file: FileAccess = FileAccess.open(file_name, FileAccess.READ)
+		distinct_id = file.get_as_text()
+		file.close()
+
+	else:
+		@warning_ignore("unsafe_method_access")
+		distinct_id = Uuid.v4()
+
+		var file: FileAccess = FileAccess.open(file_name, FileAccess.WRITE)
+		file.store_string(distinct_id)
+		file.close()
+
 	print("PostHog distinct ID: %s" % distinct_id)
 
 	PostHogTracerSubscriber.new().with_distinct_id(distinct_id).init()

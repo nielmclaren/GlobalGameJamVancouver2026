@@ -3,6 +3,7 @@ extends Node
 
 var filter: int = ~0
 var distinct_id: String
+var session_id: String
 
 func with_distinct_id(id: String) -> PostHogTracerSubscriber:
 	distinct_id = id
@@ -11,6 +12,11 @@ func with_distinct_id(id: String) -> PostHogTracerSubscriber:
 func init() -> void:
 	Tracer.add_child(self)
 	Tracer.sent_event.connect(on_sent_event)
+
+	var Uuid: Resource = preload("res://addons/uuid/uuid.gd")
+	@warning_ignore("unsafe_method_access")
+	session_id = Uuid.v4()
+
 
 func on_sent_event() -> void:
 	var trace_event: Tracer.Trace = Tracer.current_event
@@ -26,6 +32,7 @@ func on_sent_event() -> void:
 	posthog_event.properties = {
 		"app": app,
 		"version": version,
+		"session_id": session_id,
 		"log_level": Tracer.level_string(trace_event.level),
 		"is_debug_build": OS.is_debug_build(),
 		"is_template": OS.has_feature("template"),
