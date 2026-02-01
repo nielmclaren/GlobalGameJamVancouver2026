@@ -1,8 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://1jfy80jul1w0"]
+[gd_scene load_steps=7 format=3 uid="uid://1jfy80jul1w0"]
 
 [ext_resource type="Script" uid="uid://7srngd7gbyqc" path="res://ui/title_screen.gd" id="1_7xhpk"]
 [ext_resource type="PackedScene" uid="uid://cc4701uyf5r76" path="res://ui/audio_controls.tscn" id="2_bor1v"]
+[ext_resource type="Texture2D" uid="uid://ba1gxg7j675ni" path="res://assets/art/EndScreenDithered_origina.png" id="2_l1ku3"]
 [ext_resource type="Theme" uid="uid://b8rvlvfehdp6a" path="res://ui/ui_theme.tres" id="2_qer0c"]
+[ext_resource type="Theme" uid="uid://dikqu2u0jnhof" path="res://ui/button_theme.tres" id="4_6qcwj"]
 [ext_resource type="Texture2D" uid="uid://dishn0faymi46" path="res://assets/art/VGGJ2026_Title.png" id="4_dk6f0"]
 
 [node name="TitleScreen" type="Node2D"]
@@ -20,7 +22,13 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.6117647, 0.39215687, 0.7647059, 1)
+color = Color(0.23921569, 0.12156863, 0.31764707, 1)
+
+[node name="TextureRect" type="TextureRect" parent="Control"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("2_l1ku3")
 
 [node name="MarginContainer" type="MarginContainer" parent="Control"]
 layout_mode = 0
@@ -46,26 +54,41 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
+theme_override_constants/separation = 15
 
 [node name="PlayButton" type="Button" parent="Control/MarginContainer/VBoxContainer/VBoxContainer/ButtonVBox"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 60)
 layout_mode = 2
+focus_neighbor_top = NodePath("../../ButtonVBox2/FullscreenButton")
+focus_neighbor_bottom = NodePath("../CreditsButton")
+theme = ExtResource("4_6qcwj")
 text = "Play"
 
 [node name="CreditsButton" type="Button" parent="Control/MarginContainer/VBoxContainer/VBoxContainer/ButtonVBox"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 60)
 layout_mode = 2
+focus_neighbor_top = NodePath("../PlayButton")
+focus_neighbor_bottom = NodePath("../ExitButton")
+theme = ExtResource("4_6qcwj")
 text = "Credits"
 
 [node name="ExitButton" type="Button" parent="Control/MarginContainer/VBoxContainer/VBoxContainer/ButtonVBox"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 60)
 layout_mode = 2
+focus_neighbor_top = NodePath("../CreditsButton")
+focus_neighbor_bottom = NodePath("../../AudioControls")
+theme = ExtResource("4_6qcwj")
 text = "Exit"
 
 [node name="AudioControls" parent="Control/MarginContainer/VBoxContainer/VBoxContainer" instance=ExtResource("2_bor1v")]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
+focus_neighbor_top = NodePath("../ButtonVBox/ExitButton")
+focus_neighbor_bottom = NodePath("../ButtonVBox2/FullscreenButton")
 
 [node name="ButtonVBox2" type="VBoxContainer" parent="Control/MarginContainer/VBoxContainer/VBoxContainer"]
 layout_mode = 2
@@ -74,10 +97,12 @@ size_flags_vertical = 4
 
 [node name="FullscreenButton" type="Button" parent="Control/MarginContainer/VBoxContainer/VBoxContainer/ButtonVBox2"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 60)
 layout_mode = 2
+theme = ExtResource("4_6qcwj")
 text = "Fullscreen"
 
 [node name="Vggj2026Title" type="Sprite2D" parent="."]
 position = Vector2(960, 320)
-scale = Vector2(10, 10)
+scale = Vector2(12, 12)
 texture = ExtResource("4_dk6f0")

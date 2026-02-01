@@ -1,0 +1,13 @@
+[gd_resource type="Theme" load_steps=3 format=3 uid="uid://dikqu2u0jnhof"]
+
+[ext_resource type="StyleBox" uid="uid://b0lj2niopqy6i" path="res://ui/purpinkle_style_box_flat.tres" id="1_0b7qo"]
+[ext_resource type="FontFile" uid="uid://ca3crl5mj5o1k" path="res://assets/fonts/alpha-beta/alphbeta.ttf" id="1_rkjxg"]
+
+[resource]
+Button/font_sizes/font_size = 48
+Button/fonts/font = ExtResource("1_rkjxg")
+Button/styles/disabled = ExtResource("1_0b7qo")
+Button/styles/focus = ExtResource("1_0b7qo")
+Button/styles/hover = ExtResource("1_0b7qo")
+Button/styles/normal = ExtResource("1_0b7qo")
+Button/styles/pressed = ExtResource("1_0b7qo")

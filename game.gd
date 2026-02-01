@@ -58,6 +58,7 @@ func _map_regen_timeout() -> void:
 	for player: Player in _players:
 		_update_clip_tilemap(player)
 		player.is_stealthed = is_in_stealth_tile(player)
+		player.is_stunned = false
 
 
 func reset() -> void:
@@ -112,9 +113,9 @@ func is_in_stealth_tile(player: Player) -> bool:
 
 
 func _is_player_tile_overlap(player: Player, coord: Vector2i) -> bool:
-	var circle_pos: Vector2 = player.position  # center
+	var circle_pos: Vector2 = player.position # center
 	var radius: float = 10
-	var square_pos: Vector2 = _tilemap.map_to_local(coord)  # center
+	var square_pos: Vector2 = _tilemap.map_to_local(coord) # center
 	var half_size: float = Constants.TILE_HALF_SIZE
 
 	var x: float = absf(circle_pos.x - square_pos.x) - half_size
@@ -153,7 +154,7 @@ func _randomize_tiles() -> void:
 
 func _spawn_player(player_num: int, coord: Vector2i) -> void:
 	var player: Player = _player_scene.instantiate()
-	player.setup(self)
+	player.setup(self )
 	player.player_num = player_num
 	player.position = _tilemap.map_to_local(coord)
 

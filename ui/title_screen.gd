@@ -17,3 +17,5 @@ func _ready() -> void:
 	credits_button.pressed.connect(credits_pressed.emit)
 	exit_button.pressed.connect(exit_pressed.emit)
 	fullscreen_button.pressed.connect(fullscreen_pressed.emit)
+
+	play_button.grab_focus.call_deferred()

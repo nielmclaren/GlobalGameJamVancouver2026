@@ -38,6 +38,10 @@ window/size/viewport_width=1920
 window/size/viewport_height=1080
 window/stretch/mode="canvas_items"
 
+[editor]
+
+movie_writer/movie_file="/home/nmclaren/Code/GlobalGameJamVancouver2026/output/capture.avi"
+
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/posthog/plugin.cfg", "res://addons/tracer/plugin.cfg", "res://addons/uuid/plugin.cfg")

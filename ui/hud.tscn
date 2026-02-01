@@ -1,10 +1,38 @@
-[gd_scene load_steps=6 format=3 uid="uid://dwah34itfrr6d"]
+[gd_scene load_steps=10 format=3 uid="uid://dwah34itfrr6d"]
 
 [ext_resource type="Script" uid="uid://ebl54786htof" path="res://ui/hud.gd" id="1_rbyyf"]
 [ext_resource type="Texture2D" uid="uid://bu4ubst660wph" path="res://assets/art/gameplay_background.png" id="2_7ihmi"]
 [ext_resource type="LabelSettings" uid="uid://cghkt10hcxvb6" path="res://ui/score_label_settings.tres" id="2_276te"]
 [ext_resource type="LabelSettings" uid="uid://fbrkfwa5eaik" path="res://ui/crowns_label_settings.tres" id="3_546lt"]
 [ext_resource type="LabelSettings" uid="uid://nwd5qg8vbt3j" path="res://ui/player_one_two_label_settings.tres" id="3_en2x2"]
+[ext_resource type="Texture2D" uid="uid://bvhitlfcuoxva" path="res://assets/art/MattSheet2.png" id="6_1v5rv"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mjkfq"]
+atlas = ExtResource("6_1v5rv")
+region = Rect2(120, 312, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5f4cm"]
+atlas = ExtResource("6_1v5rv")
+region = Rect2(144, 312, 24, 24)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_q43x7"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mjkfq")
+}],
+"loop": true,
+"name": &"weapon0",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5f4cm")
+}],
+"loop": true,
+"name": &"weapon1",
+"speed": 5.0
+}]
 
 [node name="Hud" type="CanvasLayer"]
 script = ExtResource("1_rbyyf")
@@ -12,35 +40,6 @@ script = ExtResource("1_rbyyf")
 [node name="BackgroundSprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_7ihmi")
 centered = false
-
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="LeftContainer" type="MarginContainer" parent="HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="ColorRect" type="ColorRect" parent="HBoxContainer/LeftContainer"]
-layout_mode = 2
-color = Color(0.23921569, 0.12156863, 0.31764707, 1)
-
-[node name="Control" type="Control" parent="HBoxContainer"]
-custom_minimum_size = Vector2(1080, 1080)
-layout_mode = 2
-size_flags_horizontal = 3
-mouse_filter = 2
-
-[node name="RightContainer" type="MarginContainer" parent="HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="ColorRect2" type="ColorRect" parent="HBoxContainer/RightContainer"]
-layout_mode = 2
-color = Color(0.23921569, 0.12156863, 0.31764707, 1)
 
 [node name="PlayerOneLabel" type="Label" parent="."]
 offset_top = 136.0
@@ -96,3 +95,19 @@ offset_bottom = 926.0
 text = "Crowns"
 label_settings = ExtResource("3_546lt")
 horizontal_alignment = 1
+
+[node name="WeaponAnimatedSprite0" type="AnimatedSprite2D" parent="."]
+position = Vector2(208.00002, 384)
+rotation = 1.5707964
+scale = Vector2(12, 12)
+sprite_frames = SubResource("SpriteFrames_q43x7")
+animation = &"weapon0"
+autoplay = "weapon0"
+
+[node name="WeaponAnimatedSprite1" type="AnimatedSprite2D" parent="."]
+position = Vector2(1720, 392)
+rotation = 1.5707964
+scale = Vector2(12, 12)
+sprite_frames = SubResource("SpriteFrames_q43x7")
+animation = &"weapon1"
+autoplay = "weapon1"

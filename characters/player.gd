@@ -15,6 +15,7 @@ const SPEED: float = 20000
 @onready var _art: Node2D = %Art
 @onready var _animated_sprite: AnimatedSprite2D = %AnimatedSprite2D
 @onready var _crown_animated_sprite: AnimatedSprite2D = %CrownAnimatedSprite
+@onready var _weapon_animated_sprite: AnimatedSprite2D = %WeaponAnimatedSprite
 @onready var _attack_area: Area2D = %AttackArea
 @onready var _animation: AnimationPlayer = %AnimationPlayer
 @onready var _weapon: Node2D = %Weapon
@@ -64,6 +65,7 @@ func take_hit() -> void:
 func _ready() -> void:
 	_attack_area.body_entered.connect(_attack_area_body_entered)
 	_crown_animated_sprite.visible = false
+	_weapon_animated_sprite.play("weapon%d" % player_num)
 
 
 func _attack_area_body_entered(body: Node2D) -> void:

@@ -1,7 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://cwcqneccd8g4g"]
+[gd_scene load_steps=6 format=3 uid="uid://cwcqneccd8g4g"]
 
 [ext_resource type="Script" uid="uid://dfcldctbit6ae" path="res://ui/pause_menu.gd" id="1_50142"]
 [ext_resource type="PackedScene" uid="uid://cc4701uyf5r76" path="res://ui/audio_controls.tscn" id="2_ejwgg"]
+[ext_resource type="Texture2D" uid="uid://ba1gxg7j675ni" path="res://assets/art/EndScreenDithered_origina.png" id="2_fob5h"]
+[ext_resource type="Theme" uid="uid://dikqu2u0jnhof" path="res://ui/button_theme.tres" id="3_avurv"]
+[ext_resource type="LabelSettings" uid="uid://fbrkfwa5eaik" path="res://ui/crowns_label_settings.tres" id="3_npydk"]
 
 [node name="PauseMenu" type="Node2D"]
 script = ExtResource("1_50142")
@@ -15,14 +18,14 @@ offset_bottom = 272.0
 custom_minimum_size = Vector2(500, 400)
 layout_mode = 2
 
-[node name="ColorRect" type="ColorRect" parent="CenterContainer/Control"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0, 0, 0, 1)
+[node name="TextureRect" type="TextureRect" parent="CenterContainer/Control"]
+layout_mode = 0
+offset_left = -70.0
+offset_top = -116.00001
+offset_right = 1850.0
+offset_bottom = 964.0
+scale = Vector2(0.34392816, 0.63875026)
+texture = ExtResource("2_fob5h")
 
 [node name="MarginContainer" type="MarginContainer" parent="CenterContainer/Control"]
 layout_mode = 1
@@ -50,6 +53,7 @@ theme_override_constants/margin_bottom = 16
 layout_mode = 2
 size_flags_vertical = 3
 text = "Paused"
+label_settings = ExtResource("3_npydk")
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -63,22 +67,30 @@ size_flags_vertical = 4
 
 [node name="ResumeButton" type="Button" parent="CenterContainer/Control/MarginContainer/VBoxContainer/VBoxContainer/ButtonVBox"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 60)
 layout_mode = 2
+theme = ExtResource("3_avurv")
 text = "Resume	"
 
 [node name="AbandonButton" type="Button" parent="CenterContainer/Control/MarginContainer/VBoxContainer/VBoxContainer/ButtonVBox"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 60)
 layout_mode = 2
+theme = ExtResource("3_avurv")
 text = "Abandon"
 
 [node name="CreditsButton" type="Button" parent="CenterContainer/Control/MarginContainer/VBoxContainer/VBoxContainer/ButtonVBox"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 60)
 layout_mode = 2
+theme = ExtResource("3_avurv")
 text = "Credits"
 
 [node name="ExitButton" type="Button" parent="CenterContainer/Control/MarginContainer/VBoxContainer/VBoxContainer/ButtonVBox"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 60)
 layout_mode = 2
+theme = ExtResource("3_avurv")
 text = "Exit"
 
 [node name="AudioControls" parent="CenterContainer/Control/MarginContainer/VBoxContainer/VBoxContainer" instance=ExtResource("2_ejwgg")]
@@ -93,5 +105,7 @@ size_flags_vertical = 4
 
 [node name="FullscreenButton" type="Button" parent="CenterContainer/Control/MarginContainer/VBoxContainer/VBoxContainer/ButtonVBox2"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 60)
 layout_mode = 2
+theme = ExtResource("3_avurv")
 text = "Fullscreen"
