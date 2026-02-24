@@ -74,7 +74,7 @@ func _attack_area_body_entered(body: Node2D) -> void:
 		_try_attack()
 
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if !is_stunned:
 		_dir = _get_input_vector()
 		if !_dir.is_zero_approx():
@@ -91,6 +91,8 @@ func _process(delta: float) -> void:
 		elif _dir.x > 0:
 			_art.scale.x = 1
 
+
+func _process(_delta: float) -> void:
 	var player_form: String = "base"
 	if color_index >= 0:
 		player_form = Constants.PLAYER_FORMS[color_index]
