@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://bkgqfqikuaqb8"]
+
+[ext_resource type="Texture2D" uid="uid://ba1gxg7j675ni" path="res://assets/art/EndScreenDithered_origina.png" id="1_niwc7"]
+
+[node name="UIBackground" type="Node2D"]
+
+[node name="TextureRect" type="TextureRect" parent="."]
+offset_right = 1920.0
+offset_bottom = 1080.0
+texture = ExtResource("1_niwc7")

@@ -1,7 +1,7 @@
 [gd_scene load_steps=11 format=3 uid="uid://fi441li6sa4l"]
 
 [ext_resource type="Script" uid="uid://duvuoxtqp8wex" path="res://ui/credits_screen.gd" id="1_ed0b0"]
-[ext_resource type="Texture2D" uid="uid://ba1gxg7j675ni" path="res://assets/art/EndScreenDithered_origina.png" id="2_3edf7"]
+[ext_resource type="PackedScene" uid="uid://bkgqfqikuaqb8" path="res://ui/ui_background.tscn" id="2_dglud"]
 [ext_resource type="Theme" uid="uid://dikqu2u0jnhof" path="res://ui/button_theme.tres" id="3_phwat"]
 [ext_resource type="FontFile" uid="uid://ca3crl5mj5o1k" path="res://assets/fonts/alpha-beta/alphbeta.ttf" id="3_ygnrc"]
 [ext_resource type="Texture2D" uid="uid://midrd8nyfk00" path="res://assets/art/win_lose_sheet.png" id="4_dglud"]
@@ -26,27 +26,7 @@ font_size = 32
 [node name="CreditsScreen" type="Node2D"]
 script = ExtResource("1_ed0b0")
 
-[node name="Control" type="Control" parent="."]
-custom_minimum_size = Vector2(1920, 1080)
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="ColorRect" type="ColorRect" parent="Control"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0, 0, 0, 1)
-
-[node name="TextureRect" type="TextureRect" parent="Control"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-texture = ExtResource("2_3edf7")
+[node name="UIBackground" parent="." instance=ExtResource("2_dglud")]
 
 [node name="DoneButton" type="Button" parent="."]
 unique_name_in_owner = true

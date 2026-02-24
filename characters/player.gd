@@ -12,6 +12,10 @@ signal hitted
 
 const SPEED: float = 20000
 
+var is_online_multiplayer: bool = false
+var is_game_host: bool = false
+var is_local_player: bool = false
+
 @onready var _art: Node2D = %Art
 @onready var _animated_sprite: AnimatedSprite2D = %AnimatedSprite2D
 @onready var _crown_animated_sprite: AnimatedSprite2D = %CrownAnimatedSprite
@@ -21,7 +25,7 @@ const SPEED: float = 20000
 @onready var _weapon: Node2D = %Weapon
 @onready var _weapon_sound: AudioStreamPlayer2D = %WeaponSound
 
-@export var player_num: int = 0
+@export var player_index: int = 0
 @export var is_stunned: bool = false
 @export var is_stealthed: bool = false:
 	get():
@@ -33,7 +37,7 @@ const SPEED: float = 20000
 				_animation.play("stealth")
 			else:
 				_animation.play("destealth")
-			print("Stealthed %d: " % player_num, _is_stealthed)
+			print("Stealthed %d: " % player_index, _is_stealthed)
 
 var color_index: int = -1
 var score: int = 0:
@@ -58,7 +62,7 @@ func pickup_mask(mask: Mask) -> void:
 
 
 func take_hit() -> void:
-	print("Player %d got hit." % player_num)
+	print("Player %d got hit." % player_index)
 	_animation.play("hit")
 	hitted.emit()
 
@@ -66,7 +70,7 @@ func take_hit() -> void:
 func _ready() -> void:
 	_attack_area.body_entered.connect(_attack_area_body_entered)
 	_crown_animated_sprite.visible = false
-	_weapon_animated_sprite.play("weapon%d" % player_num)
+	_weapon_animated_sprite.play("weapon%d" % player_index)
 
 
 func _attack_area_body_entered(body: Node2D) -> void:
@@ -111,10 +115,10 @@ func _process(_delta: float) -> void:
 
 func _get_input_vector() -> Vector2:
 	return Input.get_vector(
-		"move_left%d" % player_num,
-		"move_right%d" % player_num,
-		"move_up%d" % player_num,
-		"move_down%d" % player_num
+		"move_left%d" % player_index,
+		"move_right%d" % player_index,
+		"move_up%d" % player_index,
+		"move_down%d" % player_index
 	)
 
 

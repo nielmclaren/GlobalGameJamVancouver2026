@@ -1,10 +1,24 @@
 class_name Game
 extends Node2D
 
-signal game_started
-signal game_completed
+signal completed(winner_player_index: int)
 
-var is_playing_game: bool = true
+var is_online_multiplayer: bool = false
+var is_game_host: bool = false
+var local_player_index: int = -1
+
+var _mask_scene: PackedScene = load("res://game_objects/mask.tscn")
+var _goal_scene: PackedScene = load("res://game_objects/goal.tscn")
+var _player_scene: PackedScene = load("res://characters/player.tscn")
+
+var _is_game_started: bool = false
+var _players: Array[Player]
+var _masks: Array[Mask]
+var _goal: Goal
+var _scores: Array[int]
+
+# Used to discard timeouts from old timers.
+var _reset_index: int = 0
 
 @onready var _clip_tilemap_player0: TileMapLayer = %ClipTileMapPlayer0
 @onready var _player_container0: Node2D = %ClipMaskPlayer0
@@ -15,55 +29,39 @@ var is_playing_game: bool = true
 @onready var _tilemap: TileMapLayer = %TileMapLayer
 @onready var _hud: Hud = %Hud
 @onready var _map_regen_timer: Timer = %MapRegenTimer
-@onready var _winner_screen: Node2D = %WinnerScreen
-@onready var _winner_label0: Label = %WinnerLabel0
-@onready var _winner_label1: Label = %WinnerLabel1
-@onready var _continue_button: Button = %ContinueButton
-
-@onready var _winner_loser_art: Node2D = %WinnerLoserArt
-@onready var _winner_animated_sprite: AnimatedSprite2D = %WinnerAnimatedSprite
-@onready var _loser_animated_sprite: AnimatedSprite2D = %LoserAnimatedSprite
 
 @onready var _score_sound: AudioStreamPlayer = %ScoreSound
-@onready var _win_sound: AudioStreamPlayer = %WinSound
 
-var _mask_scene: PackedScene = load("res://game_objects/mask.tscn")
-var _goal_scene: PackedScene = load("res://game_objects/goal.tscn")
-var _player_scene: PackedScene = load("res://characters/player.tscn")
-
-var _players: Array[Player]
-var _masks: Array[Mask]
-var _goal: Goal
-var _scores: Array[int]
-
-# Used to discard timeouts from old timers.
-var _reset_index: int = 0
+@onready var _level_ready_timer: Timer = %LevelReadyTimer
 
 
 func _ready() -> void:
 	Tracer.trace("Game ready.")
+	if is_online_multiplayer:
+		MultiplayerManager.message_received.connect(_message_received)
+
 	_map_regen_timer.timeout.connect(_map_regen_timeout)
-	_winner_screen.hide()
 
-	_continue_button.pressed.connect(_continue_button_pressed)
+	if !is_online_multiplayer:
+		reset()
 
-	reset()
-
-
-func _continue_button_pressed() -> void:
-	Tracer.trace("Winner screen: continue button pressed.")
-	_winner_screen.hide()
-	reset()
+	elif !is_game_host:
+		_level_ready_timer.timeout.connect(
+			func _level_ready_timeout() -> void: MultiplayerManager.send(str(get_path()) + ":ready")
+		)
 
 
-func _map_regen_timeout() -> void:
-	Tracer.trace("Map regen timeout.")
-	_randomize_tiles()
+func _input(event: InputEvent) -> void:
+	if !OS.has_feature("template") and event.is_action_pressed("reset"):
+		reset()
 
-	for player: Player in _players:
-		_update_clip_tilemap(player)
-		player.is_stealthed = is_in_stealth_tile(player)
-		player.is_stunned = false
+	# Quickly quit if this is the root scene. Normally this scene would have Main as a parent.
+	if (
+		get_parent() == get_tree().root
+		and event.is_action_pressed("ui_cancel")
+		and !event.is_echo()
+	):
+		get_tree().quit()
 
 
 func reset() -> void:
@@ -72,18 +70,18 @@ func reset() -> void:
 	clear()
 
 	_randomize_tiles()
+	_reset_clip_tiles()
 
-	_spawn_player(0, Vector2i(0, 3))
-	_spawn_player(1, Vector2i(3, 0))
+	_is_game_started = true
+
+	_spawn_player(0, _tilemap.map_to_local(Vector2i(0, 3)))
+	_spawn_player(1, _tilemap.map_to_local(Vector2i(3, 0)))
 
 	_try_spawn_goal(true)
 
 	_spawn_first_masks()
 
 	_map_regen_timer.start()
-
-	game_started.emit()
-	is_playing_game = true
 
 
 func clear() -> void:
@@ -117,6 +115,57 @@ func is_in_stealth_tile(player: Player) -> bool:
 	return false
 
 
+func _remote_spawn_player(player: Player) -> void:
+	var message: String = ";".join([player.player_index, player.position])
+	MultiplayerManager.send("%s:spawn_player:%s" % [get_path(), message])
+
+
+func _spawn_player_received(message: String) -> void:
+	_level_ready_timer.stop()
+
+	var parts: PackedStringArray = message.split(";")
+	_spawn_player(int(parts[0]), Utils.string_to_vector2(parts[1]))
+
+
+func _spawn_player(player_index: int, initial_position: Vector2) -> Player:
+	var player: Player = _player_scene.instantiate()
+	player.setup(self)
+
+	player.is_online_multiplayer = is_online_multiplayer
+	player.is_game_host = is_game_host
+	player.is_local_player = local_player_index == player_index
+	player.player_index = player_index
+	player.position = initial_position
+
+	player.masked.connect(_mask_player.bind(player))
+	player.unmasked.connect(_unmask_player.bind(player))
+	player.hitted.connect(_player_hitted.bind(player))
+
+	if player_index == 0:
+		_player_container0.add_child(player)
+	else:
+		_player_container1.add_child(player)
+
+	player.name = "Player%d" % player_index
+
+	if is_online_multiplayer and is_game_host:
+		_remote_spawn_player(player)
+
+	_players.append(player)
+
+	return player
+
+
+func _map_regen_timeout() -> void:
+	Tracer.trace("Map regen timeout.")
+	_randomize_tiles()
+
+	for player: Player in _players:
+		_update_clip_tilemap(player)
+		player.is_stealthed = is_in_stealth_tile(player)
+		player.is_stunned = false
+
+
 func _is_player_tile_overlap(player: Player, coord: Vector2i) -> bool:
 	var circle_pos: Vector2 = player.position  # center
 	var radius: float = 10
@@ -135,12 +184,17 @@ func _is_player_tile_overlap(player: Player, coord: Vector2i) -> bool:
 		return y < radius
 
 
-func _randomize_tiles() -> void:
+func _generate_random_tiles() -> Array[Vector2i]:
 	# Build a list of tile atlas positions with an equal number of each tile.
 	var tiles: Array[Vector2i]
 	for i: int in range(Constants.NUM_ROWS * Constants.NUM_COLS):
 		tiles.append(Vector2i(i % Constants.COLORS.size(), 0))
 	tiles.shuffle()
+	return tiles
+
+
+func _randomize_tiles() -> void:
+	var tiles: Array[Vector2i] = _generate_random_tiles()
 
 	for c: int in range(Constants.NUM_COLS):
 		for r: int in range(Constants.NUM_ROWS):
@@ -148,6 +202,8 @@ func _randomize_tiles() -> void:
 			var coord: Vector2i = Vector2i(c, r)
 			_tilemap.set_cell(coord, 1, tile)
 
+
+func _reset_clip_tiles() -> void:
 	# Enable all clip tiles.
 	var atlas_coord: Vector2i = Vector2i(0, 0)
 	for c: int in range(Constants.NUM_COLS):
@@ -155,24 +211,6 @@ func _randomize_tiles() -> void:
 			var coord: Vector2i = Vector2i(c, r)
 			_clip_tilemap_player0.set_cell(coord, 0, atlas_coord)
 			_clip_tilemap_player1.set_cell(coord, 0, atlas_coord)
-
-
-func _spawn_player(player_num: int, coord: Vector2i) -> void:
-	var player: Player = _player_scene.instantiate()
-	player.setup(self)
-	player.player_num = player_num
-	player.position = _tilemap.map_to_local(coord)
-
-	player.masked.connect(_mask_player.bind(player))
-	player.unmasked.connect(_unmask_player.bind(player))
-	player.hitted.connect(_player_hitted.bind(player))
-
-	if player_num == 0:
-		_player_container0.add_child(player)
-	else:
-		_player_container1.add_child(player)
-
-	_players.append(player)
 
 
 func _mask_player(player: Player) -> void:
@@ -184,7 +222,7 @@ func _unmask_player(player: Player) -> void:
 
 
 func _player_hitted(player: Player) -> void:
-	_scores[player.player_num] = 0
+	_scores[player.player_index] = 0
 	_scores_changed()
 
 
@@ -226,48 +264,23 @@ func _try_spawn_goal(is_first_spawn: bool = false) -> bool:
 
 
 func _goal_scored(player: Player) -> void:
-	Tracer.trace("Player %d scored!" % player.player_num)
-	print("Player %d scored!" % player.player_num)
-	_scores[player.player_num] += 1
+	Tracer.trace("Player %d scored!" % player.player_index)
+	print("Player %d scored!" % player.player_index)
+	_scores[player.player_index] += 1
 	_scores_changed()
 
 	_goal = null
 
-	if _scores[player.player_num] >= Constants.MAX_SCORE:
-		var other_player: Player = _players[1 - player.player_num]
-		_show_winner(player, other_player)
-
-		if !_win_sound.playing:
-			_win_sound.play()
+	if _scores[player.player_index] >= Constants.MAX_SCORE:
+		print("Player %d won!" % player.player_index)
+		var other_player: Player = _players[1 - player.player_index]
+		completed.emit(player.player_index, player.color_index, other_player.color_index)
 
 	else:
 		_delay_spawn_goal()
 
 		if !_score_sound.playing:
 			_score_sound.play()
-
-
-func _show_winner(winner: Player, loser: Player) -> void:
-	Tracer.trace("Show winner.", {"winner": winner.player_num, "loser": loser.player_num})
-	_winner_label0.visible = winner.player_num == 0
-	_winner_label1.visible = winner.player_num == 1
-
-	_winner_loser_art.scale.x = -1 if winner.player_num == 0 else 1
-
-	var winner_form: String = "base"
-	if winner.color_index >= 0:
-		winner_form = Constants.PLAYER_FORMS[winner.color_index]
-	_winner_animated_sprite.play(winner_form)
-
-	var loser_form: String = "base"
-	if loser.color_index >= 0:
-		loser_form = Constants.PLAYER_FORMS[loser.color_index]
-	_loser_animated_sprite.play(loser_form)
-
-	_winner_screen.show()
-
-	game_completed.emit()
-	is_playing_game = false
 
 
 func _scores_changed() -> void:
@@ -445,7 +458,7 @@ func _update_clip_tilemap(player: Player) -> void:
 
 
 func _get_clip_tilemap(player: Player) -> TileMapLayer:
-	if player.player_num == 0:
+	if player.player_index == 0:
 		return _clip_tilemap_player0
 	return _clip_tilemap_player1
 
@@ -460,19 +473,14 @@ func _get_coord_color(coord: Vector2i) -> Color:
 	return Constants.COLORS[atlas_coord.x]
 
 
-func _input(event: InputEvent) -> void:
-	if !OS.has_feature("template") and event.is_action_pressed("reset"):
-		reset()
-
-	if _winner_screen.visible and event.is_action_pressed("proceed"):
-		Tracer.trace("Winner screen: proceed.")
-		_winner_screen.hide()
-		reset()
-
-	# Quickly quit if this is the root scene. Normally this scene would have Main as a parent.
-	if (
-		get_parent() == get_tree().root
-		and event.is_action_pressed("ui_cancel")
-		and !event.is_echo()
-	):
-		get_tree().quit()
+func _message_received(message: String) -> void:
+	var parts: Array[String]
+	parts.assign(message.split(":"))
+	if parts.pop_front() == str(get_path()):
+		var remaining_message: String = ":".join(parts)
+		match parts.pop_front():
+			"ready":
+				if is_game_host and !_is_game_started:
+					reset()
+			"spawn_player":
+				_spawn_player_received(remaining_message)

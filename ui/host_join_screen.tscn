@@ -1,0 +1,176 @@
+[gd_scene load_steps=5 format=3 uid="uid://b8kvidllqopb6"]
+
+[ext_resource type="Script" uid="uid://bvtipc87qikj3" path="res://ui/host_join_screen.gd" id="1_pdmv5"]
+[ext_resource type="PackedScene" uid="uid://bkgqfqikuaqb8" path="res://ui/ui_background.tscn" id="2_2x614"]
+[ext_resource type="Theme" uid="uid://b8rvlvfehdp6a" path="res://ui/ui_theme.tres" id="2_76jbv"]
+[ext_resource type="Script" uid="uid://ch2ko8dy2nyhf" path="res://ui/line_edit_to_upper.gd" id="3_76jbv"]
+
+[node name="HostJoinScreen" type="Node2D"]
+script = ExtResource("1_pdmv5")
+
+[node name="UIBackground" parent="." instance=ExtResource("2_2x614")]
+
+[node name="Control" type="Control" parent="."]
+custom_minimum_size = Vector2(400, 400)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 400.0
+offset_bottom = 400.0
+
+[node name="ColorRect" type="ColorRect" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="Control"]
+layout_mode = 0
+offset_right = 400.0
+offset_bottom = 407.0
+theme = ExtResource("2_76jbv")
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/MarginContainer"]
+layout_mode = 2
+
+[node name="Control" type="Control" parent="Control/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HostPanel" type="PanelContainer" parent="Control/MarginContainer/HBoxContainer/Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="Control/MarginContainer/HBoxContainer/Control/HostPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/MarginContainer/HBoxContainer/Control/HostPanel/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HostLabel" type="Label" parent="Control/MarginContainer/HBoxContainer/Control/HostPanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+text = "Host a friend"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Control" type="Control" parent="Control/MarginContainer/HBoxContainer/Control/HostPanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+
+[node name="HostCodeInput" type="LineEdit" parent="Control/MarginContainer/HBoxContainer/Control/HostPanel/MarginContainer/VBoxContainer/Control"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+editable = false
+emoji_menu_enabled = false
+
+[node name="HostButton" type="Button" parent="Control/MarginContainer/HBoxContainer/Control/HostPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Host"
+
+[node name="HostCancelButton" type="Button" parent="Control/MarginContainer/HBoxContainer/Control/HostPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Cancel"
+
+[node name="HostDisableMask" type="ColorRect" parent="Control/MarginContainer/HBoxContainer/Control"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.8666667)
+
+[node name="Control2" type="Control" parent="Control/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="JoinPanel" type="PanelContainer" parent="Control/MarginContainer/HBoxContainer/Control2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="Control/MarginContainer/HBoxContainer/Control2/JoinPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="Control/MarginContainer/HBoxContainer/Control2/JoinPanel/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="JoinLabel" type="Label" parent="Control/MarginContainer/HBoxContainer/Control2/JoinPanel/MarginContainer/VBoxContainer2"]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+text = "Join a friend"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Control" type="Control" parent="Control/MarginContainer/HBoxContainer/Control2/JoinPanel/MarginContainer/VBoxContainer2"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+
+[node name="JoinCodeInput" type="LineEdit" parent="Control/MarginContainer/HBoxContainer/Control2/JoinPanel/MarginContainer/VBoxContainer2/Control"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+placeholder_text = "Enter Room Code"
+alignment = 1
+script = ExtResource("3_76jbv")
+
+[node name="JoinButton" type="Button" parent="Control/MarginContainer/HBoxContainer/Control2/JoinPanel/MarginContainer/VBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Join"
+
+[node name="JoinErrorLabel" type="Label" parent="Control/MarginContainer/HBoxContainer/Control2/JoinPanel/MarginContainer/VBoxContainer2"]
+unique_name_in_owner = true
+modulate = Color(1, 0.26666668, 0.26666668, 1)
+layout_mode = 2
+
+[node name="JoinDisableMask" type="ColorRect" parent="Control/MarginContainer/HBoxContainer/Control2"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.8666667)

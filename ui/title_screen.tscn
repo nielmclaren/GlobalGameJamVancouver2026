@@ -1,8 +1,8 @@
 [gd_scene load_steps=7 format=3 uid="uid://1jfy80jul1w0"]
 
 [ext_resource type="Script" uid="uid://7srngd7gbyqc" path="res://ui/title_screen.gd" id="1_7xhpk"]
+[ext_resource type="PackedScene" uid="uid://bkgqfqikuaqb8" path="res://ui/ui_background.tscn" id="2_6qcwj"]
 [ext_resource type="PackedScene" uid="uid://cc4701uyf5r76" path="res://ui/audio_controls.tscn" id="2_bor1v"]
-[ext_resource type="Texture2D" uid="uid://ba1gxg7j675ni" path="res://assets/art/EndScreenDithered_origina.png" id="2_l1ku3"]
 [ext_resource type="Theme" uid="uid://b8rvlvfehdp6a" path="res://ui/ui_theme.tres" id="2_qer0c"]
 [ext_resource type="Theme" uid="uid://dikqu2u0jnhof" path="res://ui/button_theme.tres" id="4_6qcwj"]
 [ext_resource type="Texture2D" uid="uid://dishn0faymi46" path="res://assets/art/VGGJ2026_Title.png" id="4_dk6f0"]
@@ -15,20 +15,7 @@ custom_minimum_size = Vector2(1920, 1080)
 layout_mode = 3
 anchors_preset = 0
 
-[node name="ColorRect" type="ColorRect" parent="Control"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.23921569, 0.12156863, 0.31764707, 1)
-
-[node name="TextureRect" type="TextureRect" parent="Control"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-texture = ExtResource("2_l1ku3")
+[node name="UIBackground" parent="Control" instance=ExtResource("2_6qcwj")]
 
 [node name="MarginContainer" type="MarginContainer" parent="Control"]
 layout_mode = 0

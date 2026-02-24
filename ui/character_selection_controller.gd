@@ -1,0 +1,2 @@
+class_name CharacterSelectionController
+extends Node2D

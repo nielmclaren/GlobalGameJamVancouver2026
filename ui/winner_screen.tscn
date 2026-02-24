@@ -1,0 +1,199 @@
+[gd_scene load_steps=18 format=3 uid="uid://3efa0tr7o67v"]
+
+[ext_resource type="Texture2D" uid="uid://midrd8nyfk00" path="res://assets/art/win_lose_sheet.png" id="1_b2gjs"]
+[ext_resource type="Script" uid="uid://bi4hrb43gvpb8" path="res://ui/winner_screen.gd" id="1_ljvke"]
+[ext_resource type="LabelSettings" uid="uid://dh5nkilieny34" path="res://ui/player_one_two_wins.tres" id="2_ljvke"]
+[ext_resource type="AudioStream" uid="uid://vwbewj7g1kge" path="res://assets/music/Pause Effect.ogg" id="4_640aj"]
+[ext_resource type="Theme" uid="uid://dikqu2u0jnhof" path="res://ui/button_theme.tres" id="4_iahek"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_eow3j"]
+atlas = ExtResource("1_b2gjs")
+region = Rect2(168, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j5wjh"]
+atlas = ExtResource("1_b2gjs")
+region = Rect2(24, 72, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hve3p"]
+atlas = ExtResource("1_b2gjs")
+region = Rect2(168, 120, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mfdv2"]
+atlas = ExtResource("1_b2gjs")
+region = Rect2(168, 24, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_215e1"]
+atlas = ExtResource("1_b2gjs")
+region = Rect2(120, 96, 24, 24)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_j5wjh"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_eow3j")
+}],
+"loop": true,
+"name": &"base",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_j5wjh")
+}],
+"loop": true,
+"name": &"fire",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hve3p")
+}],
+"loop": true,
+"name": &"grass",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mfdv2")
+}],
+"loop": true,
+"name": &"water",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_215e1")
+}],
+"loop": true,
+"name": &"wood",
+"speed": 5.0
+}]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vef74"]
+atlas = ExtResource("1_b2gjs")
+region = Rect2(0, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lc2xo"]
+atlas = ExtResource("1_b2gjs")
+region = Rect2(120, 48, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e8heu"]
+atlas = ExtResource("1_b2gjs")
+region = Rect2(0, 120, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iotsf"]
+atlas = ExtResource("1_b2gjs")
+region = Rect2(48, 24, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rvswv"]
+atlas = ExtResource("1_b2gjs")
+region = Rect2(168, 72, 24, 24)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_boyg6"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vef74")
+}],
+"loop": true,
+"name": &"base",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lc2xo")
+}],
+"loop": true,
+"name": &"fire",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_e8heu")
+}],
+"loop": true,
+"name": &"grass",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iotsf")
+}],
+"loop": true,
+"name": &"water",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rvswv")
+}],
+"loop": true,
+"name": &"wood",
+"speed": 5.0
+}]
+
+[node name="WinnerScreen" type="Node2D"]
+script = ExtResource("1_ljvke")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_right = 1920.0
+offset_bottom = 1088.0
+color = Color(0.61320245, 0.3909905, 0.76664364, 1)
+
+[node name="WinnerLoserArt" type="Node2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(960, 0)
+rotation = 3.1415927
+scale = Vector2(1, -1)
+
+[node name="WinnerAnimatedSprite" type="AnimatedSprite2D" parent="WinnerLoserArt"]
+unique_name_in_owner = true
+position = Vector2(-448, 640)
+scale = Vector2(48, 48)
+sprite_frames = SubResource("SpriteFrames_j5wjh")
+animation = &"base"
+
+[node name="LoserAnimatedSprite" type="AnimatedSprite2D" parent="WinnerLoserArt"]
+unique_name_in_owner = true
+position = Vector2(608, 736)
+scale = Vector2(16, 16)
+sprite_frames = SubResource("SpriteFrames_boyg6")
+animation = &"base"
+
+[node name="WinnerLabel0" type="Label" parent="."]
+unique_name_in_owner = true
+offset_left = 1152.0
+offset_top = 256.0
+offset_right = 1786.0
+offset_bottom = 491.0
+text = "Player one
+wins!"
+label_settings = ExtResource("2_ljvke")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="WinnerLabel1" type="Label" parent="."]
+unique_name_in_owner = true
+offset_left = 128.0
+offset_top = 256.0
+offset_right = 781.0
+offset_bottom = 491.0
+text = "Player two
+wins!"
+label_settings = ExtResource("2_ljvke")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ContinueButton" type="Button" parent="."]
+unique_name_in_owner = true
+offset_left = 1600.0
+offset_top = 928.0
+offset_right = 1856.0
+offset_bottom = 1024.0
+theme = ExtResource("4_iahek")
+text = "Continue"
+
+[node name="WinSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_640aj")
+autoplay = true
+bus = &"Sfx"
