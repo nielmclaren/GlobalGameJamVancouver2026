@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://fi441li6sa4l"]
+[gd_scene load_steps=11 format=3 uid="uid://fi441li6sa4l"]
 
 [ext_resource type="Script" uid="uid://duvuoxtqp8wex" path="res://ui/credits_screen.gd" id="1_ed0b0"]
 [ext_resource type="Texture2D" uid="uid://ba1gxg7j675ni" path="res://assets/art/EndScreenDithered_origina.png" id="2_3edf7"]
@@ -18,6 +18,10 @@ region = Rect2(48, 144, 24, 24)
 [sub_resource type="LabelSettings" id="LabelSettings_phwat"]
 font = ExtResource("3_ygnrc")
 font_size = 64
+
+[sub_resource type="LabelSettings" id="LabelSettings_dglud"]
+font = ExtResource("3_ygnrc")
+font_size = 32
 
 [node name="CreditsScreen" type="Node2D"]
 script = ExtResource("1_ed0b0")
@@ -55,7 +59,7 @@ theme = ExtResource("3_phwat")
 text = "Done"
 
 [node name="Sprite2D2" type="Sprite2D" parent="."]
-position = Vector2(1664, 640)
+position = Vector2(1664, 608)
 scale = Vector2(24, 24)
 texture = SubResource("AtlasTexture_2tuqu")
 
@@ -66,41 +70,58 @@ texture = SubResource("AtlasTexture_dglud")
 
 [node name="Label" type="Label" parent="."]
 offset_left = 256.0
-offset_top = 320.0
+offset_top = 256.0
 offset_right = 1312.0
-offset_bottom = 378.0
-text = "Designed by Reina Magica / MageX"
+offset_bottom = 314.0
+text = "Designed by Reina Magica"
 label_settings = SubResource("LabelSettings_phwat")
 
 [node name="Label2" type="Label" parent="."]
 offset_left = 256.0
-offset_top = 480.0
+offset_top = 416.0
 offset_right = 1312.0
-offset_bottom = 538.0
+offset_bottom = 474.0
 text = "Programmed by Niel McLaren"
 label_settings = SubResource("LabelSettings_phwat")
 
 [node name="Label3" type="Label" parent="."]
 offset_left = 256.0
-offset_top = 640.0
+offset_top = 576.0
 offset_right = 1312.0
-offset_bottom = 698.0
+offset_bottom = 634.0
 text = "Art by Matt Froese"
 label_settings = SubResource("LabelSettings_phwat")
 
 [node name="Label4" type="Label" parent="."]
 offset_left = 256.0
-offset_top = 800.0
+offset_top = 736.0
 offset_right = 1402.0
-offset_bottom = 858.0
-text = "Music by Brian Holt / Bad Bad Power"
+offset_bottom = 794.0
+text = "Music by Brian Holt (Bad Bad Power)"
 label_settings = SubResource("LabelSettings_phwat")
+
+[node name="Label5" type="Label" parent="."]
+offset_left = 256.0
+offset_top = 960.0
+offset_right = 1402.0
+offset_bottom = 1018.0
+text = "Sample from: S23-24 Light swords fencing.wav by craigsmith
+"
+label_settings = SubResource("LabelSettings_dglud")
+
+[node name="Label6" type="Label" parent="."]
+offset_left = 748.0
+offset_top = 992.0
+offset_right = 1894.0
+offset_bottom = 1053.0
+text = "-- License: Creative Commons 0"
+label_settings = SubResource("LabelSettings_dglud")
 
 [node name="LinkButton" type="LinkButton" parent="."]
 offset_left = 256.0
-offset_top = 384.0
+offset_top = 320.0
 offset_right = 762.0
-offset_bottom = 434.0
+offset_bottom = 370.0
 theme_override_fonts/font = ExtResource("3_ygnrc")
 theme_override_font_sizes/font_size = 54
 text = "https://magex.itch.io"
@@ -108,9 +129,9 @@ uri = "https://magex.itch.io"
 
 [node name="LinkButton2" type="LinkButton" parent="."]
 offset_left = 256.0
-offset_top = 544.0
+offset_top = 480.0
 offset_right = 843.0
-offset_bottom = 594.0
+offset_bottom = 530.0
 theme_override_fonts/font = ExtResource("3_ygnrc")
 theme_override_font_sizes/font_size = 54
 text = "https://nielmclaren.com"
@@ -118,9 +139,9 @@ uri = "https://nielmclaren.com"
 
 [node name="LinkButton3" type="LinkButton" parent="."]
 offset_left = 256.0
-offset_top = 704.0
+offset_top = 640.0
 offset_right = 1033.0
-offset_bottom = 754.0
+offset_bottom = 690.0
 theme_override_fonts/font = ExtResource("3_ygnrc")
 theme_override_font_sizes/font_size = 54
 text = "https://mattfroeseart.carrd.co"
@@ -128,10 +149,20 @@ uri = "https://mattfroeseart.carrd.co/"
 
 [node name="LinkButton4" type="LinkButton" parent="."]
 offset_left = 256.0
-offset_top = 864.0
+offset_top = 800.0
 offset_right = 762.0
-offset_bottom = 914.0
+offset_bottom = 850.0
 theme_override_fonts/font = ExtResource("3_ygnrc")
 theme_override_font_sizes/font_size = 54
 text = "https://brianholt.ca"
 uri = "https://brianholt.ca/"
+
+[node name="LinkButton5" type="LinkButton" parent="."]
+offset_left = 256.0
+offset_top = 992.0
+offset_right = 762.0
+offset_bottom = 1042.0
+theme_override_fonts/font = ExtResource("3_ygnrc")
+theme_override_font_sizes/font_size = 32
+text = "https://freesound.org/s/675829"
+uri = "https://freesound.org/s/675829"
