@@ -202,8 +202,6 @@ func _apply_input(player: int, other_player: int, action: String) -> void:
 		"ui_cancel":
 			if _state_readys[player]:
 				_confirm_character_selection(player, false)
-			else:
-				_state_character_selections[player] = CharacterSelection.NONE
 
 
 func _move_character_selection(player: int, other_player: int, direction: int) -> void:

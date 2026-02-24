@@ -1,0 +1,7 @@
+[gd_resource type="LabelSettings" load_steps=2 format=3 uid="uid://b4lsvhnlevmc4"]
+
+[ext_resource type="FontFile" uid="uid://ba754vt7red8h" path="res://assets/fonts/pixel-splitter/PixelSplitter-Bold.ttf" id="1_3uaxi"]
+
+[resource]
+font = ExtResource("1_3uaxi")
+font_size = 48

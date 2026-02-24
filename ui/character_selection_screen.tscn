@@ -1,8 +1,10 @@
-[gd_scene load_steps=7 format=3 uid="uid://chr26unydsapp"]
+[gd_scene load_steps=9 format=3 uid="uid://chr26unydsapp"]
 
 [ext_resource type="Script" uid="uid://bqag7erwugwsw" path="res://ui/character_selection_screen.gd" id="1_j3yi0"]
 [ext_resource type="PackedScene" uid="uid://bkgqfqikuaqb8" path="res://ui/ui_background.tscn" id="2_7iokj"]
 [ext_resource type="PackedScene" uid="uid://dth57hb786kgk" path="res://ui/character_selection_controller.tscn" id="2_2672o"]
+[ext_resource type="LabelSettings" uid="uid://du5k82yuhs2js" path="res://ui/screen_title.tres" id="3_vv4gq"]
+[ext_resource type="LabelSettings" uid="uid://b4lsvhnlevmc4" path="res://ui/character_selection_ready_label_settings.tres" id="4_y0wt2"]
 
 [sub_resource type="Animation" id="Animation_7iokj"]
 length = 0.001
@@ -17,6 +19,18 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [0.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Control/Fader:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
 }
 
 [sub_resource type="Animation" id="Animation_2672o"]
@@ -59,6 +73,7 @@ _data = {
 script = ExtResource("1_j3yi0")
 
 [node name="UIBackground" parent="." instance=ExtResource("2_7iokj")]
+metadata/_edit_lock_ = true
 
 [node name="Control" type="Control" parent="."]
 custom_minimum_size = Vector2(400, 400)
@@ -67,124 +82,125 @@ anchors_preset = 0
 offset_right = 400.0
 offset_bottom = 400.0
 
-[node name="Background" type="ColorRect" parent="Control"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0, 0, 0, 1)
-
-[node name="Label" type="Label" parent="Control"]
+[node name="TitleLabel" type="Label" parent="Control"]
 layout_mode = 0
-offset_left = 152.0
-offset_top = 48.0
-offset_right = 234.0
-offset_bottom = 71.0
-text = "Pick a Side"
+offset_top = 64.0
+offset_right = 1920.0
+offset_bottom = 299.0
+text = "PICK A SIDE!"
+label_settings = ExtResource("3_vv4gq")
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Confirm0" type="Node2D" parent="Control"]
 unique_name_in_owner = true
-visible = false
+position = Vector2(384, 640)
 
 [node name="Label" type="Label" parent="Control/Confirm0"]
-offset_left = 48.0
-offset_top = 272.0
-offset_right = 111.0
-offset_bottom = 295.0
+offset_left = -224.0
+offset_top = 160.0
+offset_right = 224.0
+offset_bottom = 217.0
 text = "Ready?"
+label_settings = ExtResource("4_y0wt2")
 horizontal_alignment = 1
 
 [node name="Confirm1" type="Node2D" parent="Control"]
 unique_name_in_owner = true
-visible = false
+position = Vector2(1536, 640)
 
 [node name="Label" type="Label" parent="Control/Confirm1"]
-offset_left = 288.0
-offset_top = 272.0
-offset_right = 351.0
-offset_bottom = 295.0
+offset_left = -224.0
+offset_top = 160.0
+offset_right = 224.0
+offset_bottom = 217.0
 text = "Ready?"
+label_settings = ExtResource("4_y0wt2")
 horizontal_alignment = 1
 
 [node name="Ready0" type="Node2D" parent="Control"]
 unique_name_in_owner = true
-visible = false
+position = Vector2(384, 640)
 
 [node name="Label" type="Label" parent="Control/Ready0"]
-offset_left = 48.0
-offset_top = 272.0
-offset_right = 111.0
-offset_bottom = 295.0
+offset_left = -224.0
+offset_top = 160.0
+offset_right = 224.0
+offset_bottom = 217.0
 text = "Ready!"
+label_settings = ExtResource("4_y0wt2")
 horizontal_alignment = 1
 
 [node name="OtherReady0" type="Node2D" parent="Control"]
 unique_name_in_owner = true
-visible = false
+position = Vector2(384, 640)
 
 [node name="Label" type="Label" parent="Control/OtherReady0"]
-offset_left = 48.0
-offset_top = 272.0
-offset_right = 111.0
-offset_bottom = 295.0
+offset_left = -224.0
+offset_top = 160.0
+offset_right = 224.0
+offset_bottom = 217.0
 text = "Ready!"
+label_settings = ExtResource("4_y0wt2")
 horizontal_alignment = 1
 
 [node name="Ready1" type="Node2D" parent="Control"]
 unique_name_in_owner = true
-visible = false
+position = Vector2(1536, 640)
 
 [node name="Label" type="Label" parent="Control/Ready1"]
-offset_left = 288.0
-offset_top = 272.0
-offset_right = 351.0
-offset_bottom = 295.0
+offset_left = -224.0
+offset_top = 160.0
+offset_right = 224.0
+offset_bottom = 217.0
 text = "Ready!"
+label_settings = ExtResource("4_y0wt2")
 horizontal_alignment = 1
 
 [node name="OtherReady1" type="Node2D" parent="Control"]
 unique_name_in_owner = true
-visible = false
+position = Vector2(1536, 640)
 
 [node name="Label" type="Label" parent="Control/OtherReady1"]
-offset_left = 288.0
-offset_top = 272.0
-offset_right = 351.0
-offset_bottom = 295.0
+offset_left = -224.0
+offset_top = 160.0
+offset_right = 224.0
+offset_bottom = 217.0
 text = "Ready!"
+label_settings = ExtResource("4_y0wt2")
 horizontal_alignment = 1
 
 [node name="CharacterMarker0" type="Marker2D" parent="Control"]
 unique_name_in_owner = true
-position = Vector2(80, 224)
+position = Vector2(384, 640)
 
 [node name="CharacterMarker1" type="Marker2D" parent="Control"]
 unique_name_in_owner = true
-position = Vector2(320, 224)
+position = Vector2(1536, 640)
 
 [node name="ControllerMarker0" type="Marker2D" parent="Control"]
 unique_name_in_owner = true
-position = Vector2(192, 192)
+position = Vector2(960, 512)
 
 [node name="ControllerMarker1" type="Marker2D" parent="Control"]
 unique_name_in_owner = true
-position = Vector2(192, 288)
+position = Vector2(960, 800)
 
 [node name="Controller0" parent="Control" instance=ExtResource("2_2672o")]
 unique_name_in_owner = true
-position = Vector2(192, 192)
+position = Vector2(960, 512)
 
 [node name="Controller1" parent="Control" instance=ExtResource("2_2672o")]
 unique_name_in_owner = true
-position = Vector2(192, 288)
+position = Vector2(960, 800)
 
 [node name="Fader" type="ColorRect" parent="Control"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_right = 1520.0
+offset_bottom = 688.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0)

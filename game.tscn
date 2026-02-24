@@ -148,6 +148,11 @@ unique_name_in_owner = true
 [node name="GoalContainer" type="Node2D" parent="Level"]
 unique_name_in_owner = true
 
+[node name="LevelReadyTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 0.5
+autostart = true
+
 [node name="MapRegenTimer" type="Timer" parent="."]
 unique_name_in_owner = true
 wait_time = 30.0
@@ -160,11 +165,6 @@ unique_name_in_owner = true
 [node name="DevBar" type="Node2D" parent="CanvasLayer"]
 script = ExtResource("2_e2o6t")
 metadata/_custom_type_script = "uid://b6xjkpxjv77pk"
-
-[node name="LevelReadyTimer" type="Timer" parent="."]
-unique_name_in_owner = true
-wait_time = 0.5
-autostart = true
 
 [node name="ScoreSound" type="AudioStreamPlayer" parent="."]
 unique_name_in_owner = true
