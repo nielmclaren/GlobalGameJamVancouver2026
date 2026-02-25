@@ -15,7 +15,7 @@ var _is_game_started: bool = false
 var _players: Array[Player]
 var _masks: Array[Mask]
 var _goal: Goal
-var _scores: Array[int]
+var _scores: Array[int] = [0, 0]
 
 @onready var _clip_tilemap_player0: TileMapLayer = %ClipTileMapPlayer0
 @onready var _player_container0: Node2D = %ClipMaskPlayer0
@@ -46,7 +46,8 @@ func _ready() -> void:
 	elif !is_game_host:
 		# For an online game, the game client sends "ready" repeatedly until game host starts the game.
 		_level_ready_timer.timeout.connect(
-			func _level_ready_timeout() -> void: MultiplayerManager.send(str(get_path()) + ":ready")
+			func _level_ready_timeout() -> void:
+				MultiplayerManager.send(MultiplayerMessage.new(get_path(), "ready"))
 		)
 
 
@@ -89,18 +90,6 @@ func is_in_stealth_tile(player: Player) -> bool:
 	return false
 
 
-func _remote_spawn_player(player: Player) -> void:
-	var message: String = ";".join([player.player_index, player.position])
-	MultiplayerManager.send("%s:spawn_player:%s" % [get_path(), message])
-
-
-func _spawn_player_received(message: String) -> void:
-	_level_ready_timer.stop()
-
-	var parts: PackedStringArray = message.split(";")
-	_spawn_player(int(parts[0]), Utils.string_to_vector2(parts[1]))
-
-
 func _spawn_player(player_index: int, initial_position: Vector2) -> Player:
 	var player: Player = _player_scene.instantiate()
 	player.setup(self)
@@ -123,11 +112,22 @@ func _spawn_player(player_index: int, initial_position: Vector2) -> Player:
 	player.name = "Player%d" % player_index
 
 	if is_online_multiplayer and is_game_host:
-		_remote_spawn_player(player)
+		_game_host_send_spawn_player(player)
 
 	_players.append(player)
 
 	return player
+
+
+func _game_host_send_spawn_player(player: Player) -> void:
+	MultiplayerManager.send(
+		(
+			MultiplayerMessage
+			. new(get_path(), "spawn_player")
+			. append_int(player.player_index)
+			. append_vector2(player.position)
+		)
+	)
 
 
 func _map_regen_timeout() -> void:
@@ -182,11 +182,13 @@ func _randomize_tiles(rand_seed: int) -> void:
 			_tilemap.set_cell(coord, 1, tile)
 
 	if is_online_multiplayer and is_game_host:
-		_remote_randomize_tiles(rand_seed)
+		_game_host_send_randomize_tiles(rand_seed)
 
 
-func _remote_randomize_tiles(rand_seed: int) -> void:
-	MultiplayerManager.send(str(get_path()) + ":randomize_tiles:" + str(rand_seed))
+func _game_host_send_randomize_tiles(rand_seed: int) -> void:
+	MultiplayerManager.send(
+		MultiplayerMessage.new(get_path(), "randomize_tiles").append_int(rand_seed)
+	)
 
 
 func _reset_clip_tiles() -> void:
@@ -244,11 +246,11 @@ func _spawn_goal_at(coord: Vector2i) -> void:
 	_goal = goal
 
 	if is_online_multiplayer and is_game_host:
-		_remote_spawn_goal_at(coord)
+		_game_host_send_spawn_goal_at(coord)
 
 
-func _remote_spawn_goal_at(coord: Vector2i) -> void:
-	MultiplayerManager.send(str(get_path()) + ":spawn_goal:" + str(coord))
+func _game_host_send_spawn_goal_at(coord: Vector2i) -> void:
+	MultiplayerManager.send(MultiplayerMessage.new(get_path(), "spawn_goal").append_vector2i(coord))
 
 
 func _goal_scored(player: Player) -> void:
@@ -332,11 +334,15 @@ func _spawn_mask_at(coord: Vector2i, color_index: int) -> void:
 	_masks.append(mask)
 
 	if is_online_multiplayer and is_game_host:
-		_remote_spawn_mask_at(coord, color_index)
+		_game_host_send_spawn_mask_at(coord, color_index)
 
 
-func _remote_spawn_mask_at(coord: Vector2i, color_index: int) -> void:
-	MultiplayerManager.send(str(get_path()) + ":spawn_mask:" + str(coord) + ";" + str(color_index))
+func _game_host_send_spawn_mask_at(coord: Vector2i, color_index: int) -> void:
+	MultiplayerManager.send(
+		MultiplayerMessage.new(get_path(), "spawn_mask").append_vector2i(coord).append_int(
+			color_index
+		)
+	)
 
 
 func _get_available_mask_color_indices() -> Array[int]:
@@ -461,29 +467,24 @@ func _get_coord_color(coord: Vector2i) -> Color:
 	return Constants.COLORS[atlas_coord.x]
 
 
-func _message_received(message: String) -> void:
-	var parts: Array[String]
-	parts.assign(message.split(":"))
-	if parts.pop_front() == str(get_path()):
-		var remaining_message: String = ":".join(parts)
-		match parts.pop_front():
-			"ready":
-				if is_game_host and !_is_game_started:
-					start()
+func _message_received(message: MultiplayerMessage) -> void:
+	if !message.is_addressed_to(self):
+		return
 
-			"randomize_tiles":
-				var rand_seed_str: String = parts.pop_front()
-				_randomize_tiles(rand_seed_str.to_int())
+	match message.name:
+		"ready":
+			if is_game_host and !_is_game_started:
+				start()
 
-			"spawn_player":
-				_spawn_player_received(remaining_message)
+		"randomize_tiles":
+			_randomize_tiles(message.get_int(0))
 
-			"spawn_goal":
-				_spawn_goal_at(Utils.string_to_vector2i(remaining_message))
+		"spawn_player":
+			_level_ready_timer.stop()
+			_spawn_player(message.get_int(0), message.get_vector2(1))
 
-			"spawn_mask":
-				var arg_parts: Array[String]
-				arg_parts.assign(remaining_message.split(";"))
-				var coord_str: String = arg_parts.pop_front()
-				var color_index_str: String = arg_parts.pop_front()
-				_spawn_mask_at(Utils.string_to_vector2i(coord_str), color_index_str.to_int())
+		"spawn_goal":
+			_spawn_goal_at(message.get_vector2(0))
+
+		"spawn_mask":
+			_spawn_mask_at(message.get_vector2i(0), message.get_int(1))

@@ -7,7 +7,7 @@ signal room_gone
 signal room_full
 signal room_ready
 signal partner_left
-signal message_received(message: String)
+signal message_received(message: MultiplayerMessage)
 signal status_message_changed(status: StatusMessage)
 
 enum StatusMessage { CONNECTING, CONNECTED, PARTNER_DISCONNECTED, DISCONNECTED }
@@ -42,30 +42,20 @@ func reconnect() -> void:
 
 func create_room() -> void:
 	_message_handler = _handle_create_room
-	send("create_room")
+	_send_raw("create_room")
 
 
 func join_room(room_id: String) -> void:
 	_message_handler = _handle_join_room
-	send("join_room:%s" % room_id)
+	_send_raw("join_room:%s" % room_id)
 
 
 func leave_room() -> void:
-	send("leave_room")
+	_send_raw("leave_room")
 
 
-func send(message: String) -> void:
-	if _socket.get_ready_state() == WebSocketPeer.STATE_OPEN:
-		_set_status_message(StatusMessage.CONNECTED)
-		_socket.send_text(message)
-
-	else:
-		var code: int = _socket.get_close_code()
-		print("Send failed. WebSocket closed with code: %d" % code)
-		set_process(false)
-
-		_set_status_message(StatusMessage.DISCONNECTED)
-		disconnected.emit()
+func send(message: MultiplayerMessage) -> void:
+	_send_raw(message.serialize())
 
 
 func _ready() -> void:
@@ -106,6 +96,20 @@ func _process(_delta: float) -> void:
 
 func _exit_tree() -> void:
 	_socket.close()
+
+
+func _send_raw(message: String) -> void:
+	if _socket.get_ready_state() == WebSocketPeer.STATE_OPEN:
+		_set_status_message(StatusMessage.CONNECTED)
+		_socket.send_text(message)
+
+	else:
+		var code: int = _socket.get_close_code()
+		print("Send failed. WebSocket closed with code: %d" % code)
+		set_process(false)
+
+		_set_status_message(StatusMessage.DISCONNECTED)
+		disconnected.emit()
 
 
 func _handle_handshake(payload: String) -> void:
@@ -169,7 +173,7 @@ func _handle_room_waiting_for_client(payload: String) -> void:
 
 
 func _handle_relay(payload: String) -> void:
-	message_received.emit(payload)
+	message_received.emit(MultiplayerMessage.deserialize(payload))
 
 
 func _set_status_message(status_message_: StatusMessage) -> void:

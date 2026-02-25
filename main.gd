@@ -116,9 +116,6 @@ func _input(event: InputEvent) -> void:
 			_toggle_pause_menu()
 			get_viewport().set_input_as_handled()
 
-		elif _sm.get_state() == _title_state_enter:
-			_quit()
-
 	elif event.is_action_pressed("pause") and !event.is_echo():
 		if _game:
 			_toggle_pause_menu()
@@ -240,11 +237,11 @@ func _quit() -> void:
 func _toggle_pause_menu() -> void:
 	if _is_pause_menu:
 		_unpause()
-		MultiplayerManager.send("unpause")
+		MultiplayerManager.send(MultiplayerMessage.new(get_path(), "unpause"))
 
 	else:
 		_pause()
-		MultiplayerManager.send("pause")
+		MultiplayerManager.send(MultiplayerMessage.new(get_path(), "pause"))
 
 
 func _pause() -> void:
@@ -284,23 +281,15 @@ func _toggle_fullscreen() -> void:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 
 
-func _message_received(message: String) -> void:
-	var index: int = message.find(":")
-	if index < 0:
+func _message_received(message: MultiplayerMessage) -> void:
+	if !message.is_addressed_to(self):
 		return
 
-	var path: String = message.substr(0, index)
-	if path == str(get_path()):
-		var payload: String = message.substr(index + 1)
-		match payload:
-			"pause":
-				_pause()
-			"unpause":
-				_unpause()
-
-
-func _send_message(message: String) -> void:
-	MultiplayerManager.send("%s:%s" % [get_path(), message])
+	match message.name:
+		"pause":
+			_pause()
+		"unpause":
+			_unpause()
 
 
 ### States

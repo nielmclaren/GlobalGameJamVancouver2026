@@ -40,7 +40,7 @@ func _ready() -> void:
 	MultiplayerManager.message_received.connect(_message_received)
 
 	if is_game_host:
-		MultiplayerManager.send(_game_host_pack_state())
+		_game_host_send_state()
 
 	_update()
 
@@ -57,7 +57,7 @@ func _update() -> void:
 		_animation.play("RESET")
 
 	if is_game_host:
-		MultiplayerManager.send(_game_host_pack_state())
+		_game_host_send_state()
 
 
 func _input(event: InputEvent) -> void:
@@ -77,7 +77,7 @@ func _online_multiplayer_input(event: InputEvent) -> void:
 
 		else:
 			if !_state_readys[CLIENT_INDEX]:
-				MultiplayerManager.send(_game_client_pack_input("move_left"))
+				_game_client_send_input("move_left")
 
 	elif event.is_action_pressed("move_right"):
 		if is_game_host:
@@ -87,7 +87,7 @@ func _online_multiplayer_input(event: InputEvent) -> void:
 
 		else:
 			if !_state_readys[CLIENT_INDEX]:
-				MultiplayerManager.send(_game_client_pack_input("move_right"))
+				_game_client_send_input("move_right")
 
 	elif event.is_action_pressed("ui_accept"):
 		if is_game_host:
@@ -96,7 +96,7 @@ func _online_multiplayer_input(event: InputEvent) -> void:
 
 		else:
 			if _state_character_selections[CLIENT_INDEX] != CharacterSelection.NONE:
-				MultiplayerManager.send(_game_client_pack_input("ui_accept"))
+				_game_client_send_input("ui_accept")
 
 	elif event.is_action_pressed("ui_cancel"):
 		if is_game_host:
@@ -105,7 +105,7 @@ func _online_multiplayer_input(event: InputEvent) -> void:
 
 		else:
 			if _state_character_selections[CLIENT_INDEX] != CharacterSelection.NONE:
-				MultiplayerManager.send(_game_client_pack_input("ui_cancel"))
+				_game_client_send_input("ui_cancel")
 
 
 func _local_multiplayer_input(event: InputEvent) -> void:
@@ -235,7 +235,7 @@ func _confirm_character_selection(player: int, value: bool) -> void:
 		_state_readys[player] = value
 
 
-func _message_received(message: String) -> void:
+func _message_received(message: MultiplayerMessage) -> void:
 	if is_game_host:
 		_game_host_receive_input(message)
 
@@ -243,53 +243,48 @@ func _message_received(message: String) -> void:
 		_game_client_receive_state(message)
 
 
-func _game_client_pack_input(action: String) -> String:
-	var result: String = "%s:%s" % [get_path(), action]
-	return result
+func _game_client_send_input(action: String) -> void:
+	MultiplayerManager.send(MultiplayerMessage.new(get_path(), "input").append_string(action))
 
 
-func _game_host_receive_input(message: String) -> void:
-	var index: int = message.find(":")
-	if index < 0:
+func _game_host_receive_input(message: MultiplayerMessage) -> void:
+	if !message.is_addressed_to(self):
 		return
 
-	var path: String = message.substr(0, index)
-	if path == str(get_path()):
-		var payload: String = message.substr(index + 1)
-		_apply_input(CLIENT_INDEX, HOST_INDEX, payload)
-		_update()
+	if message.name != "input":
+		push_error("Game host received message that wasn't input.")
+		return
+
+	_apply_input(CLIENT_INDEX, HOST_INDEX, message.get_string(0))
+	_update()
 
 
-func _game_host_pack_state() -> String:
-	var result: String = str(get_path()) + ":"
-	result += (
-		";"
-		. join(
-			[
-				_state_character_selections[HOST_INDEX],
-				1 if _state_readys[HOST_INDEX] else 0,
-				_state_character_selections[CLIENT_INDEX],
-				1 if _state_readys[CLIENT_INDEX] else 0,
-			]
+func _game_host_send_state() -> void:
+	MultiplayerManager.send(
+		(
+			MultiplayerMessage
+			. new(get_path(), "state")
+			. append_int(_state_character_selections[HOST_INDEX])
+			. append_bool(_state_readys[HOST_INDEX])
+			. append_int(_state_character_selections[CLIENT_INDEX])
+			. append_bool(_state_readys[CLIENT_INDEX])
 		)
 	)
-	return result
 
 
-func _game_client_receive_state(message: String) -> void:
-	var index: int = message.find(":")
-	if index < 0:
+func _game_client_receive_state(message: MultiplayerMessage) -> void:
+	if !message.is_addressed_to(self):
 		return
 
-	var path: String = message.substr(0, index)
-	if path == str(get_path()):
-		var payload: String = message.substr(index + 1)
-		var parts: PackedStringArray = payload.split(";")
-		_state_character_selections[HOST_INDEX] = int(parts[0]) as CharacterSelection
-		_state_readys[HOST_INDEX] = int(parts[1]) > 0
-		_state_character_selections[CLIENT_INDEX] = int(parts[2]) as CharacterSelection
-		_state_readys[CLIENT_INDEX] = int(parts[3]) > 0
-		_update()
+	if message.name != "state":
+		push_error("Game client received message that wasn't state.")
+		return
+
+	_state_character_selections[HOST_INDEX] = message.get_int(0) as CharacterSelection
+	_state_readys[HOST_INDEX] = message.get_int(1) > 0
+	_state_character_selections[CLIENT_INDEX] = message.get_int(2) as CharacterSelection
+	_state_readys[CLIENT_INDEX] = message.get_int(3) > 0
+	_update()
 
 
 func _emit_completed() -> void:
