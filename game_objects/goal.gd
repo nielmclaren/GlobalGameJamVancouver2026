@@ -1,7 +1,9 @@
 class_name Goal
 extends Area2D
 
-signal scored(player: Player)
+signal picked_up(player: Player)
+
+var coord: Vector2i
 
 
 func _process(_delta: float) -> void:
@@ -9,5 +11,4 @@ func _process(_delta: float) -> void:
 	for body: Node2D in bodies:
 		if body is Player:
 			var player: Player = body
-			scored.emit(player)
-			queue_free()
+			picked_up.emit(player)

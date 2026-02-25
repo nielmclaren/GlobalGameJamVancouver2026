@@ -12,5 +12,5 @@ func _ready() -> void:
 	set_score(1, 0)
 
 
-func set_score(player_num: int, score: int) -> void:
-	_score_labels[player_num].text = str(score)
+func set_score(player_index: int, score: int) -> void:
+	_score_labels[player_index].text = str(score)

@@ -13,7 +13,8 @@ var _player_scene: PackedScene = load("res://characters/player.tscn")
 
 var _is_game_started: bool = false
 var _players: Array[Player]
-var _masks: Array[Mask]
+var _id_to_mask: Dictionary  # mask ID -> Mask
+var _next_mask_id: AutoIncrement = AutoIncrement.new()
 var _goal: Goal
 var _scores: Array[int] = [0, 0]
 
@@ -70,9 +71,9 @@ func start() -> void:
 	_spawn_player(0, _tilemap.map_to_local(Vector2i(0, 3)))
 	_spawn_player(1, _tilemap.map_to_local(Vector2i(3, 0)))
 
-	_try_spawn_goal(true)
-
 	_spawn_first_masks()
+
+	_try_spawn_goal(true)
 
 	if !is_online_multiplayer or is_game_host:
 		_map_regen_timer.start()
@@ -234,32 +235,46 @@ func _try_spawn_goal(is_first_spawn: bool = false) -> bool:
 		return false
 
 	var coord: Vector2i = available_coords.pick_random()
-	_spawn_goal_at(coord)
+	_spawn_update_goal(coord)
 	return true
 
 
-func _spawn_goal_at(coord: Vector2i) -> void:
-	var goal: Goal = _goal_scene.instantiate()
-	goal.scored.connect(_goal_scored)
-	goal.position = _tilemap.map_to_local(coord)
-	_goal_container.add_child(goal)
-	_goal = goal
+func _spawn_update_goal(coord: Vector2i) -> void:
+	if !_goal:
+		_goal = _goal_scene.instantiate()
+		_goal.picked_up.connect(_goal_picked_up)
+		_goal_container.add_child(_goal)
+
+	_goal.coord = coord
+	_goal.position = _tilemap.map_to_local(coord)
 
 	if is_online_multiplayer and is_game_host:
-		_game_host_send_spawn_goal_at(coord)
+		_game_host_send_goal_state()
 
 
-func _game_host_send_spawn_goal_at(coord: Vector2i) -> void:
-	MultiplayerManager.send(MultiplayerMessage.new(get_path(), "spawn_goal").append_vector2i(coord))
+func _despawn_goal() -> void:
+	if _goal:
+		_goal.queue_free()
+		_goal = null
+
+	if is_online_multiplayer and is_game_host:
+		_game_host_send_goal_state()
 
 
-func _goal_scored(player: Player) -> void:
+func _game_host_send_goal_state() -> void:
+	var message: MultiplayerMessage = MultiplayerMessage.new(get_path(), "goal_state")
+	if _goal:
+		message.append_vector2(_goal.coord)
+	MultiplayerManager.send(message)
+
+
+func _goal_picked_up(player: Player) -> void:
 	Tracer.trace("Player %d scored!" % player.player_index)
 	print("Player %d scored!" % player.player_index)
 	_scores[player.player_index] += 1
 	_scores_changed()
 
-	_goal = null
+	_despawn_goal()
 
 	if _scores[player.player_index] >= Constants.MAX_SCORE:
 		print("Player %d won!" % player.player_index)
@@ -292,11 +307,11 @@ func _spawn_first_masks() -> void:
 
 	coord = [Vector2i(0, Constants.NUM_ROWS - 2), Vector2i(1, Constants.NUM_ROWS - 1)].pick_random()
 	color_index = available_mask_color_indices.pop_back()
-	_spawn_mask_at(coord, color_index)
+	_spawn_update_mask(_next_mask_id.value(), coord, color_index)
 
 	coord = [Vector2i(Constants.NUM_COLS - 2, 0), Vector2i(Constants.NUM_COLS - 1, 1)].pick_random()
 	color_index = available_mask_color_indices.pop_back()
-	_spawn_mask_at(coord, color_index)
+	_spawn_update_mask(_next_mask_id.value(), coord, color_index)
 
 
 func _delay_spawn_mask() -> void:
@@ -320,35 +335,48 @@ func _try_spawn_mask() -> bool:
 	var coord: Vector2i = available_coords.pick_random()
 	var color_index: int = available_mask_color_indices.pick_random()
 
-	_spawn_mask_at(coord, color_index)
+	_spawn_update_mask(_next_mask_id.value(), coord, color_index)
 
 	return true
 
 
-func _spawn_mask_at(coord: Vector2i, color_index: int) -> void:
-	var mask: Mask = _mask_scene.instantiate()
+# If a mask with the given ID exists, it is updated instead.
+func _spawn_update_mask(id: int, coord: Vector2i, color_index: int) -> Mask:
+	var mask: Mask
+	if id in _id_to_mask:
+		mask = _id_to_mask[id]
+	else:
+		mask = _mask_scene.instantiate()
+		mask.picked_up.connect(_mask_picked_up.bind(mask))
+		_mask_container.add_child(mask)
+		_id_to_mask[id] = mask
+
+	mask.id = id
+	mask.coord = coord
 	mask.color_index = color_index
-	mask.picked_up.connect(_mask_picked_up.bind(mask))
 	mask.position = _tilemap.map_to_local(coord)
-	_mask_container.add_child(mask)
-	_masks.append(mask)
 
 	if is_online_multiplayer and is_game_host:
-		_game_host_send_spawn_mask_at(coord, color_index)
+		_game_host_send_mask_state()
+
+	return mask
 
 
-func _game_host_send_spawn_mask_at(coord: Vector2i, color_index: int) -> void:
-	MultiplayerManager.send(
-		MultiplayerMessage.new(get_path(), "spawn_mask").append_vector2i(coord).append_int(
-			color_index
-		)
-	)
+func _despawn_mask(id: int) -> void:
+	var mask: Mask = _id_to_mask[id]
+	mask.queue_free()
+	_id_to_mask.erase(id)
+
+	if is_online_multiplayer and is_game_host:
+		_game_host_send_mask_state()
 
 
 func _get_available_mask_color_indices() -> Array[int]:
 	var result: Array[int]
 	for color_index: int in range(Constants.COLORS.size()):
-		if _masks.any(func(mask: Mask) -> bool: return mask.color_index == color_index):
+		if _id_to_mask.values().any(
+			func(mask: Mask) -> bool: return mask.color_index == color_index
+		):
 			continue
 		if _players.any(func(player: Player) -> bool: return player.color_index == color_index):
 			continue
@@ -357,11 +385,33 @@ func _get_available_mask_color_indices() -> Array[int]:
 
 
 func _mask_picked_up(player: Player, mask: Mask) -> void:
-	_masks.erase(mask)
+	if !is_online_multiplayer or is_game_host:
+		player.color_index = mask.color_index
 
-	_delay_spawn_mask()
+		_despawn_mask(mask.id)
 
-	_update_clip_tilemap(player)
+		_delay_spawn_mask()
+
+		_update_clip_tilemap(player)
+
+	if is_online_multiplayer and is_game_host:
+		_game_host_send_player_mask_state()
+		_game_host_send_mask_state()
+
+
+func _game_host_send_player_mask_state() -> void:
+	var message: MultiplayerMessage = MultiplayerMessage.new(get_path(), "player_mask_state")
+	for player: Player in _players:
+		message.append_int(player.color_index)
+	MultiplayerManager.send(message)
+
+
+func _game_host_send_mask_state() -> void:
+	var message: MultiplayerMessage = MultiplayerMessage.new(get_path(), "mask_state")
+	message.append_int(_id_to_mask.size())
+	for mask: Mask in _id_to_mask.values():
+		message.append_int(mask.id).append_vector2i(mask.coord).append_int(mask.color_index)
+	MultiplayerManager.send(message)
 
 
 func _get_diagonal_coords() -> Array[Vector2i]:
@@ -417,7 +467,7 @@ func _is_coord_empty(coord: Vector2i) -> bool:
 		if _tilemap.local_to_map(player.position) == coord:
 			return false
 
-	for mask: Mask in _masks:
+	for mask: Mask in _id_to_mask.values():
 		if _tilemap.local_to_map(mask.position) == coord:
 			return false
 
@@ -468,7 +518,7 @@ func _get_coord_color(coord: Vector2i) -> Color:
 
 
 func _message_received(message: MultiplayerMessage) -> void:
-	if !message.is_addressed_to(self):
+	if !message.matches_path(get_path()):
 		return
 
 	match message.name:
@@ -483,8 +533,31 @@ func _message_received(message: MultiplayerMessage) -> void:
 			_level_ready_timer.stop()
 			_spawn_player(message.get_int(0), message.get_vector2(1))
 
-		"spawn_goal":
-			_spawn_goal_at(message.get_vector2(0))
+		"mask_state":
+			_sync_mask_state(message)
 
-		"spawn_mask":
-			_spawn_mask_at(message.get_vector2i(0), message.get_int(1))
+		"player_mask_state":
+			_players[0].color_index = message.get_int(0)
+			_players[1].color_index = message.get_int(1)
+
+		"goal_state":
+			if message.arg_size() == 0:
+				_despawn_goal()
+			else:
+				_spawn_update_goal(message.get_vector2(0))
+
+
+func _sync_mask_state(message: MultiplayerMessage) -> void:
+	var doomed_mask_ids: Array[int]
+	doomed_mask_ids.assign(_id_to_mask.keys())
+
+	var num_masks: int = message.get_int(0)
+	for i: int in range(num_masks):
+		var id: int = message.get_int(3 * i + 1)
+		var coord: Vector2i = message.get_vector2i(3 * i + 2)
+		var color_index: int = message.get_int(3 * i + 3)
+		_spawn_update_mask(id, coord, color_index)
+		doomed_mask_ids.erase(id)
+
+	for id: int in doomed_mask_ids:
+		_despawn_mask(id)

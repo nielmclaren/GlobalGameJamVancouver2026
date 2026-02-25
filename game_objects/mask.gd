@@ -3,9 +3,14 @@ extends Area2D
 
 signal picked_up(player: Player)
 
-@onready var _animated_sprite: AnimatedSprite2D = %AnimatedSprite2D
+var id: int
+var color_index: int:
+	set(v):
+		_animated_sprite.play(Constants.PLAYER_FORMS[v])
+		color_index = v
+var coord: Vector2i
 
-var color_index: int
+@onready var _animated_sprite: AnimatedSprite2D = %AnimatedSprite2D
 
 
 func _ready() -> void:
@@ -17,6 +22,4 @@ func _process(_delta: float) -> void:
 	for body: Node2D in bodies:
 		if body is Player:
 			var player: Player = body
-			player.pickup_mask(self)
 			picked_up.emit(player)
-			queue_free()

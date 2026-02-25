@@ -248,7 +248,7 @@ func _game_client_send_input(action: String) -> void:
 
 
 func _game_host_receive_input(message: MultiplayerMessage) -> void:
-	if !message.is_addressed_to(self):
+	if !message.matches_path(get_path()):
 		return
 
 	if message.name != "input":
@@ -273,7 +273,7 @@ func _game_host_send_state() -> void:
 
 
 func _game_client_receive_state(message: MultiplayerMessage) -> void:
-	if !message.is_addressed_to(self):
+	if !message.matches_path(get_path()):
 		return
 
 	if message.name != "state":

@@ -282,7 +282,7 @@ func _toggle_fullscreen() -> void:
 
 
 func _message_received(message: MultiplayerMessage) -> void:
-	if !message.is_addressed_to(self):
+	if !message.matches_path(get_path()):
 		return
 
 	match message.name:

@@ -9,13 +9,13 @@ var args: PackedStringArray = []
 static func deserialize(message: String) -> MultiplayerMessage:
 	var parts: PackedStringArray = message.split(":")
 	var result: MultiplayerMessage = MultiplayerMessage.new(parts[0], parts[1])
-	if parts.size() > 2:
+	if parts.size() > 2 and parts[2]:
 		result.args = parts[2].split(";")
 	return result
 
 
 func serialize() -> String:
-	var args_str: String = "_" if args.is_empty() else ";".join(args)
+	var args_str: String = "" if args.is_empty() else ";".join(args)
 	return path + ":" + name + ":" + args_str
 
 
@@ -30,8 +30,12 @@ func setup(path_: String, name_: String) -> MultiplayerMessage:
 	return self
 
 
-func is_addressed_to(node: Node) -> bool:
-	return path == str(node.get_path())
+func matches_path(node_path: NodePath) -> bool:
+	return path == str(node_path)
+
+
+func arg_size() -> int:
+	return args.size()
 
 
 func append_bool(value: bool) -> MultiplayerMessage:

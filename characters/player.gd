@@ -57,10 +57,6 @@ func setup(game: Game) -> Player:
 	return self
 
 
-func pickup_mask(mask: Mask) -> void:
-	color_index = mask.color_index
-
-
 func take_hit() -> void:
 	print("Player %d got hit." % player_index)
 	_animation.play("hit")
