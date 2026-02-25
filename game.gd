@@ -271,21 +271,43 @@ func _game_host_send_goal_state() -> void:
 func _goal_picked_up(player: Player) -> void:
 	Tracer.trace("Player %d scored!" % player.player_index)
 	print("Player %d scored!" % player.player_index)
-	_scores[player.player_index] += 1
-	_scores_changed()
 
-	_despawn_goal()
+	if !is_online_multiplayer or is_game_host:
+		_scores[player.player_index] += 1
+		_scores_changed()
 
-	if _scores[player.player_index] >= Constants.MAX_SCORE:
-		print("Player %d won!" % player.player_index)
-		var other_player: Player = _players[1 - player.player_index]
-		completed.emit(player.player_index, player.color_index, other_player.color_index)
+		_despawn_goal()
 
-	else:
-		_delay_spawn_goal()
+		if _scores[player.player_index] >= Constants.MAX_SCORE:
+			print("Player %d won!" % player.player_index)
+			var other_player: Player = _players[1 - player.player_index]
+			completed.emit(player.player_index, player.color_index, other_player.color_index)
 
-		if !_score_sound.playing:
-			_score_sound.play()
+			if is_online_multiplayer and is_game_host:
+				_game_host_send_game_over(
+					player.player_index, player.color_index, other_player.color_index
+				)
+
+		else:
+			_delay_spawn_goal()
+
+			# TODO: Trigger sound on game client.
+			if !_score_sound.playing:
+				_score_sound.play()
+
+
+func _game_host_send_game_over(
+	player_index: int, winner_color_index: int, loser_color_index: int
+) -> void:
+	MultiplayerManager.send(
+		(
+			MultiplayerMessage
+			. new(get_path(), "game_over")
+			. append_int(player_index)
+			. append_int(winner_color_index)
+			. append_int(loser_color_index)
+		)
+	)
 
 
 func _scores_changed() -> void:
@@ -294,6 +316,17 @@ func _scores_changed() -> void:
 	if _players.size() > 1:
 		_players[0].score = _scores[0]
 		_players[1].score = _scores[1]
+
+	if is_online_multiplayer and is_game_host:
+		_game_host_send_score_state()
+
+
+func _game_host_send_score_state() -> void:
+	MultiplayerManager.send(
+		MultiplayerMessage.new(get_path(), "score_state").append_int(_scores[0]).append_int(
+			_scores[1]
+		)
+	)
 
 
 func _spawn_first_masks() -> void:
@@ -545,6 +578,14 @@ func _message_received(message: MultiplayerMessage) -> void:
 				_despawn_goal()
 			else:
 				_spawn_update_goal(message.get_vector2(0))
+
+		"score_state":
+			_scores[0] = message.get_int(0)
+			_scores[1] = message.get_int(1)
+			_scores_changed()
+
+		"game_over":
+			completed.emit(message.get_int(0), message.get_int(1), message.get_int(2))
 
 
 func _sync_mask_state(message: MultiplayerMessage) -> void:
