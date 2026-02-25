@@ -38,7 +38,7 @@ func _ready() -> void:
 
 	_map_regen_timer.timeout.connect(_map_regen_timeout)
 
-	_reset_clip_tiles()
+	_init_clip_tiles()
 
 	if !is_online_multiplayer:
 		# Local game can start right away.
@@ -50,16 +50,6 @@ func _ready() -> void:
 			func _level_ready_timeout() -> void:
 				MultiplayerManager.send(MultiplayerMessage.new(get_path(), "ready"))
 		)
-
-
-func _input(event: InputEvent) -> void:
-	# Quickly quit if this is the root scene. Normally this scene would have Main as a parent.
-	if (
-		get_parent() == get_tree().root
-		and event.is_action_pressed("ui_cancel")
-		and !event.is_echo()
-	):
-		get_tree().quit()
 
 
 func start() -> void:
@@ -101,8 +91,6 @@ func _spawn_player(player_index: int, initial_position: Vector2) -> Player:
 	player.player_index = player_index
 	player.position = initial_position
 
-	player.masked.connect(_mask_player.bind(player))
-	player.unmasked.connect(_unmask_player.bind(player))
 	player.hitted.connect(_player_hitted.bind(player))
 
 	if player_index == 0:
@@ -192,7 +180,7 @@ func _game_host_send_randomize_tiles(rand_seed: int) -> void:
 	)
 
 
-func _reset_clip_tiles() -> void:
+func _init_clip_tiles() -> void:
 	# Enable all clip tiles.
 	var atlas_coord: Vector2i = Vector2i(0, 0)
 	for c: int in range(Constants.NUM_COLS):
@@ -200,14 +188,6 @@ func _reset_clip_tiles() -> void:
 			var coord: Vector2i = Vector2i(c, r)
 			_clip_tilemap_player0.set_cell(coord, 0, atlas_coord)
 			_clip_tilemap_player1.set_cell(coord, 0, atlas_coord)
-
-
-func _mask_player(player: Player) -> void:
-	_update_clip_tilemap(player)
-
-
-func _unmask_player(player: Player) -> void:
-	_reveal_clip_tilemap(player)
 
 
 func _player_hitted(player: Player) -> void:

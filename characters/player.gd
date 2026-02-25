@@ -1,12 +1,6 @@
 class_name Player
 extends CharacterBody2D
 
-# Emitted when the player reveals themselves, e.g., by attacking.
-signal unmasked
-
-# Emitted when the player goes back into hiding, e.g., after attack.
-signal masked
-
 # Emitted when player gets hit.
 signal hitted
 
@@ -132,14 +126,6 @@ func _perform_attack() -> void:
 			player.take_hit()
 
 	_weapon_sound.play()
-
-
-func _unmask() -> void:
-	unmasked.emit()
-
-
-func _mask() -> void:
-	masked.emit()
 
 
 func _activate_stealth_mode() -> void:
