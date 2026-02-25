@@ -1,0 +1,8 @@
+[gd_resource type="LabelSettings" load_steps=2 format=3 uid="uid://dxldxp6tbopps"]
+
+[ext_resource type="FontFile" uid="uid://ca3crl5mj5o1k" path="res://assets/fonts/alpha-beta/alphbeta.ttf" id="1_qv8rn"]
+
+[resource]
+font = ExtResource("1_qv8rn")
+font_size = 96
+font_color = Color(1, 1, 0.5372549, 1)

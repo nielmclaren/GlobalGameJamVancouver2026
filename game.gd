@@ -17,9 +17,6 @@ var _masks: Array[Mask]
 var _goal: Goal
 var _scores: Array[int]
 
-# Used to discard timeouts from old timers.
-var _reset_index: int = 0
-
 @onready var _clip_tilemap_player0: TileMapLayer = %ClipTileMapPlayer0
 @onready var _player_container0: Node2D = %ClipMaskPlayer0
 @onready var _clip_tilemap_player1: TileMapLayer = %ClipTileMapPlayer1
@@ -29,9 +26,7 @@ var _reset_index: int = 0
 @onready var _tilemap: TileMapLayer = %TileMapLayer
 @onready var _hud: Hud = %Hud
 @onready var _map_regen_timer: Timer = %MapRegenTimer
-
 @onready var _score_sound: AudioStreamPlayer = %ScoreSound
-
 @onready var _level_ready_timer: Timer = %LevelReadyTimer
 
 
@@ -42,19 +37,20 @@ func _ready() -> void:
 
 	_map_regen_timer.timeout.connect(_map_regen_timeout)
 
+	_reset_clip_tiles()
+
 	if !is_online_multiplayer:
-		reset()
+		# Local game can start right away.
+		start()
 
 	elif !is_game_host:
+		# For an online game, the game client sends "ready" repeatedly until game host starts the game.
 		_level_ready_timer.timeout.connect(
 			func _level_ready_timeout() -> void: MultiplayerManager.send(str(get_path()) + ":ready")
 		)
 
 
 func _input(event: InputEvent) -> void:
-	if !OS.has_feature("template") and event.is_action_pressed("reset"):
-		reset()
-
 	# Quickly quit if this is the root scene. Normally this scene would have Main as a parent.
 	if (
 		get_parent() == get_tree().root
@@ -64,15 +60,11 @@ func _input(event: InputEvent) -> void:
 		get_tree().quit()
 
 
-func reset() -> void:
-	_reset_index += 1
-
-	clear()
-
-	_randomize_tiles()
-	_reset_clip_tiles()
-
+func start() -> void:
 	_is_game_started = true
+
+	var rand_seed: int = randi()
+	_randomize_tiles(rand_seed)
 
 	_spawn_player(0, _tilemap.map_to_local(Vector2i(0, 3)))
 	_spawn_player(1, _tilemap.map_to_local(Vector2i(3, 0)))
@@ -81,26 +73,8 @@ func reset() -> void:
 
 	_spawn_first_masks()
 
-	_map_regen_timer.start()
-
-
-func clear() -> void:
-	for player: Player in _players:
-		player.queue_free()
-	_players.clear()
-
-	if _goal:
-		_goal.queue_free()
-		_goal = null
-
-	for mask: Mask in _masks:
-		mask.queue_free()
-	_masks.clear()
-
-	_scores.clear()
-	_scores.append(0)
-	_scores.append(0)
-	_scores_changed()
+	if !is_online_multiplayer or is_game_host:
+		_map_regen_timer.start()
 
 
 func is_in_stealth_tile(player: Player) -> bool:
@@ -158,7 +132,8 @@ func _spawn_player(player_index: int, initial_position: Vector2) -> Player:
 
 func _map_regen_timeout() -> void:
 	Tracer.trace("Map regen timeout.")
-	_randomize_tiles()
+	var rand_seed: int = randi()
+	_randomize_tiles(rand_seed)
 
 	for player: Player in _players:
 		_update_clip_tilemap(player)
@@ -184,23 +159,34 @@ func _is_player_tile_overlap(player: Player, coord: Vector2i) -> bool:
 		return y < radius
 
 
-func _generate_random_tiles() -> Array[Vector2i]:
+func _generate_random_tiles(rand_seed: int) -> Array[Vector2i]:
 	# Build a list of tile atlas positions with an equal number of each tile.
 	var tiles: Array[Vector2i]
 	for i: int in range(Constants.NUM_ROWS * Constants.NUM_COLS):
 		tiles.append(Vector2i(i % Constants.COLORS.size(), 0))
+
+	seed(rand_seed)
 	tiles.shuffle()
+	randomize()
+
 	return tiles
 
 
-func _randomize_tiles() -> void:
-	var tiles: Array[Vector2i] = _generate_random_tiles()
+func _randomize_tiles(rand_seed: int) -> void:
+	var tiles: Array[Vector2i] = _generate_random_tiles(rand_seed)
 
 	for c: int in range(Constants.NUM_COLS):
 		for r: int in range(Constants.NUM_ROWS):
 			var tile: Vector2i = tiles.pop_back()
 			var coord: Vector2i = Vector2i(c, r)
 			_tilemap.set_cell(coord, 1, tile)
+
+	if is_online_multiplayer and is_game_host:
+		_remote_randomize_tiles(rand_seed)
+
+
+func _remote_randomize_tiles(rand_seed: int) -> void:
+	MultiplayerManager.send(str(get_path()) + ":randomize_tiles:" + str(rand_seed))
 
 
 func _reset_clip_tiles() -> void:
@@ -227,19 +213,12 @@ func _player_hitted(player: Player) -> void:
 
 
 func _delay_spawn_goal() -> void:
-	var reset_index: int = _reset_index
 	await get_tree().create_timer(Constants.GOAL_SPAWN_DELAY_S).timeout
-
-	if _reset_index != reset_index:
-		return
 
 	var success: bool = false
 	while !success:
 		success = _try_spawn_goal()
 		await get_tree().create_timer(Constants.GOAL_SPAWN_RETRY_S).timeout
-
-		if _reset_index != reset_index:
-			return
 
 
 func _try_spawn_goal(is_first_spawn: bool = false) -> bool:
@@ -310,19 +289,12 @@ func _spawn_first_masks() -> void:
 
 
 func _delay_spawn_mask() -> void:
-	var reset_index: int = _reset_index
 	await get_tree().create_timer(Constants.MASK_SPAWN_DELAY_S).timeout
-
-	if _reset_index != reset_index:
-		return
 
 	var success: bool = false
 	while !success:
 		success = _try_spawn_mask()
 		await get_tree().create_timer(Constants.MASK_SPAWN_RETRY_S).timeout
-
-		if _reset_index != reset_index:
-			return
 
 
 func _try_spawn_mask() -> bool:
@@ -481,6 +453,9 @@ func _message_received(message: String) -> void:
 		match parts.pop_front():
 			"ready":
 				if is_game_host and !_is_game_started:
-					reset()
+					start()
+			"randomize_tiles":
+				var rand_seed_str: String = parts.pop_front()
+				_randomize_tiles(rand_seed_str.to_int())
 			"spawn_player":
 				_spawn_player_received(remaining_message)

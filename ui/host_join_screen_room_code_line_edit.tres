@@ -1,0 +1,11 @@
+[gd_resource type="Theme" load_steps=3 format=3 uid="uid://cmoo12gf1kjj2"]
+
+[ext_resource type="FontFile" uid="uid://bp0ifce0t6njh" path="res://assets/fonts/nine-pin/Nine Pin.ttf" id="1_h35kv"]
+[ext_resource type="StyleBox" uid="uid://dln5rk0oo6171" path="res://ui/host_join_screen_line_edit_style_box.tres" id="2_qrcx0"]
+
+[resource]
+LineEdit/colors/font_uneditable_color = Color(0.8745098, 0.8745098, 0.8745098, 1)
+LineEdit/font_sizes/font_size = 80
+LineEdit/fonts/font = ExtResource("1_h35kv")
+LineEdit/styles/normal = ExtResource("2_qrcx0")
+LineEdit/styles/read_only = ExtResource("2_qrcx0")
