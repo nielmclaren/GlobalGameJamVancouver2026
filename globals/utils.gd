@@ -39,3 +39,8 @@ func atlas_coord_to_color_index(coord: Vector2i) -> int:
 func string_to_vector2(value: String) -> Vector2:
 	var parts: PackedStringArray = value.substr(1, value.length() - 2).split(", ")
 	return Vector2(float(parts[0]), float(parts[1]))
+
+
+func string_to_vector2i(value: String) -> Vector2i:
+	var parts: PackedStringArray = value.substr(1, value.length() - 2).split(", ")
+	return Vector2i(parts[0].to_int(), parts[1].to_int())

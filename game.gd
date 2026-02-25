@@ -232,14 +232,23 @@ func _try_spawn_goal(is_first_spawn: bool = false) -> bool:
 		return false
 
 	var coord: Vector2i = available_coords.pick_random()
+	_spawn_goal_at(coord)
+	return true
 
+
+func _spawn_goal_at(coord: Vector2i) -> void:
 	var goal: Goal = _goal_scene.instantiate()
 	goal.scored.connect(_goal_scored)
 	goal.position = _tilemap.map_to_local(coord)
 	_goal_container.add_child(goal)
 	_goal = goal
 
-	return true
+	if is_online_multiplayer and is_game_host:
+		_remote_spawn_goal_at(coord)
+
+
+func _remote_spawn_goal_at(coord: Vector2i) -> void:
+	MultiplayerManager.send(str(get_path()) + ":spawn_goal:" + str(coord))
 
 
 func _goal_scored(player: Player) -> void:
@@ -321,6 +330,13 @@ func _spawn_mask_at(coord: Vector2i, color_index: int) -> void:
 	mask.position = _tilemap.map_to_local(coord)
 	_mask_container.add_child(mask)
 	_masks.append(mask)
+
+	if is_online_multiplayer and is_game_host:
+		_remote_spawn_mask_at(coord, color_index)
+
+
+func _remote_spawn_mask_at(coord: Vector2i, color_index: int) -> void:
+	MultiplayerManager.send(str(get_path()) + ":spawn_mask:" + str(coord) + ";" + str(color_index))
 
 
 func _get_available_mask_color_indices() -> Array[int]:
@@ -454,8 +470,20 @@ func _message_received(message: String) -> void:
 			"ready":
 				if is_game_host and !_is_game_started:
 					start()
+
 			"randomize_tiles":
 				var rand_seed_str: String = parts.pop_front()
 				_randomize_tiles(rand_seed_str.to_int())
+
 			"spawn_player":
 				_spawn_player_received(remaining_message)
+
+			"spawn_goal":
+				_spawn_goal_at(Utils.string_to_vector2i(remaining_message))
+
+			"spawn_mask":
+				var arg_parts: Array[String]
+				arg_parts.assign(remaining_message.split(";"))
+				var coord_str: String = arg_parts.pop_front()
+				var color_index_str: String = arg_parts.pop_front()
+				_spawn_mask_at(Utils.string_to_vector2i(coord_str), color_index_str.to_int())
