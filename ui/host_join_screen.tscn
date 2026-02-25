@@ -1,176 +1,154 @@
-[gd_scene load_steps=5 format=3 uid="uid://b8kvidllqopb6"]
+[gd_scene load_steps=8 format=3 uid="uid://b8kvidllqopb6"]
 
 [ext_resource type="Script" uid="uid://bvtipc87qikj3" path="res://ui/host_join_screen.gd" id="1_pdmv5"]
 [ext_resource type="PackedScene" uid="uid://bkgqfqikuaqb8" path="res://ui/ui_background.tscn" id="2_2x614"]
-[ext_resource type="Theme" uid="uid://b8rvlvfehdp6a" path="res://ui/ui_theme.tres" id="2_76jbv"]
+[ext_resource type="LabelSettings" uid="uid://dxldxp6tbopps" path="res://ui/host_join_screen_subtitle_label_settings.tres" id="3_2x614"]
 [ext_resource type="Script" uid="uid://ch2ko8dy2nyhf" path="res://ui/line_edit_to_upper.gd" id="3_76jbv"]
+[ext_resource type="LabelSettings" uid="uid://il8c2fivkaxs" path="res://ui/host_join_screen_error_label_settings.tres" id="3_ylbgw"]
+[ext_resource type="Theme" uid="uid://cmoo12gf1kjj2" path="res://ui/host_join_screen_room_code_line_edit.tres" id="4_aktce"]
+[ext_resource type="Theme" uid="uid://dikqu2u0jnhof" path="res://ui/button_theme.tres" id="6_ylbgw"]
 
 [node name="HostJoinScreen" type="Node2D"]
 script = ExtResource("1_pdmv5")
+metadata/_edit_vertical_guides_ = [960.0, 480.0, 1440.0]
+metadata/_edit_horizontal_guides_ = [608.0]
 
 [node name="UIBackground" parent="." instance=ExtResource("2_2x614")]
+metadata/_edit_lock_ = true
 
-[node name="Control" type="Control" parent="."]
+[node name="HostControls" type="Control" parent="."]
 custom_minimum_size = Vector2(400, 400)
 layout_mode = 3
 anchors_preset = 0
-offset_right = 400.0
-offset_bottom = 400.0
+offset_right = 1920.0
+offset_bottom = 1088.0
+metadata/_edit_lock_ = true
 
-[node name="ColorRect" type="ColorRect" parent="Control"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0, 0, 0, 1)
-
-[node name="MarginContainer" type="MarginContainer" parent="Control"]
+[node name="HostTitleLabel" type="Label" parent="HostControls"]
 layout_mode = 0
-offset_right = 400.0
-offset_bottom = 407.0
-theme = ExtResource("2_76jbv")
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 20
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 20
-
-[node name="HBoxContainer" type="HBoxContainer" parent="Control/MarginContainer"]
-layout_mode = 2
-
-[node name="Control" type="Control" parent="Control/MarginContainer/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="HostPanel" type="PanelContainer" parent="Control/MarginContainer/HBoxContainer/Control"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 3
-
-[node name="MarginContainer" type="MarginContainer" parent="Control/MarginContainer/HBoxContainer/Control/HostPanel"]
-layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 12
-
-[node name="VBoxContainer" type="VBoxContainer" parent="Control/MarginContainer/HBoxContainer/Control/HostPanel/MarginContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="HostLabel" type="Label" parent="Control/MarginContainer/HBoxContainer/Control/HostPanel/MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 150)
-layout_mode = 2
-text = "Host a friend"
+offset_top = 192.0
+offset_right = 960.0
+offset_bottom = 279.0
+text = "Host a Friend"
+label_settings = ExtResource("3_2x614")
 horizontal_alignment = 1
-vertical_alignment = 1
 
-[node name="Control" type="Control" parent="Control/MarginContainer/HBoxContainer/Control/HostPanel/MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 30)
-layout_mode = 2
-
-[node name="HostCodeInput" type="LineEdit" parent="Control/MarginContainer/HBoxContainer/Control/HostPanel/MarginContainer/VBoxContainer/Control"]
+[node name="HostCodeInput" type="LineEdit" parent="HostControls"]
 unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 0
+offset_left = 192.0
+offset_top = 384.0
+offset_right = 768.0
+offset_bottom = 544.0
+theme = ExtResource("4_aktce")
+text = "FCGDA"
 alignment = 1
 editable = false
 emoji_menu_enabled = false
 
-[node name="HostButton" type="Button" parent="Control/MarginContainer/HBoxContainer/Control/HostPanel/MarginContainer/VBoxContainer"]
+[node name="HostButton" type="Button" parent="HostControls"]
 unique_name_in_owner = true
-layout_mode = 2
+custom_minimum_size = Vector2(240, 60)
+layout_mode = 0
+offset_left = 352.0
+offset_top = 608.0
+offset_right = 608.0
+offset_bottom = 668.0
+theme = ExtResource("6_ylbgw")
 text = "Host"
 
-[node name="HostCancelButton" type="Button" parent="Control/MarginContainer/HBoxContainer/Control/HostPanel/MarginContainer/VBoxContainer"]
+[node name="HostCancelButton" type="Button" parent="HostControls"]
 unique_name_in_owner = true
-layout_mode = 2
+custom_minimum_size = Vector2(240, 60)
+layout_mode = 0
+offset_left = 352.0
+offset_top = 704.0
+offset_right = 608.0
+offset_bottom = 764.0
+theme = ExtResource("6_ylbgw")
 text = "Cancel"
 
-[node name="HostDisableMask" type="ColorRect" parent="Control/MarginContainer/HBoxContainer/Control"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0, 0, 0, 0.8666667)
+[node name="JoinControls" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
 
-[node name="Control2" type="Control" parent="Control/MarginContainer/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="JoinPanel" type="PanelContainer" parent="Control/MarginContainer/HBoxContainer/Control2"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 3
-
-[node name="MarginContainer" type="MarginContainer" parent="Control/MarginContainer/HBoxContainer/Control2/JoinPanel"]
-layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 12
-
-[node name="VBoxContainer2" type="VBoxContainer" parent="Control/MarginContainer/HBoxContainer/Control2/JoinPanel/MarginContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="JoinLabel" type="Label" parent="Control/MarginContainer/HBoxContainer/Control2/JoinPanel/MarginContainer/VBoxContainer2"]
-custom_minimum_size = Vector2(0, 150)
-layout_mode = 2
-text = "Join a friend"
+[node name="JoinTitleLabel" type="Label" parent="JoinControls"]
+layout_mode = 0
+offset_left = 960.0
+offset_top = 192.0
+offset_right = 1920.0
+offset_bottom = 279.0
+text = "Join a Friend"
+label_settings = ExtResource("3_2x614")
 horizontal_alignment = 1
-vertical_alignment = 1
 
-[node name="Control" type="Control" parent="Control/MarginContainer/HBoxContainer/Control2/JoinPanel/MarginContainer/VBoxContainer2"]
-custom_minimum_size = Vector2(0, 30)
-layout_mode = 2
-
-[node name="JoinCodeInput" type="LineEdit" parent="Control/MarginContainer/HBoxContainer/Control2/JoinPanel/MarginContainer/VBoxContainer2/Control"]
+[node name="JoinCodeInput" type="LineEdit" parent="JoinControls"]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 1152.0
+offset_top = 384.0
+offset_right = 1688.0
+offset_bottom = 504.0
 grow_horizontal = 2
 grow_vertical = 2
-placeholder_text = "Enter Room Code"
+theme = ExtResource("4_aktce")
+placeholder_text = "Room Code"
 alignment = 1
 script = ExtResource("3_76jbv")
 
-[node name="JoinButton" type="Button" parent="Control/MarginContainer/HBoxContainer/Control2/JoinPanel/MarginContainer/VBoxContainer2"]
+[node name="JoinButton" type="Button" parent="JoinControls"]
 unique_name_in_owner = true
-layout_mode = 2
+custom_minimum_size = Vector2(240, 60)
+layout_mode = 0
+offset_left = 1312.0
+offset_top = 608.0
+offset_right = 1568.0
+offset_bottom = 668.0
+theme = ExtResource("6_ylbgw")
 text = "Join"
 
-[node name="JoinErrorLabel" type="Label" parent="Control/MarginContainer/HBoxContainer/Control2/JoinPanel/MarginContainer/VBoxContainer2"]
+[node name="JoinErrorLabel" type="Label" parent="JoinControls"]
 unique_name_in_owner = true
-modulate = Color(1, 0.26666668, 0.26666668, 1)
-layout_mode = 2
+layout_mode = 0
+offset_left = 1120.0
+offset_top = 736.0
+offset_right = 1792.0
+offset_bottom = 928.0
+text = "There was an error"
+label_settings = ExtResource("3_ylbgw")
+horizontal_alignment = 1
 
-[node name="JoinDisableMask" type="ColorRect" parent="Control/MarginContainer/HBoxContainer/Control2"]
+[node name="HostDisableMask" type="ColorRect" parent="."]
 unique_name_in_owner = true
 visible = false
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+offset_left = 32.0
+offset_top = 32.0
+offset_right = 928.0
+offset_bottom = 928.0
+size_flags_horizontal = 3
 color = Color(0, 0, 0, 0.8666667)
+
+[node name="JoinDisableMask" type="ColorRect" parent="."]
+unique_name_in_owner = true
+visible = false
+offset_left = 992.0
+offset_top = 32.0
+offset_right = 1888.0
+offset_bottom = 928.0
+size_flags_horizontal = 3
+color = Color(0, 0, 0, 0.8666667)
+
+[node name="BackButton" type="Button" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 60)
+offset_left = 64.0
+offset_top = 960.0
+offset_right = 165.0
+offset_bottom = 1004.0
+theme = ExtResource("6_ylbgw")
+text = "Back"

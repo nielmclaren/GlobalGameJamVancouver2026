@@ -1,6 +1,7 @@
 class_name HostJoinScreen
 extends Node2D
 
+signal canceled
 signal completed(is_game_host: bool)
 
 @onready var _host_code_input: LineEdit = %HostCodeInput
@@ -11,6 +12,7 @@ signal completed(is_game_host: bool)
 @onready var _join_button: Button = %JoinButton
 @onready var _join_disable_mask: ColorRect = %JoinDisableMask
 @onready var _join_error_label: Label = %JoinErrorLabel
+@onready var _back_button: Button = %BackButton
 
 var _is_game_host: bool = false
 
@@ -32,6 +34,10 @@ func _ready() -> void:
 	_join_code_input.text_changed.connect(_join_code_changed)
 	_join_code_input.text_submitted.connect(_join_code_submitted)
 	_join_button.pressed.connect(_join_code_submitted)
+
+	_join_error_label.text = ""
+
+	_back_button.pressed.connect(canceled.emit)
 
 
 func _host_button_pressed() -> void:

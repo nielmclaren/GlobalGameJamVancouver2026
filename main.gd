@@ -130,12 +130,20 @@ func _play_pressed() -> void:
 	_sm.change_state(_local_online_state_enter)
 
 
+func _local_online_canceled() -> void:
+	_sm.change_state(_title_state_enter)
+
+
 func _local_online_completed(is_online_multiplayer: bool) -> void:
 	_is_online_multiplayer = is_online_multiplayer
 	if _is_online_multiplayer:
 		_sm.change_state(_host_join_state_enter)
 	else:
 		_sm.change_state(_character_selection_state_enter)
+
+
+func _host_join_canceled() -> void:
+	_sm.change_state(_title_state_enter)
 
 
 func _host_join_completed(is_game_host: bool) -> void:
@@ -150,6 +158,10 @@ func _partner_left() -> void:
 
 
 func _disconnected() -> void:
+	_sm.change_state(_title_state_enter)
+
+
+func _character_selection_canceled() -> void:
 	_sm.change_state(_title_state_enter)
 
 
@@ -321,6 +333,7 @@ func _credits_state_leave() -> void:
 
 func _local_online_state_enter() -> void:
 	_local_online_screen = local_online_scene.instantiate()
+	_local_online_screen.canceled.connect(_local_online_canceled)
 	_local_online_screen.completed.connect(_local_online_completed)
 	screen_container.add_child(_local_online_screen)
 
@@ -331,6 +344,7 @@ func _local_online_state_leave() -> void:
 
 func _host_join_state_enter() -> void:
 	_host_join_screen = host_join_scene.instantiate()
+	_host_join_screen.canceled.connect(_host_join_canceled)
 	_host_join_screen.completed.connect(_host_join_completed)
 	screen_container.add_child(_host_join_screen)
 
@@ -341,6 +355,7 @@ func _host_join_state_leave() -> void:
 
 func _character_selection_state_enter() -> void:
 	_character_selection_screen = character_selection_scene.instantiate()
+	_character_selection_screen.canceled.connect(_character_selection_canceled)
 	_character_selection_screen.completed.connect(_character_selection_completed)
 	_character_selection_screen.is_game_host = _is_game_host
 	_character_selection_screen.is_online_multiplayer = _is_online_multiplayer

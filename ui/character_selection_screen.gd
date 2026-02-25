@@ -1,6 +1,7 @@
 class_name CharacterSelectionScreen
 extends Node2D
 
+signal canceled
 signal completed(local_player_index: int)
 
 enum CharacterSelection { NONE = -1, LEFT = 0, RIGHT = 1 }
@@ -23,6 +24,7 @@ var _state_readys: Array[bool] = [false, false]
 @onready var _ready_nodes: Array[Node2D] = [%Ready0, %Ready1]
 @onready var _other_ready_nodes: Array[Node2D] = [%OtherReady0, %OtherReady1]
 @onready var _animation: AnimationPlayer = %AnimationPlayer
+@onready var _back_button: Button = %BackButton
 
 
 func _ready() -> void:
@@ -32,6 +34,8 @@ func _ready() -> void:
 	_ready_nodes[1].hide()
 	_other_ready_nodes[0].hide()
 	_other_ready_nodes[1].hide()
+
+	_back_button.pressed.connect(_back_button_pressed)
 
 	MultiplayerManager.message_received.connect(_message_received)
 
@@ -296,3 +300,10 @@ func _emit_completed() -> void:
 			else 1
 		)
 	)
+
+
+func _back_button_pressed() -> void:
+	if is_online_multiplayer:
+		MultiplayerManager.leave_room()
+
+	canceled.emit()
