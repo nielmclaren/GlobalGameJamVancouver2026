@@ -1,6 +1,7 @@
 class_name PlayerState
 extends RefCounted
 
+@export var direction: Vector2
 @export var position: Vector2
 @export var ticks: int = -1
 @export var message_num: int = -1
@@ -11,15 +12,21 @@ static func filter_after(min_ticks: int) -> Callable:
 
 
 func serialize() -> String:
-	return _vector2_to_string(position) + "|%d|%d" % [ticks, message_num]
+	return (
+		_vector2_to_string(direction)
+		+ "|"
+		+ _vector2_to_string(position)
+		+ "|%d|%d" % [ticks, message_num]
+	)
 
 
 static func deserialize(message: String) -> PlayerState:
 	var parts: PackedStringArray = message.split("|")
 	var input: PlayerState = PlayerState.new()
-	input.position = _string_to_vector2(parts[0])
-	input.ticks = int(parts[1])
-	input.message_num = int(parts[2])
+	input.direction = _string_to_vector2(parts[0])
+	input.position = _string_to_vector2(parts[1])
+	input.ticks = int(parts[2])
+	input.message_num = int(parts[3])
 	return input
 
 

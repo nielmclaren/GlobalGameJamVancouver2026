@@ -16,9 +16,9 @@ const SPEED: float = 20000
 const INPUT_BUFFER_SIZE: int = 120
 
 # Delay applying player inputs received from the game client on the game host (ms).
-const GAME_HOST_TICKS_OFFSET: int = 1000
+const GAME_HOST_TICKS_OFFSET: int = 200
 # Delay applying player states received from the game host on the game client (ms).
-const GAME_CLIENT_TICKS_OFFSET: int = 1000
+const GAME_CLIENT_TICKS_OFFSET: int = 200
 
 var is_online_multiplayer: bool = false
 var is_game_host: bool = false
@@ -120,6 +120,7 @@ func _physics_process_online_multiplayer(delta: float) -> void:
 
 			if is_game_host:
 				var state: PlayerState = PlayerState.new()
+				state.direction = _direction
 				state.position = position
 				state.ticks = now
 				state.message_num = _next_message_num
@@ -147,6 +148,7 @@ func _physics_process_online_multiplayer(delta: float) -> void:
 			_position_changed()
 
 			var state: PlayerState = PlayerState.new()
+			state.direction = _direction
 			state.position = position
 			state.ticks = now
 			state.message_num = _processed_message_num
@@ -157,6 +159,7 @@ func _physics_process_online_multiplayer(delta: float) -> void:
 		else:
 			for received_state: PlayerState in _state_receive_buffer:
 				if received_state.ticks <= now - GAME_CLIENT_TICKS_OFFSET:
+					_direction = received_state.direction
 					position = received_state.position
 					_processed_message_num = received_state.message_num
 
@@ -176,9 +179,9 @@ func _physics_process_local_multiplayer(delta: float) -> void:
 	if _direction.length_squared() > 0 or _prev_direction.length_squared() > 0:
 		_prev_direction = _direction
 
-	var input: PlayerInput = _get_input(delta)
-	_apply_input(input)
-	_position_changed()
+		var input: PlayerInput = _get_input(delta)
+		_apply_input(input)
+		_position_changed()
 
 
 func _process(_delta: float) -> void:
@@ -228,6 +231,7 @@ func _get_input(delta: float) -> PlayerInput:
 
 
 func _apply_input(input: PlayerInput) -> void:
+	_direction = input.direction
 	if !input.direction.is_zero_approx():
 		velocity = input.direction * SPEED * input.delta
 		move_and_slide()
