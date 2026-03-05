@@ -1,6 +1,12 @@
 class_name Player
 extends CharacterBody2D
 
+# Emitted when the player reveals themselves, e.g., by attacking.
+signal unmasked
+
+# Emitted when the player goes back into hiding, e.g., after attack.
+signal masked
+
 # Emitted when player gets hit.
 signal hitted
 
@@ -99,6 +105,7 @@ func _physics_process(delta: float) -> void:
 
 
 func _physics_process_online_multiplayer(delta: float) -> void:
+	var now: int = Time.get_ticks_msec() - _ready_ticks
 	if is_local_player:
 		if is_stunned:
 			return
@@ -114,7 +121,7 @@ func _physics_process_online_multiplayer(delta: float) -> void:
 			if is_game_host:
 				var state: PlayerState = PlayerState.new()
 				state.position = position
-				state.ticks = Time.get_ticks_msec() - _ready_ticks
+				state.ticks = now
 				state.message_num = _next_message_num
 				_next_message_num += 1
 
@@ -130,20 +137,18 @@ func _physics_process_online_multiplayer(delta: float) -> void:
 	else:
 		if is_game_host:
 			for received_input: PlayerInput in _input_receive_buffer:
-				if (
-					received_input.ticks + GAME_HOST_TICKS_OFFSET
-					< Time.get_ticks_msec() - _ready_ticks
-				):
+				if received_input.ticks <= now - GAME_HOST_TICKS_OFFSET:
 					_apply_input(received_input)
-					received_input.is_doomed = true
 					_processed_message_num = received_input.message_num
 
-			_input_receive_buffer.assign(_input_receive_buffer.filter(PlayerInput.not_doomed))
+			_input_receive_buffer.assign(
+				_input_receive_buffer.filter(PlayerInput.filter_after(now - GAME_HOST_TICKS_OFFSET))
+			)
 			_position_changed()
 
 			var state: PlayerState = PlayerState.new()
 			state.position = position
-			state.ticks = Time.get_ticks_msec() - _ready_ticks
+			state.ticks = now
 			state.message_num = _processed_message_num
 
 			# Game host should only send one state for the game client's player.
@@ -151,15 +156,15 @@ func _physics_process_online_multiplayer(delta: float) -> void:
 
 		else:
 			for received_state: PlayerState in _state_receive_buffer:
-				if (
-					received_state.ticks + GAME_CLIENT_TICKS_OFFSET
-					< Time.get_ticks_msec() - _ready_ticks
-				):
+				if received_state.ticks <= now - GAME_CLIENT_TICKS_OFFSET:
 					position = received_state.position
-					received_state.is_doomed = true
 					_processed_message_num = received_state.message_num
 
-			_state_receive_buffer.assign(_state_receive_buffer.filter(PlayerState.not_doomed))
+			_state_receive_buffer.assign(
+				_state_receive_buffer.filter(
+					PlayerState.filter_after(now - GAME_CLIENT_TICKS_OFFSET)
+				)
+			)
 			_position_changed()
 
 
@@ -263,6 +268,14 @@ func _perform_attack() -> void:
 			player.take_hit()
 
 	_weapon_sound.play()
+
+
+func _unmask() -> void:
+	unmasked.emit()
+
+
+func _mask() -> void:
+	masked.emit()
 
 
 func _activate_stealth_mode() -> void:

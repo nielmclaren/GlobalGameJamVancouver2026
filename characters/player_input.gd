@@ -5,15 +5,10 @@ extends RefCounted
 @export var delta: float
 @export var ticks: int = -1
 @export var message_num: int = -1
-@export var is_doomed: bool = false
 
 
-static func not_doomed(input: PlayerInput) -> bool:
-	return !input.is_doomed
-
-
-static func filter_after(max_ticks: int) -> Callable:
-	return func(input: PlayerInput) -> bool: return input.ticks >= max_ticks
+static func filter_after(min_ticks: int) -> Callable:
+	return func(input: PlayerInput) -> bool: return input.ticks > min_ticks
 
 
 func serialize() -> String:

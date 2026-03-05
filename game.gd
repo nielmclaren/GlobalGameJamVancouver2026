@@ -91,6 +91,8 @@ func _spawn_player(player_index: int, initial_position: Vector2) -> Player:
 	player.player_index = player_index
 	player.position = initial_position
 
+	player.masked.connect(_mask_player.bind(player))
+	player.unmasked.connect(_unmask_player.bind(player))
 	player.hitted.connect(_player_hitted.bind(player))
 
 	if player_index == 0:
@@ -188,6 +190,14 @@ func _init_clip_tiles() -> void:
 			var coord: Vector2i = Vector2i(c, r)
 			_clip_tilemap_player0.set_cell(coord, 0, atlas_coord)
 			_clip_tilemap_player1.set_cell(coord, 0, atlas_coord)
+
+
+func _mask_player(player: Player) -> void:
+	_update_clip_tilemap(player)
+
+
+func _unmask_player(player: Player) -> void:
+	_reveal_clip_tilemap(player)
 
 
 func _player_hitted(player: Player) -> void:

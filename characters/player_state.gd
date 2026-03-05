@@ -4,15 +4,10 @@ extends RefCounted
 @export var position: Vector2
 @export var ticks: int = -1
 @export var message_num: int = -1
-@export var is_doomed: bool = false
 
 
-static func not_doomed(state: PlayerState) -> bool:
-	return !state.is_doomed
-
-
-static func filter_after(max_ticks: int) -> Callable:
-	return func(state: PlayerState) -> bool: return state.ticks >= max_ticks
+static func filter_after(min_ticks: int) -> Callable:
+	return func(state: PlayerState) -> bool: return state.ticks > min_ticks
 
 
 func serialize() -> String:
