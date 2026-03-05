@@ -77,7 +77,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(240, 60)
 layout_mode = 2
 theme = ExtResource("3_avurv")
-text = "Abandon"
+text = "Leave"
 
 [node name="CreditsButton" type="Button" parent="CenterContainer/Control/MarginContainer/VBoxContainer/VBoxContainer/ButtonVBox"]
 unique_name_in_owner = true

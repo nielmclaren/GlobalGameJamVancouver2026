@@ -39,6 +39,13 @@ func _ready() -> void:
 
 	_back_button.pressed.connect(canceled.emit)
 
+	_host_button.grab_focus.call_deferred()
+
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		canceled.emit()
+
 
 func _host_button_pressed() -> void:
 	_enable_host_ui(true, false, true)

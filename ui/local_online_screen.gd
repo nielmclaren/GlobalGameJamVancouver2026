@@ -13,6 +13,12 @@ func _ready() -> void:
 	_local_button.pressed.connect(_local_button_pressed)
 	_online_button.pressed.connect(_online_button_pressed)
 	_back_button.pressed.connect(_back_button_pressed)
+	_local_button.grab_focus.call_deferred()
+
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		canceled.emit()
 
 
 func _local_button_pressed() -> void:

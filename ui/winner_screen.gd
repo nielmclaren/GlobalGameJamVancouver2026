@@ -39,6 +39,8 @@ func _ready() -> void:
 		loser_form = Constants.PLAYER_FORMS[loser_color_index]
 	_loser_animated_sprite.play(loser_form)
 
+	_continue_button.grab_focus.call_deferred()
+
 
 func _continue_button_pressed() -> void:
 	Tracer.trace("Winner screen: continue button pressed.")

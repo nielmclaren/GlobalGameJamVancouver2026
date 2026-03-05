@@ -169,9 +169,6 @@ func _character_selection_completed(local_player_index: int) -> void:
 
 func _game_started() -> void:
 	title_music.stop()
-	if !gameplay_music.playing:
-		gameplay_music.play()
-		pause_sound.play()
 
 
 func _game_completed(
@@ -183,10 +180,6 @@ func _game_completed(
 
 	_sm.change_state(_winner_state_enter)
 
-	gameplay_music.stop()
-	if !title_music.playing:
-		title_music.play()
-
 
 func _winner_completed() -> void:
 	_sm.change_state(_game_state_enter)
@@ -196,10 +189,6 @@ func _abandon_pressed() -> void:
 	Tracer.trace("Abandon clicked.")
 	MultiplayerManager.leave_room()
 	_sm.change_state(_title_state_enter)
-
-	gameplay_music.stop()
-	if !title_music.playing:
-		title_music.play()
 
 
 func _show_credits_pressed() -> void:
@@ -220,6 +209,9 @@ func _hide_credits() -> void:
 	if _is_pause_menu:
 		# No state change for pause menu.
 		credits_screen.hide()
+
+		pause_menu.focus()
+
 	else:
 		_sm.change_state(_title_state_enter)
 
@@ -364,6 +356,8 @@ func _game_state_enter() -> void:
 	game_container.add_child(_game)
 
 	title_music.stop()
+	if !gameplay_music.playing:
+		gameplay_music.play()
 
 
 func _game_state_leave() -> void:
@@ -375,6 +369,10 @@ func _game_state_leave() -> void:
 	_is_pause_menu = false
 	_prev_paused = false
 	get_tree().paused = false
+
+	gameplay_music.stop()
+	if !title_music.playing:
+		title_music.play()
 
 
 func _winner_state_enter() -> void:

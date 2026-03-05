@@ -28,16 +28,6 @@ script = ExtResource("1_ed0b0")
 
 [node name="UIBackground" parent="." instance=ExtResource("2_dglud")]
 
-[node name="DoneButton" type="Button" parent="."]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(240, 60)
-offset_left = 1600.0
-offset_top = 960.0
-offset_right = 1840.0
-offset_bottom = 1020.0
-theme = ExtResource("3_phwat")
-text = "Done"
-
 [node name="Sprite2D2" type="Sprite2D" parent="."]
 position = Vector2(1664, 608)
 scale = Vector2(24, 24)
@@ -146,3 +136,13 @@ theme_override_fonts/font = ExtResource("3_ygnrc")
 theme_override_font_sizes/font_size = 32
 text = "https://freesound.org/s/675829"
 uri = "https://freesound.org/s/675829"
+
+[node name="DoneButton" type="Button" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 60)
+offset_left = 1600.0
+offset_top = 960.0
+offset_right = 1840.0
+offset_bottom = 1020.0
+theme = ExtResource("3_phwat")
+text = "Done"
