@@ -1,0 +1,7 @@
+[gd_resource type="FontVariation" load_steps=2 format=3 uid="uid://dang4nv3kr2rt"]
+
+[ext_resource type="FontFile" uid="uid://bp0ifce0t6njh" path="res://assets/fonts/nine-pin/Nine Pin.ttf" id="1_80w4c"]
+
+[resource]
+base_font = ExtResource("1_80w4c")
+spacing_glyph = 24

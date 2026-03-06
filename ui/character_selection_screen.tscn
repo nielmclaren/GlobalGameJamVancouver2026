@@ -1,11 +1,26 @@
-[gd_scene load_steps=10 format=3 uid="uid://chr26unydsapp"]
+[gd_scene load_steps=13 format=3 uid="uid://chr26unydsapp"]
 
 [ext_resource type="Script" uid="uid://bqag7erwugwsw" path="res://ui/character_selection_screen.gd" id="1_j3yi0"]
 [ext_resource type="PackedScene" uid="uid://bkgqfqikuaqb8" path="res://ui/ui_background.tscn" id="2_7iokj"]
 [ext_resource type="PackedScene" uid="uid://dth57hb786kgk" path="res://ui/character_selection_controller.tscn" id="2_2672o"]
 [ext_resource type="LabelSettings" uid="uid://du5k82yuhs2js" path="res://ui/screen_title.tres" id="3_vv4gq"]
 [ext_resource type="LabelSettings" uid="uid://b4lsvhnlevmc4" path="res://ui/character_selection_ready_label_settings.tres" id="4_y0wt2"]
-[ext_resource type="Theme" uid="uid://dikqu2u0jnhof" path="res://ui/button_theme.tres" id="6_70y16"]
+[ext_resource type="Script" uid="uid://bgxvk5kxd13ru" path="res://addons/controller_icons/objects/ControllerIconTexture.gd" id="5_dj7pb"]
+[ext_resource type="PackedScene" uid="uid://elq4i50qnekt" path="res://ui/smart_back_button.tscn" id="6_70y16"]
+
+[sub_resource type="Texture2D" id="Texture2D_88dbw"]
+resource_local_to_scene = false
+resource_name = ""
+script = ExtResource("5_dj7pb")
+path = "ui_accept0"
+metadata/_custom_type_script = "uid://bgxvk5kxd13ru"
+
+[sub_resource type="Texture2D" id="Texture2D_dj7pb"]
+resource_local_to_scene = false
+resource_name = ""
+script = ExtResource("5_dj7pb")
+path = "ui_accept1"
+metadata/_custom_type_script = "uid://bgxvk5kxd13ru"
 
 [sub_resource type="Animation" id="Animation_7iokj"]
 length = 0.001
@@ -87,7 +102,7 @@ vertical_alignment = 1
 
 [node name="Confirm0" type="Node2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(384, 640)
+position = Vector2(384, 544)
 
 [node name="Label" type="Label" parent="Confirm0"]
 offset_left = -224.0
@@ -98,9 +113,13 @@ text = "Ready?"
 label_settings = ExtResource("4_y0wt2")
 horizontal_alignment = 1
 
+[node name="Sprite2D" type="Sprite2D" parent="Confirm0"]
+position = Vector2(0, 288)
+texture = SubResource("Texture2D_88dbw")
+
 [node name="Confirm1" type="Node2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(1536, 640)
+position = Vector2(1536, 544)
 
 [node name="Label" type="Label" parent="Confirm1"]
 offset_left = -224.0
@@ -111,9 +130,14 @@ text = "Ready?"
 label_settings = ExtResource("4_y0wt2")
 horizontal_alignment = 1
 
+[node name="Sprite2D" type="Sprite2D" parent="Confirm1"]
+position = Vector2(0, 288)
+texture = SubResource("Texture2D_dj7pb")
+
 [node name="Ready0" type="Node2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(384, 640)
+visible = false
+position = Vector2(384, 544)
 
 [node name="Label" type="Label" parent="Ready0"]
 offset_left = -224.0
@@ -126,7 +150,8 @@ horizontal_alignment = 1
 
 [node name="OtherReady0" type="Node2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(384, 640)
+visible = false
+position = Vector2(384, 544)
 
 [node name="Label" type="Label" parent="OtherReady0"]
 offset_left = -224.0
@@ -139,7 +164,8 @@ horizontal_alignment = 1
 
 [node name="Ready1" type="Node2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(1536, 640)
+visible = false
+position = Vector2(1536, 544)
 
 [node name="Label" type="Label" parent="Ready1"]
 offset_left = -224.0
@@ -152,7 +178,8 @@ horizontal_alignment = 1
 
 [node name="OtherReady1" type="Node2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(1536, 640)
+visible = false
+position = Vector2(1536, 544)
 
 [node name="Label" type="Label" parent="OtherReady1"]
 offset_left = -224.0
@@ -165,37 +192,31 @@ horizontal_alignment = 1
 
 [node name="CharacterMarker0" type="Marker2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(384, 640)
+position = Vector2(384, 544)
 
 [node name="CharacterMarker1" type="Marker2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(1536, 640)
+position = Vector2(1536, 544)
 
 [node name="ControllerMarker0" type="Marker2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(960, 512)
+position = Vector2(960, 416)
 
 [node name="ControllerMarker1" type="Marker2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(960, 800)
+position = Vector2(960, 704)
 
 [node name="Controller0" parent="." instance=ExtResource("2_2672o")]
 unique_name_in_owner = true
-position = Vector2(960, 512)
+position = Vector2(960, 416)
 
 [node name="Controller1" parent="." instance=ExtResource("2_2672o")]
 unique_name_in_owner = true
-position = Vector2(960, 800)
+position = Vector2(960, 704)
 
-[node name="BackButton" type="Button" parent="."]
+[node name="SmartBackButton" parent="." instance=ExtResource("6_70y16")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(240, 60)
-offset_left = 64.0
-offset_top = 960.0
-offset_right = 304.0
-offset_bottom = 1020.0
-theme = ExtResource("6_70y16")
-text = "Back"
+position = Vector2(0, 1080)
 
 [node name="Fader" type="ColorRect" parent="."]
 anchors_preset = 15

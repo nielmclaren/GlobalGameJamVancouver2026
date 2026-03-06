@@ -1,0 +1,7 @@
+[gd_resource type="LabelSettings" load_steps=2 format=3 uid="uid://hqbhvhrjtu51"]
+
+[ext_resource type="FontFile" uid="uid://ca3crl5mj5o1k" path="res://assets/fonts/alpha-beta/alphbeta.ttf" id="1_uu41m"]
+
+[resource]
+font = ExtResource("1_uu41m")
+font_size = 64

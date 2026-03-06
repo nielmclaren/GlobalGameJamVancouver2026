@@ -6,7 +6,7 @@ signal completed(is_online_multiplayer: bool)
 
 @onready var _local_button: Button = %LocalButton
 @onready var _online_button: Button = %OnlineButton
-@onready var _back_button: Button = %BackButton
+@onready var _back_button: SmartBackButton = %SmartBackButton
 
 
 func _ready() -> void:

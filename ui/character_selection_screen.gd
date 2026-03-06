@@ -11,6 +11,8 @@ const CLIENT_INDEX: int = 1
 var is_game_host: bool = false
 var is_online_multiplayer: bool = false
 
+var _debouncers: Array[bool] = [true, true]
+
 # Controller can have left character -1, right character 1, or no character 0.
 var _state_character_selections: Array[CharacterSelection] = [
 	CharacterSelection.NONE, CharacterSelection.NONE
@@ -24,7 +26,7 @@ var _state_readys: Array[bool] = [false, false]
 @onready var _ready_nodes: Array[Node2D] = [%Ready0, %Ready1]
 @onready var _other_ready_nodes: Array[Node2D] = [%OtherReady0, %OtherReady1]
 @onready var _animation: AnimationPlayer = %AnimationPlayer
-@onready var _back_button: Button = %BackButton
+@onready var _back_button: SmartBackButton = %SmartBackButton
 
 
 func _ready() -> void:
@@ -79,7 +81,7 @@ func _online_multiplayer_input(event: InputEvent) -> void:
 			if !_state_readys[CLIENT_INDEX]:
 				_game_client_send_input("move_left")
 
-	elif event.is_action_pressed("move_right"):
+	if event.is_action_pressed("move_right"):
 		if is_game_host:
 			if !_state_readys[HOST_INDEX]:
 				_apply_input(HOST_INDEX, CLIENT_INDEX, "move_right")
@@ -89,7 +91,7 @@ func _online_multiplayer_input(event: InputEvent) -> void:
 			if !_state_readys[CLIENT_INDEX]:
 				_game_client_send_input("move_right")
 
-	elif event.is_action_pressed("ui_accept"):
+	if event.is_action_pressed("ui_accept"):
 		if is_game_host:
 			_apply_input(HOST_INDEX, CLIENT_INDEX, "ui_accept")
 			_update()
@@ -98,7 +100,7 @@ func _online_multiplayer_input(event: InputEvent) -> void:
 			if _state_character_selections[CLIENT_INDEX] != CharacterSelection.NONE:
 				_game_client_send_input("ui_accept")
 
-	elif event.is_action_pressed("ui_cancel"):
+	if event.is_action_pressed("ui_cancel"):
 		if is_game_host:
 			_apply_input(HOST_INDEX, CLIENT_INDEX, "ui_cancel")
 			_update()
@@ -109,22 +111,31 @@ func _online_multiplayer_input(event: InputEvent) -> void:
 
 
 func _local_multiplayer_input(event: InputEvent) -> void:
-	if event.is_action_pressed("move_left0"):
+	if is_zero_approx(Input.get_axis("move_left0", "move_right0")):
+		_debouncers[0] = true
+	if is_zero_approx(Input.get_axis("move_left1", "move_right1")):
+		_debouncers[1] = true
+
+	if event.is_action_pressed("move_left0") and _debouncers[0]:
+		_debouncers[0] = false
 		if !_state_readys[HOST_INDEX]:
 			_apply_input(HOST_INDEX, CLIENT_INDEX, "move_left")
 			_update()
 
-	if event.is_action_pressed("move_left1"):
+	if event.is_action_pressed("move_left1") and _debouncers[1]:
+		_debouncers[1] = false
 		if !_state_readys[CLIENT_INDEX]:
 			_apply_input(CLIENT_INDEX, HOST_INDEX, "move_left")
 			_update()
 
-	if event.is_action_pressed("move_right0"):
+	if event.is_action_pressed("move_right0") and _debouncers[0]:
+		_debouncers[0] = false
 		if !_state_readys[HOST_INDEX]:
 			_apply_input(HOST_INDEX, CLIENT_INDEX, "move_right")
 			_update()
 
-	if event.is_action_pressed("move_right1"):
+	if event.is_action_pressed("move_right1") and _debouncers[1]:
+		_debouncers[1] = false
 		if !_state_readys[CLIENT_INDEX]:
 			_apply_input(CLIENT_INDEX, HOST_INDEX, "move_right")
 			_update()
@@ -133,17 +144,23 @@ func _local_multiplayer_input(event: InputEvent) -> void:
 		_apply_input(HOST_INDEX, CLIENT_INDEX, "ui_accept")
 		_update()
 
-	elif event.is_action_pressed("ui_accept1"):
+	if event.is_action_pressed("ui_accept1"):
 		_apply_input(CLIENT_INDEX, HOST_INDEX, "ui_accept")
 		_update()
 
 	if event.is_action_pressed("ui_cancel0"):
-		_apply_input(HOST_INDEX, CLIENT_INDEX, "ui_cancel")
-		_update()
+		if _state_character_selections[HOST_INDEX] != CharacterSelection.NONE:
+			_apply_input(HOST_INDEX, CLIENT_INDEX, "ui_cancel")
+			_update()
+		else:
+			canceled.emit()
 
 	if event.is_action_pressed("ui_cancel1"):
-		_apply_input(CLIENT_INDEX, HOST_INDEX, "ui_cancel")
-		_update()
+		if _state_character_selections[CLIENT_INDEX] != CharacterSelection.NONE:
+			_apply_input(CLIENT_INDEX, HOST_INDEX, "ui_cancel")
+			_update()
+		else:
+			canceled.emit()
 
 
 func _update_player(index: int) -> void:
@@ -206,6 +223,8 @@ func _apply_input(player: int, other_player: int, action: String) -> void:
 		"ui_cancel":
 			if _state_readys[player]:
 				_confirm_character_selection(player, false)
+			else:
+				_state_character_selections[player] = CharacterSelection.NONE
 
 
 func _move_character_selection(player: int, other_player: int, direction: int) -> void:

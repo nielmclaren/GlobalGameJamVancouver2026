@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://bo0cu0dgvlh0t"]
+[gd_scene load_steps=6 format=3 uid="uid://bo0cu0dgvlh0t"]
 
 [ext_resource type="Script" uid="uid://oca6lk7fl2rj" path="res://ui/local_online_screen.gd" id="1_2lekp"]
 [ext_resource type="PackedScene" uid="uid://bkgqfqikuaqb8" path="res://ui/ui_background.tscn" id="2_2lekp"]
 [ext_resource type="Theme" uid="uid://b8rvlvfehdp6a" path="res://ui/ui_theme.tres" id="3_ik7re"]
 [ext_resource type="Theme" uid="uid://dikqu2u0jnhof" path="res://ui/button_theme.tres" id="4_cfvsy"]
+[ext_resource type="PackedScene" uid="uid://elq4i50qnekt" path="res://ui/smart_back_button.tscn" id="5_ltsm8"]
 
 [node name="LocalOnlineScreen" type="Node2D"]
 script = ExtResource("1_2lekp")
@@ -30,7 +31,7 @@ offset_top = 480.0
 offset_right = 768.0
 offset_bottom = 540.0
 focus_neighbor_right = NodePath("../OnlineButton")
-focus_neighbor_bottom = NodePath("../../../BackButton")
+focus_neighbor_bottom = NodePath("../../../SmartBackButton/BackButton")
 theme = ExtResource("4_cfvsy")
 text = "Local"
 
@@ -43,18 +44,10 @@ offset_top = 480.0
 offset_right = 1408.0
 offset_bottom = 540.0
 focus_neighbor_left = NodePath("../LocalButton")
-focus_neighbor_bottom = NodePath("../../../BackButton")
+focus_neighbor_bottom = NodePath("../../../SmartBackButton/BackButton")
 theme = ExtResource("4_cfvsy")
 text = "Online"
 
-[node name="BackButton" type="Button" parent="."]
+[node name="SmartBackButton" parent="." instance=ExtResource("5_ltsm8")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(240, 60)
-offset_left = 64.0
-offset_top = 960.0
-offset_right = 165.0
-offset_bottom = 1004.0
-focus_neighbor_top = NodePath("../Control/Control/LocalButton")
-focus_neighbor_right = NodePath("../Control/Control/LocalButton")
-theme = ExtResource("4_cfvsy")
-text = "Back"
+position = Vector2(0, 1080)

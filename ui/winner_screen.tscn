@@ -1,10 +1,12 @@
-[gd_scene load_steps=18 format=3 uid="uid://3efa0tr7o67v"]
+[gd_scene load_steps=21 format=3 uid="uid://3efa0tr7o67v"]
 
 [ext_resource type="Texture2D" uid="uid://midrd8nyfk00" path="res://assets/art/win_lose_sheet.png" id="1_b2gjs"]
 [ext_resource type="Script" uid="uid://bi4hrb43gvpb8" path="res://ui/winner_screen.gd" id="1_ljvke"]
 [ext_resource type="LabelSettings" uid="uid://dh5nkilieny34" path="res://ui/player_one_two_wins.tres" id="2_ljvke"]
 [ext_resource type="AudioStream" uid="uid://vwbewj7g1kge" path="res://assets/music/Pause Effect.ogg" id="4_640aj"]
 [ext_resource type="Theme" uid="uid://dikqu2u0jnhof" path="res://ui/button_theme.tres" id="4_iahek"]
+[ext_resource type="Script" uid="uid://bgxvk5kxd13ru" path="res://addons/controller_icons/objects/ControllerIconTexture.gd" id="5_1jkf2"]
+[ext_resource type="LabelSettings" uid="uid://hqbhvhrjtu51" path="res://ui/controller_icon_label.tres" id="7_8m47r"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_eow3j"]
 atlas = ExtResource("1_b2gjs")
@@ -132,6 +134,14 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="Texture2D" id="Texture2D_8m47r"]
+resource_local_to_scene = false
+resource_name = ""
+script = ExtResource("5_1jkf2")
+path = "ui_accept"
+show_mode = 2
+metadata/_custom_type_script = "uid://bgxvk5kxd13ru"
+
 [node name="WinnerScreen" type="Node2D"]
 script = ExtResource("1_ljvke")
 
@@ -155,7 +165,7 @@ animation = &"base"
 
 [node name="LoserAnimatedSprite" type="AnimatedSprite2D" parent="WinnerLoserArt"]
 unique_name_in_owner = true
-position = Vector2(608, 736)
+position = Vector2(608, 704.0001)
 scale = Vector2(16, 16)
 sprite_frames = SubResource("SpriteFrames_boyg6")
 animation = &"base"
@@ -184,14 +194,36 @@ label_settings = ExtResource("2_ljvke")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ContinueButton" type="Button" parent="."]
+[node name="ContinueButton" type="Node2D" parent="."]
+
+[node name="MouseContent" type="Node2D" parent="ContinueButton"]
 unique_name_in_owner = true
-offset_left = 1600.0
-offset_top = 928.0
+
+[node name="ContinueButton" type="Button" parent="ContinueButton/MouseContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 60)
+offset_left = 1616.0
+offset_top = 966.0
 offset_right = 1856.0
-offset_bottom = 1024.0
+offset_bottom = 1026.0
 theme = ExtResource("4_iahek")
-text = "Continue"
+text = "Rematch"
+metadata/_edit_use_anchors_ = true
+
+[node name="ControllerContent" type="Node2D" parent="ContinueButton"]
+unique_name_in_owner = true
+
+[node name="ButtonIcon" type="Sprite2D" parent="ContinueButton/ControllerContent"]
+position = Vector2(1531, 998)
+texture = SubResource("Texture2D_8m47r")
+
+[node name="Label" type="Label" parent="ContinueButton/ControllerContent"]
+offset_left = 1595.0
+offset_top = 968.0
+offset_right = 1854.0
+offset_bottom = 1026.0
+text = "Rematch"
+label_settings = ExtResource("7_8m47r")
 
 [node name="WinSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("4_640aj")

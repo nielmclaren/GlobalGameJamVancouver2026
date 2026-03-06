@@ -140,7 +140,7 @@ func _local_online_completed(is_online_multiplayer: bool) -> void:
 
 
 func _host_join_canceled() -> void:
-	_sm.change_state(_title_state_enter)
+	_sm.change_state(_local_online_state_enter)
 
 
 func _host_join_completed(is_game_host: bool) -> void:
@@ -159,7 +159,10 @@ func _disconnected() -> void:
 
 
 func _character_selection_canceled() -> void:
-	_sm.change_state(_title_state_enter)
+	if _is_online_multiplayer:
+		_sm.change_state(_host_join_state_enter)
+	else:
+		_sm.change_state(_local_online_state_enter)
 
 
 func _character_selection_completed(local_player_index: int) -> void:

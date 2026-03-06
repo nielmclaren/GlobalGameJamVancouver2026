@@ -12,7 +12,7 @@ signal completed(is_game_host: bool)
 @onready var _join_button: Button = %JoinButton
 @onready var _join_disable_mask: ColorRect = %JoinDisableMask
 @onready var _join_error_label: Label = %JoinErrorLabel
-@onready var _back_button: Button = %BackButton
+@onready var _back_button: SmartBackButton = %SmartBackButton
 
 var _is_game_host: bool = false
 
@@ -20,6 +20,7 @@ var _is_game_host: bool = false
 func _ready() -> void:
 	MultiplayerManager.room_gone.connect(_room_gone)
 	MultiplayerManager.room_full.connect(_room_full)
+	MultiplayerManager.room_created.connect(_room_created)
 	MultiplayerManager.room_ready.connect(_room_ready)
 
 	_host_disable_mask.hide()
@@ -44,7 +45,11 @@ func _ready() -> void:
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
-		canceled.emit()
+		if _is_game_host:
+			_host_cancel_button_pressed()
+
+		else:
+			canceled.emit()
 
 
 func _host_button_pressed() -> void:
@@ -53,8 +58,10 @@ func _host_button_pressed() -> void:
 	_clear_error()
 
 	_is_game_host = true
+	_host_code_input.text = ""
 
-	MultiplayerManager.room_created.connect(_room_created)
+	_host_cancel_button.grab_focus.call_deferred()
+
 	MultiplayerManager.create_room()
 
 
@@ -63,10 +70,14 @@ func _host_cancel_button_pressed() -> void:
 	_enable_join_ui(true, true)
 	_clear_error()
 
+	_is_game_host = false
+
+	_host_button.grab_focus.call_deferred()
+
+	MultiplayerManager.leave_room()
+
 
 func _room_created(room_id: String) -> void:
-	MultiplayerManager.room_created.disconnect(_room_created)
-
 	_host_code_input.text = room_id
 	_host_code_input.show()
 
@@ -119,6 +130,8 @@ func _clear_error() -> void:
 
 
 func _enable_host_ui(show_ui: bool, enable_ui: bool, is_already_hosting: bool) -> void:
+	_host_code_input.visible = !enable_ui
+
 	_host_disable_mask.visible = !show_ui
 	_host_button.disabled = !enable_ui
 

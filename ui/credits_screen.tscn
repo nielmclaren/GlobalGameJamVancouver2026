@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://fi441li6sa4l"]
+[gd_scene load_steps=15 format=3 uid="uid://fi441li6sa4l"]
 
 [ext_resource type="Script" uid="uid://duvuoxtqp8wex" path="res://ui/credits_screen.gd" id="1_ed0b0"]
 [ext_resource type="PackedScene" uid="uid://bkgqfqikuaqb8" path="res://ui/ui_background.tscn" id="2_dglud"]
@@ -6,6 +6,8 @@
 [ext_resource type="FontFile" uid="uid://ca3crl5mj5o1k" path="res://assets/fonts/alpha-beta/alphbeta.ttf" id="3_ygnrc"]
 [ext_resource type="Texture2D" uid="uid://midrd8nyfk00" path="res://assets/art/win_lose_sheet.png" id="4_dglud"]
 [ext_resource type="Texture2D" uid="uid://dtpoo8b1d1n11" path="res://assets/art/MattSheet.png" id="4_f5300"]
+[ext_resource type="Script" uid="uid://bgxvk5kxd13ru" path="res://addons/controller_icons/objects/ControllerIconTexture.gd" id="7_2tuqu"]
+[ext_resource type="LabelSettings" uid="uid://hqbhvhrjtu51" path="res://ui/controller_icon_label.tres" id="8_tcopw"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2tuqu"]
 atlas = ExtResource("4_dglud")
@@ -23,6 +25,22 @@ font_size = 64
 font = ExtResource("3_ygnrc")
 font_size = 32
 
+[sub_resource type="Texture2D" id="Texture2D_tcopw"]
+resource_local_to_scene = false
+resource_name = ""
+script = ExtResource("7_2tuqu")
+path = "ui_cancel"
+show_mode = 2
+metadata/_custom_type_script = "uid://bgxvk5kxd13ru"
+
+[sub_resource type="Texture2D" id="Texture2D_bc4w8"]
+resource_local_to_scene = false
+resource_name = ""
+script = ExtResource("7_2tuqu")
+path = "ui_cancel"
+show_mode = 2
+metadata/_custom_type_script = "uid://bgxvk5kxd13ru"
+
 [node name="CreditsScreen" type="Node2D"]
 script = ExtResource("1_ed0b0")
 
@@ -38,7 +56,9 @@ position = Vector2(992, 128)
 scale = Vector2(8, 8)
 texture = SubResource("AtlasTexture_dglud")
 
-[node name="Label" type="Label" parent="."]
+[node name="Content" type="Node2D" parent="."]
+
+[node name="Label" type="Label" parent="Content"]
 offset_left = 256.0
 offset_top = 256.0
 offset_right = 1312.0
@@ -46,7 +66,7 @@ offset_bottom = 314.0
 text = "Designed by Reina Magica"
 label_settings = SubResource("LabelSettings_phwat")
 
-[node name="Label2" type="Label" parent="."]
+[node name="Label2" type="Label" parent="Content"]
 offset_left = 256.0
 offset_top = 416.0
 offset_right = 1312.0
@@ -54,7 +74,7 @@ offset_bottom = 474.0
 text = "Programmed by Niel McLaren"
 label_settings = SubResource("LabelSettings_phwat")
 
-[node name="Label3" type="Label" parent="."]
+[node name="Label3" type="Label" parent="Content"]
 offset_left = 256.0
 offset_top = 576.0
 offset_right = 1312.0
@@ -62,7 +82,7 @@ offset_bottom = 634.0
 text = "Art by Matt Froese"
 label_settings = SubResource("LabelSettings_phwat")
 
-[node name="Label4" type="Label" parent="."]
+[node name="Label4" type="Label" parent="Content"]
 offset_left = 256.0
 offset_top = 736.0
 offset_right = 1402.0
@@ -70,16 +90,16 @@ offset_bottom = 794.0
 text = "Music by Brian Holt (Bad Bad Power)"
 label_settings = SubResource("LabelSettings_phwat")
 
-[node name="Label5" type="Label" parent="."]
+[node name="Label5" type="Label" parent="Content"]
 offset_left = 256.0
 offset_top = 960.0
 offset_right = 1402.0
-offset_bottom = 1018.0
+offset_bottom = 1021.0
 text = "Sample from: S23-24 Light swords fencing.wav by craigsmith
 "
 label_settings = SubResource("LabelSettings_dglud")
 
-[node name="Label6" type="Label" parent="."]
+[node name="Label6" type="Label" parent="Content"]
 offset_left = 748.0
 offset_top = 992.0
 offset_right = 1894.0
@@ -87,7 +107,7 @@ offset_bottom = 1053.0
 text = "-- License: Creative Commons 0"
 label_settings = SubResource("LabelSettings_dglud")
 
-[node name="LinkButton" type="LinkButton" parent="."]
+[node name="LinkButton" type="LinkButton" parent="Content"]
 offset_left = 256.0
 offset_top = 320.0
 offset_right = 762.0
@@ -97,7 +117,7 @@ theme_override_font_sizes/font_size = 54
 text = "https://magex.itch.io"
 uri = "https://magex.itch.io"
 
-[node name="LinkButton2" type="LinkButton" parent="."]
+[node name="LinkButton2" type="LinkButton" parent="Content"]
 offset_left = 256.0
 offset_top = 480.0
 offset_right = 843.0
@@ -107,7 +127,7 @@ theme_override_font_sizes/font_size = 54
 text = "https://nielmclaren.com"
 uri = "https://nielmclaren.com"
 
-[node name="LinkButton3" type="LinkButton" parent="."]
+[node name="LinkButton3" type="LinkButton" parent="Content"]
 offset_left = 256.0
 offset_top = 640.0
 offset_right = 1033.0
@@ -117,7 +137,7 @@ theme_override_font_sizes/font_size = 54
 text = "https://mattfroeseart.carrd.co"
 uri = "https://mattfroeseart.carrd.co/"
 
-[node name="LinkButton4" type="LinkButton" parent="."]
+[node name="LinkButton4" type="LinkButton" parent="Content"]
 offset_left = 256.0
 offset_top = 800.0
 offset_right = 762.0
@@ -127,7 +147,7 @@ theme_override_font_sizes/font_size = 54
 text = "https://brianholt.ca"
 uri = "https://brianholt.ca/"
 
-[node name="LinkButton5" type="LinkButton" parent="."]
+[node name="LinkButton5" type="LinkButton" parent="Content"]
 offset_left = 256.0
 offset_top = 992.0
 offset_right = 762.0
@@ -137,12 +157,36 @@ theme_override_font_sizes/font_size = 32
 text = "https://freesound.org/s/675829"
 uri = "https://freesound.org/s/675829"
 
-[node name="DoneButton" type="Button" parent="."]
+[node name="DoneButton" type="Node2D" parent="."]
+
+[node name="MouseContent" type="Node2D" parent="DoneButton"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(240, 60)
-offset_left = 1600.0
+
+[node name="DoneButton" type="Button" parent="DoneButton/MouseContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 60)
+offset_left = 1680.0
 offset_top = 960.0
 offset_right = 1840.0
 offset_bottom = 1020.0
 theme = ExtResource("3_phwat")
 text = "Done"
+
+[node name="DoneButtonIcon" type="Sprite2D" parent="DoneButton/MouseContent"]
+position = Vector2(1504, 992)
+texture = SubResource("Texture2D_tcopw")
+
+[node name="ControllerContent" type="Node2D" parent="DoneButton"]
+unique_name_in_owner = true
+
+[node name="ButtonIcon" type="Sprite2D" parent="DoneButton/ControllerContent"]
+position = Vector2(1640, 992)
+texture = SubResource("Texture2D_bc4w8")
+
+[node name="Label" type="Label" parent="DoneButton/ControllerContent"]
+offset_left = 1706.0
+offset_top = 961.0
+offset_right = 1840.0
+offset_bottom = 1019.0
+text = "Done"
+label_settings = ExtResource("8_tcopw")

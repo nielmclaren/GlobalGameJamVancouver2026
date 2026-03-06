@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://b8kvidllqopb6"]
+[gd_scene load_steps=10 format=3 uid="uid://b8kvidllqopb6"]
 
 [ext_resource type="Script" uid="uid://bvtipc87qikj3" path="res://ui/host_join_screen.gd" id="1_pdmv5"]
 [ext_resource type="PackedScene" uid="uid://bkgqfqikuaqb8" path="res://ui/ui_background.tscn" id="2_2x614"]
@@ -6,7 +6,9 @@
 [ext_resource type="Script" uid="uid://ch2ko8dy2nyhf" path="res://ui/line_edit_to_upper.gd" id="3_76jbv"]
 [ext_resource type="LabelSettings" uid="uid://il8c2fivkaxs" path="res://ui/host_join_screen_error_label_settings.tres" id="3_ylbgw"]
 [ext_resource type="Theme" uid="uid://cmoo12gf1kjj2" path="res://ui/host_join_screen_room_code_line_edit.tres" id="4_aktce"]
+[ext_resource type="FontVariation" uid="uid://dang4nv3kr2rt" path="res://ui/host_join_screen_room_code_font_variation.tres" id="5_sw2vr"]
 [ext_resource type="Theme" uid="uid://dikqu2u0jnhof" path="res://ui/button_theme.tres" id="6_ylbgw"]
+[ext_resource type="PackedScene" uid="uid://elq4i50qnekt" path="res://ui/smart_back_button.tscn" id="8_rmh4n"]
 
 [node name="HostJoinScreen" type="Node2D"]
 script = ExtResource("1_pdmv5")
@@ -43,6 +45,7 @@ offset_bottom = 544.0
 focus_neighbor_right = NodePath("../../JoinControls/JoinCodeInput")
 focus_neighbor_bottom = NodePath("../HostButton")
 theme = ExtResource("4_aktce")
+theme_override_fonts/font = ExtResource("5_sw2vr")
 text = "FCGDA"
 alignment = 1
 editable = false
@@ -72,7 +75,6 @@ offset_right = 608.0
 offset_bottom = 764.0
 focus_neighbor_top = NodePath("../HostButton")
 focus_neighbor_right = NodePath("../../JoinControls/JoinButton")
-focus_neighbor_bottom = NodePath("../../BackButton")
 theme = ExtResource("6_ylbgw")
 text = "Cancel"
 
@@ -107,7 +109,8 @@ grow_vertical = 2
 focus_neighbor_left = NodePath("../../HostControls/HostCodeInput")
 focus_neighbor_bottom = NodePath("../JoinButton")
 theme = ExtResource("4_aktce")
-placeholder_text = "Room Code"
+theme_override_fonts/font = ExtResource("5_sw2vr")
+placeholder_text = "CODE"
 alignment = 1
 script = ExtResource("3_76jbv")
 
@@ -155,14 +158,6 @@ offset_bottom = 928.0
 size_flags_horizontal = 3
 color = Color(0, 0, 0, 0.8666667)
 
-[node name="BackButton" type="Button" parent="."]
+[node name="SmartBackButton" parent="." instance=ExtResource("8_rmh4n")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(240, 60)
-offset_left = 64.0
-offset_top = 960.0
-offset_right = 165.0
-offset_bottom = 1004.0
-focus_neighbor_top = NodePath("../HostControls/HostCancelButton")
-focus_neighbor_right = NodePath("../HostControls/HostCancelButton")
-theme = ExtResource("6_ylbgw")
-text = "Back"
+position = Vector2(0, 1080)

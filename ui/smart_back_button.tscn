@@ -1,0 +1,48 @@
+[gd_scene load_steps=6 format=3 uid="uid://elq4i50qnekt"]
+
+[ext_resource type="Script" uid="uid://bsdujajiue8vi" path="res://ui/smart_back_button.gd" id="1_2i3sa"]
+[ext_resource type="Theme" uid="uid://dikqu2u0jnhof" path="res://ui/button_theme.tres" id="1_whnjc"]
+[ext_resource type="Script" uid="uid://bgxvk5kxd13ru" path="res://addons/controller_icons/objects/ControllerIconTexture.gd" id="2_2i3sa"]
+[ext_resource type="LabelSettings" uid="uid://hqbhvhrjtu51" path="res://ui/controller_icon_label.tres" id="3_rupmq"]
+
+[sub_resource type="Texture2D" id="Texture2D_ltsm8"]
+resource_local_to_scene = false
+resource_name = ""
+script = ExtResource("2_2i3sa")
+path = "ui_cancel"
+show_mode = 2
+metadata/_custom_type_script = "uid://bgxvk5kxd13ru"
+
+[node name="SmartBackButton" type="Node2D"]
+script = ExtResource("1_2i3sa")
+
+[node name="ControllerContent" type="Node2D" parent="."]
+unique_name_in_owner = true
+
+[node name="BackButtonIcon" type="Sprite2D" parent="ControllerContent"]
+position = Vector2(96, -96)
+texture = SubResource("Texture2D_ltsm8")
+
+[node name="Label" type="Label" parent="ControllerContent"]
+offset_left = 160.0
+offset_top = -128.0
+offset_right = 294.0
+offset_bottom = -70.0
+text = "Cancel"
+label_settings = ExtResource("3_rupmq")
+
+[node name="MouseContent" type="Node2D" parent="."]
+unique_name_in_owner = true
+
+[node name="BackButton" type="Button" parent="MouseContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 60)
+offset_left = 64.0
+offset_top = -128.0
+offset_right = 304.0
+offset_bottom = -68.0
+focus_neighbor_top = NodePath("../../Control/Control/LocalButton")
+focus_neighbor_right = NodePath("../../Control/Control/LocalButton")
+theme = ExtResource("1_whnjc")
+text = "Cancel"
+icon_alignment = 2

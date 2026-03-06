@@ -5,7 +5,7 @@
 
 [resource]
 LineEdit/colors/font_uneditable_color = Color(0.8745098, 0.8745098, 0.8745098, 1)
-LineEdit/font_sizes/font_size = 80
+LineEdit/font_sizes/font_size = 96
 LineEdit/fonts/font = ExtResource("1_h35kv")
 LineEdit/styles/normal = ExtResource("2_qrcx0")
 LineEdit/styles/read_only = ExtResource("2_qrcx0")
