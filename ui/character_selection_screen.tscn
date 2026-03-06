@@ -113,7 +113,8 @@ text = "Ready?"
 label_settings = ExtResource("4_y0wt2")
 horizontal_alignment = 1
 
-[node name="Sprite2D" type="Sprite2D" parent="Confirm0"]
+[node name="ConfirmIconSprite0" type="Sprite2D" parent="Confirm0"]
+unique_name_in_owner = true
 position = Vector2(0, 288)
 texture = SubResource("Texture2D_88dbw")
 
@@ -130,7 +131,8 @@ text = "Ready?"
 label_settings = ExtResource("4_y0wt2")
 horizontal_alignment = 1
 
-[node name="Sprite2D" type="Sprite2D" parent="Confirm1"]
+[node name="ConfirmIconSprite1" type="Sprite2D" parent="Confirm1"]
+unique_name_in_owner = true
 position = Vector2(0, 288)
 texture = SubResource("Texture2D_dj7pb")
 

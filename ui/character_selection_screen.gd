@@ -23,6 +23,7 @@ var _state_readys: Array[bool] = [false, false]
 @onready var _controller_markers: Array[Marker2D] = [%ControllerMarker0, %ControllerMarker1]
 @onready var _character_markers: Array[Marker2D] = [%CharacterMarker0, %CharacterMarker1]
 @onready var _confirm_nodes: Array[Node2D] = [%Confirm0, %Confirm1]
+@onready var _confirm_icon_sprites: Array[Sprite2D] = [%ConfirmIconSprite0, %ConfirmIconSprite1]
 @onready var _ready_nodes: Array[Node2D] = [%Ready0, %Ready1]
 @onready var _other_ready_nodes: Array[Node2D] = [%OtherReady0, %OtherReady1]
 @onready var _animation: AnimationPlayer = %AnimationPlayer
@@ -210,6 +211,19 @@ func _update_ready_prompts() -> void:
 				and _state_readys[HOST_INDEX]
 			)
 		)
+
+		# For online multiplayer, confirm button is always "ui_accept".
+		# For local multiplayer, confirm button depends on the player (space or enter key).
+		if _confirm_nodes[selection].visible:
+			var sprite: Sprite2D = _confirm_icon_sprites[selection]
+			var texture: ControllerIconTexture = sprite.texture
+			if is_online_multiplayer:
+				texture.path = "ui_accept"
+			else:
+				if _state_character_selections[HOST_INDEX] == selection:
+					texture.path = "ui_accept0"
+				elif _state_character_selections[CLIENT_INDEX] == selection:
+					texture.path = "ui_accept1"
 
 
 func _apply_input(player: int, other_player: int, action: String) -> void:
