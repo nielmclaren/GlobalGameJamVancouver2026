@@ -33,6 +33,7 @@ var _scores: Array[int] = [0, 0]
 
 func _ready() -> void:
 	Tracer.trace("Game ready.")
+
 	if is_online_multiplayer:
 		MultiplayerManager.message_received.connect(_message_received)
 
@@ -86,10 +87,18 @@ func _spawn_player(player_index: int, initial_position: Vector2) -> Player:
 	player.setup(self)
 
 	player.is_online_multiplayer = is_online_multiplayer
-	player.is_game_host = is_game_host
-	player.is_local_player = local_player_index == player_index
-	player.player_index = player_index
 	player.position = initial_position
+	player.player_index = player_index
+
+	if is_online_multiplayer:
+		player.is_game_host = is_game_host
+		player.is_local_player = local_player_index == player_index
+		player.device_index = -1
+
+	else:
+		player.is_game_host = false
+		player.is_local_player = true
+		player.device_index = player_index if local_player_index == 0 else 1 - player_index
 
 	player.masked.connect(_mask_player.bind(player))
 	player.unmasked.connect(_unmask_player.bind(player))

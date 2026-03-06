@@ -321,13 +321,20 @@ func _game_client_receive_state(message: MultiplayerMessage) -> void:
 
 
 func _emit_completed() -> void:
-	completed.emit(
-		(
-			0
-			if is_game_host and _state_character_selections[HOST_INDEX] == CharacterSelection.LEFT
-			else 1
-		)
-	)
+	var result: int
+	if is_online_multiplayer:
+		if is_game_host:
+			result = _state_character_selections[HOST_INDEX]
+		else:
+			result = _state_character_selections[CLIENT_INDEX]
+
+	else:
+		if _state_character_selections[HOST_INDEX] == CharacterSelection.LEFT:
+			result = 0
+		else:
+			result = 1
+
+	completed.emit(result)
 
 
 func _back_button_pressed() -> void:

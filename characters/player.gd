@@ -25,6 +25,8 @@ var is_game_host: bool = false
 var is_local_player: bool = false
 
 var player_index: int = 0
+var device_index: int = 0
+
 var is_stunned: bool = false
 var is_stealthed: bool = false:
 	get():
@@ -249,7 +251,7 @@ func _attack_area_body_entered(body: Node2D) -> void:
 func _get_input_vector() -> Vector2:
 	var suffix: String = ""
 	if !is_online_multiplayer:
-		suffix = str(player_index)
+		suffix = str(device_index)
 	return Input.get_vector(
 		"move_left%s" % suffix,
 		"move_right%s" % suffix,
