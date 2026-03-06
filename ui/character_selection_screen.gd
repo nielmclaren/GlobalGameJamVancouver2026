@@ -72,7 +72,7 @@ func _input(event: InputEvent) -> void:
 
 
 func _online_multiplayer_input(event: InputEvent) -> void:
-	if event.is_action_pressed("move_left"):
+	if event.is_action_pressed("move_left") and !event.is_echo():
 		if is_game_host:
 			if !_state_readys[HOST_INDEX]:
 				_apply_input(HOST_INDEX, CLIENT_INDEX, "move_left")
@@ -82,7 +82,7 @@ func _online_multiplayer_input(event: InputEvent) -> void:
 			if !_state_readys[CLIENT_INDEX]:
 				_game_client_send_input("move_left")
 
-	if event.is_action_pressed("move_right"):
+	if event.is_action_pressed("move_right") and !event.is_echo():
 		if is_game_host:
 			if !_state_readys[HOST_INDEX]:
 				_apply_input(HOST_INDEX, CLIENT_INDEX, "move_right")
@@ -92,7 +92,7 @@ func _online_multiplayer_input(event: InputEvent) -> void:
 			if !_state_readys[CLIENT_INDEX]:
 				_game_client_send_input("move_right")
 
-	if event.is_action_pressed("ui_accept"):
+	if event.is_action_pressed("ui_accept") and !event.is_echo():
 		if is_game_host:
 			_apply_input(HOST_INDEX, CLIENT_INDEX, "ui_accept")
 			_update()
@@ -101,7 +101,7 @@ func _online_multiplayer_input(event: InputEvent) -> void:
 			if _state_character_selections[CLIENT_INDEX] != CharacterSelection.NONE:
 				_game_client_send_input("ui_accept")
 
-	if event.is_action_pressed("ui_cancel"):
+	if event.is_action_pressed("ui_cancel") and !event.is_echo():
 		if is_game_host:
 			_apply_input(HOST_INDEX, CLIENT_INDEX, "ui_cancel")
 			_update()
@@ -117,46 +117,46 @@ func _local_multiplayer_input(event: InputEvent) -> void:
 	if is_zero_approx(Input.get_axis("move_left1", "move_right1")):
 		_debouncers[1] = true
 
-	if event.is_action_pressed("move_left0") and _debouncers[0]:
+	if event.is_action_pressed("move_left0") and !event.is_echo() and _debouncers[0]:
 		_debouncers[0] = false
 		if !_state_readys[HOST_INDEX]:
 			_apply_input(HOST_INDEX, CLIENT_INDEX, "move_left")
 			_update()
 
-	if event.is_action_pressed("move_left1") and _debouncers[1]:
+	if event.is_action_pressed("move_left1") and !event.is_echo() and _debouncers[1]:
 		_debouncers[1] = false
 		if !_state_readys[CLIENT_INDEX]:
 			_apply_input(CLIENT_INDEX, HOST_INDEX, "move_left")
 			_update()
 
-	if event.is_action_pressed("move_right0") and _debouncers[0]:
+	if event.is_action_pressed("move_right0") and !event.is_echo() and _debouncers[0]:
 		_debouncers[0] = false
 		if !_state_readys[HOST_INDEX]:
 			_apply_input(HOST_INDEX, CLIENT_INDEX, "move_right")
 			_update()
 
-	if event.is_action_pressed("move_right1") and _debouncers[1]:
+	if event.is_action_pressed("move_right1") and !event.is_echo() and _debouncers[1]:
 		_debouncers[1] = false
 		if !_state_readys[CLIENT_INDEX]:
 			_apply_input(CLIENT_INDEX, HOST_INDEX, "move_right")
 			_update()
 
-	if event.is_action_pressed("ui_accept0"):
+	if event.is_action_pressed("ui_accept0") and !event.is_echo():
 		_apply_input(HOST_INDEX, CLIENT_INDEX, "ui_accept")
 		_update()
 
-	if event.is_action_pressed("ui_accept1"):
+	if event.is_action_pressed("ui_accept1") and !event.is_echo():
 		_apply_input(CLIENT_INDEX, HOST_INDEX, "ui_accept")
 		_update()
 
-	if event.is_action_pressed("ui_cancel0"):
+	if event.is_action_pressed("ui_cancel0") and !event.is_echo():
 		if _state_character_selections[HOST_INDEX] != CharacterSelection.NONE:
 			_apply_input(HOST_INDEX, CLIENT_INDEX, "ui_cancel")
 			_update()
 		else:
 			canceled.emit()
 
-	if event.is_action_pressed("ui_cancel1"):
+	if event.is_action_pressed("ui_cancel1") and !event.is_echo():
 		if _state_character_selections[CLIENT_INDEX] != CharacterSelection.NONE:
 			_apply_input(CLIENT_INDEX, HOST_INDEX, "ui_cancel")
 			_update()

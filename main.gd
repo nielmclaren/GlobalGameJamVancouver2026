@@ -116,7 +116,7 @@ func _input(event: InputEvent) -> void:
 			_toggle_pause_menu()
 			get_viewport().set_input_as_handled()
 
-	elif event.is_action_pressed("pause") and !event.is_echo():
+	elif event.is_action_pressed("ui_menu") and !event.is_echo():
 		if _game:
 			_toggle_pause_menu()
 			get_viewport().set_input_as_handled()
