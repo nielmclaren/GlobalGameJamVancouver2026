@@ -22,7 +22,11 @@ var _peer_id: String
 var _message_handler: Callable = Callable()
 
 
-func reconnect() -> void:
+func open() -> void:
+	var s: int = _socket.get_ready_state()
+	if s != WebSocketPeer.STATE_CLOSED and s != WebSocketPeer.STATE_CLOSING:
+		return
+
 	_message_handler = _handle_handshake
 
 	var err: int = _socket.connect_to_url(_socket_url)
@@ -38,6 +42,16 @@ func reconnect() -> void:
 	else:
 		_set_status_message(StatusMessage.DISCONNECTED)
 		set_process(false)
+
+
+func is_open() -> bool:
+	return _socket.get_ready_state() == WebSocketPeer.STATE_OPEN
+
+
+func close() -> void:
+	var s: int = _socket.get_ready_state()
+	if s != WebSocketPeer.STATE_CLOSED and s != WebSocketPeer.STATE_CLOSING:
+		_socket.close(1000)
 
 
 func create_room() -> void:
@@ -60,8 +74,7 @@ func send(message: MultiplayerMessage) -> void:
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-
-	reconnect()
+	set_process(false)
 
 
 func _process(_delta: float) -> void:
@@ -80,7 +93,8 @@ func _process(_delta: float) -> void:
 					_message_handler.call(payload)
 
 			else:
-				push_warning("Expected string and received binary data.")
+				push_warning("Expected string and received binary data. Closing socket.")
+				_socket.close(1003)
 
 	elif state == WebSocketPeer.STATE_CLOSING:
 		pass

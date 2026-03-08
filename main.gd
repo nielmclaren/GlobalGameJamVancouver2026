@@ -15,6 +15,7 @@ var local_online_scene: PackedScene = preload("res://ui/local_online_screen.tscn
 var host_join_scene: PackedScene = preload("res://ui/host_join_screen.tscn")
 var character_selection_scene: PackedScene = preload("res://ui/character_selection_screen.tscn")
 var winner_scene: PackedScene = preload("res://ui/winner_screen.tscn")
+var status_message_scene: PackedScene = preload("res://ui/status_message_screen.tscn")
 
 var _sm: CallableStateMachineNoProcess
 
@@ -22,15 +23,21 @@ var _is_online_multiplayer: bool = false
 var _is_game_host: bool = false
 var _local_player_index: int = -1
 
+# True iff the player is currently in an online multiplayer game. If disconnected, a status message will be shown.
+var _show_message_if_disconnected: bool = false
+
 var _winner_player_index: int = -1
 var _winner_color_index: int = -1
 var _loser_color_index: int = -1
+
+var _status_message: String
 
 var _title_screen: TitleScreen
 var _local_online_screen: LocalOnlineScreen
 var _host_join_screen: HostJoinScreen
 var _character_selection_screen: CharacterSelectionScreen
 var _winner_screen: WinnerScreen
+var _status_message_screen: StatusMessageScreen
 
 var _game: Game
 
@@ -53,6 +60,7 @@ func _ready() -> void:
 	MultiplayerManager.message_received.connect(_message_received)
 	MultiplayerManager.partner_left.connect(_partner_left)
 	MultiplayerManager.disconnected.connect(_disconnected)
+	MultiplayerManager.open()
 
 	_sm = CallableStateMachineNoProcess.new()
 	_sm.add_state(_title_state_enter, _title_state_leave)
@@ -62,6 +70,7 @@ func _ready() -> void:
 	_sm.add_state(_character_selection_state_enter, _character_selection_state_leave)
 	_sm.add_state(_game_state_enter, _game_state_leave)
 	_sm.add_state(_winner_state_enter, _winner_state_leave)
+	_sm.add_state(_status_message_state_enter, _status_message_state_leave)
 	_sm.set_initial_state(_title_state_enter)
 
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -101,6 +110,7 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
 		Tracer.trace("Quit notification received.")
 		MultiplayerManager.leave_room()
+		MultiplayerManager.close()
 		await TracerIntegration.quit()
 		get_tree().quit()
 
@@ -133,7 +143,10 @@ func _local_online_canceled() -> void:
 
 func _local_online_completed(is_online_multiplayer: bool) -> void:
 	_is_online_multiplayer = is_online_multiplayer
+	_show_message_if_disconnected = is_online_multiplayer
+
 	if _is_online_multiplayer:
+		await MultiplayerManager.open()
 		_sm.change_state(_host_join_state_enter)
 	else:
 		_sm.change_state(_character_selection_state_enter)
@@ -151,11 +164,14 @@ func _host_join_completed(is_game_host: bool) -> void:
 
 
 func _partner_left() -> void:
-	_sm.change_state(_title_state_enter)
+	_status_message = "Other player disconnected."
+	_sm.change_state(_status_message_state_enter)
 
 
 func _disconnected() -> void:
-	_sm.change_state(_title_state_enter)
+	if _show_message_if_disconnected:
+		_status_message = "Disconnected from server."
+		_sm.change_state(_status_message_state_enter)
 
 
 func _character_selection_canceled() -> void:
@@ -186,6 +202,11 @@ func _game_completed(
 
 func _winner_completed() -> void:
 	_sm.change_state(_game_state_enter)
+
+
+func _status_message_completed() -> void:
+	_status_message = ""
+	_sm.change_state(_title_state_enter)
 
 
 func _abandon_pressed() -> void:
@@ -297,6 +318,8 @@ func _title_state_enter() -> void:
 	_title_screen.exit_pressed.connect(_exit_pressed)
 	screen_container.add_child(_title_screen)
 
+	_show_message_if_disconnected = false
+
 	# TODO: Reassess whether these are needed.
 	_is_pause_menu = false
 	_prev_paused = false
@@ -389,3 +412,14 @@ func _winner_state_enter() -> void:
 
 func _winner_state_leave() -> void:
 	_winner_screen.queue_free()
+
+
+func _status_message_state_enter() -> void:
+	_status_message_screen = status_message_scene.instantiate()
+	_status_message_screen.completed.connect(_status_message_completed)
+	_status_message_screen.message = _status_message
+	screen_container.add_child(_status_message_screen)
+
+
+func _status_message_state_leave() -> void:
+	_status_message_screen.queue_free()

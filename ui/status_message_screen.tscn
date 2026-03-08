@@ -1,0 +1,74 @@
+[gd_scene load_steps=10 format=3 uid="uid://dt60i0bd6b0fn"]
+
+[ext_resource type="Script" uid="uid://cpymyij7vdt00" path="res://ui/status_message_screen.gd" id="1_yt2up"]
+[ext_resource type="PackedScene" uid="uid://bkgqfqikuaqb8" path="res://ui/ui_background.tscn" id="2_ndk6d"]
+[ext_resource type="Texture2D" uid="uid://midrd8nyfk00" path="res://assets/art/win_lose_sheet.png" id="2_tk638"]
+[ext_resource type="LabelSettings" uid="uid://q2n6s537ad5y" path="res://ui/status_message_label.tres" id="3_ndk6d"]
+[ext_resource type="Theme" uid="uid://dikqu2u0jnhof" path="res://ui/button_theme.tres" id="4_qarxm"]
+[ext_resource type="Script" uid="uid://bgxvk5kxd13ru" path="res://addons/controller_icons/objects/ControllerIconTexture.gd" id="5_wbpvx"]
+[ext_resource type="LabelSettings" uid="uid://hqbhvhrjtu51" path="res://ui/controller_icon_label.tres" id="6_kpxvr"]
+
+[sub_resource type="Texture2D" id="Texture2D_8m47r"]
+resource_local_to_scene = false
+resource_name = ""
+script = ExtResource("5_wbpvx")
+path = "ui_accept"
+show_mode = 2
+metadata/_custom_type_script = "uid://bgxvk5kxd13ru"
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yt2up"]
+atlas = ExtResource("2_tk638")
+region = Rect2(0, 0, 24, 24)
+
+[node name="StatusMessageScreen" type="Node2D"]
+script = ExtResource("1_yt2up")
+
+[node name="UIBackground" parent="." instance=ExtResource("2_ndk6d")]
+
+[node name="MessageLabel" type="Label" parent="."]
+unique_name_in_owner = true
+offset_left = 256.0
+offset_top = 160.0
+offset_right = 1664.0
+offset_bottom = 608.0
+text = "If you can read this there is a bug."
+label_settings = ExtResource("3_ndk6d")
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="ContinueButton" type="Node2D" parent="."]
+
+[node name="MouseContent" type="Node2D" parent="ContinueButton"]
+unique_name_in_owner = true
+
+[node name="ContinueButton" type="Button" parent="ContinueButton/MouseContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 60)
+offset_left = 1616.0
+offset_top = 966.0
+offset_right = 1856.0
+offset_bottom = 1026.0
+theme = ExtResource("4_qarxm")
+text = "Continue"
+metadata/_edit_use_anchors_ = true
+
+[node name="ControllerContent" type="Node2D" parent="ContinueButton"]
+unique_name_in_owner = true
+
+[node name="ButtonIcon" type="Sprite2D" parent="ContinueButton/ControllerContent"]
+position = Vector2(1531, 998)
+texture = SubResource("Texture2D_8m47r")
+
+[node name="Label" type="Label" parent="ContinueButton/ControllerContent"]
+offset_left = 1600.0
+offset_top = 960.0
+offset_right = 1859.0
+offset_bottom = 1018.0
+text = "Continue"
+label_settings = ExtResource("6_kpxvr")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(256, 832)
+scale = Vector2(-16, 16)
+texture = SubResource("AtlasTexture_yt2up")

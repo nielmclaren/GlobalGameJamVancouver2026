@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://bo0cu0dgvlh0t"]
+[gd_scene load_steps=7 format=3 uid="uid://bo0cu0dgvlh0t"]
 
 [ext_resource type="Script" uid="uid://oca6lk7fl2rj" path="res://ui/local_online_screen.gd" id="1_2lekp"]
 [ext_resource type="PackedScene" uid="uid://bkgqfqikuaqb8" path="res://ui/ui_background.tscn" id="2_2lekp"]
 [ext_resource type="Theme" uid="uid://b8rvlvfehdp6a" path="res://ui/ui_theme.tres" id="3_ik7re"]
 [ext_resource type="Theme" uid="uid://dikqu2u0jnhof" path="res://ui/button_theme.tres" id="4_cfvsy"]
 [ext_resource type="PackedScene" uid="uid://elq4i50qnekt" path="res://ui/smart_back_button.tscn" id="5_ltsm8"]
+[ext_resource type="LabelSettings" uid="uid://q2n6s537ad5y" path="res://ui/status_message_label.tres" id="6_bju3x"]
 
 [node name="LocalOnlineScreen" type="Node2D"]
 script = ExtResource("1_2lekp")
@@ -51,3 +52,15 @@ text = "Online"
 [node name="SmartBackButton" parent="." instance=ExtResource("5_ltsm8")]
 unique_name_in_owner = true
 position = Vector2(0, 1080)
+
+[node name="MessageLabel" type="Label" parent="."]
+unique_name_in_owner = true
+offset_left = 256.0
+offset_top = 608.0
+offset_right = 1664.0
+offset_bottom = 832.0
+text = "If you can read this there is a bug."
+label_settings = ExtResource("6_bju3x")
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
