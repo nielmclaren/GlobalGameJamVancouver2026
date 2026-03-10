@@ -202,6 +202,11 @@ func _process(_delta: float) -> void:
 	if _direction.is_zero_approx():
 		target_animation = "%s_idle" % player_form
 
+	if _direction.y < 0:
+		target_animation += "_back"
+	elif _direction.y > 0:
+		target_animation += "_front"
+
 	if _animated_sprite.animation != target_animation:
 		_animated_sprite.play(target_animation)
 
