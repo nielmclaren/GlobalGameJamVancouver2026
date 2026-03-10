@@ -49,6 +49,7 @@ theme_override_fonts/font = ExtResource("5_sw2vr")
 text = "FCGDA"
 alignment = 1
 editable = false
+context_menu_enabled = false
 emoji_menu_enabled = false
 
 [node name="HostButton" type="Button" parent="HostControls"]
@@ -112,6 +113,7 @@ theme = ExtResource("4_aktce")
 theme_override_fonts/font = ExtResource("5_sw2vr")
 placeholder_text = "CODE"
 alignment = 1
+context_menu_enabled = false
 script = ExtResource("3_76jbv")
 
 [node name="JoinButton" type="Button" parent="JoinControls"]
