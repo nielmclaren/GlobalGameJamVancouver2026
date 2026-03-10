@@ -49,7 +49,7 @@ func _online_button_pressed() -> void:
 
 
 func _connected() -> void:
-	if MultiplayerManager.is_open():
+	if MultiplayerManager.is_open() and _is_online_pressed:
 		_message_label.text = "Connected."
 
 		completed.emit(true)

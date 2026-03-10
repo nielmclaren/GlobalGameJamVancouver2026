@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://chr26unydsapp"]
+[gd_scene load_steps=17 format=3 uid="uid://chr26unydsapp"]
 
 [ext_resource type="Script" uid="uid://bqag7erwugwsw" path="res://ui/character_selection_screen.gd" id="1_j3yi0"]
 [ext_resource type="PackedScene" uid="uid://bkgqfqikuaqb8" path="res://ui/ui_background.tscn" id="2_7iokj"]
@@ -7,6 +7,37 @@
 [ext_resource type="LabelSettings" uid="uid://b4lsvhnlevmc4" path="res://ui/character_selection_ready_label_settings.tres" id="4_y0wt2"]
 [ext_resource type="Script" uid="uid://bgxvk5kxd13ru" path="res://addons/controller_icons/objects/ControllerIconTexture.gd" id="5_dj7pb"]
 [ext_resource type="PackedScene" uid="uid://elq4i50qnekt" path="res://ui/smart_back_button.tscn" id="6_70y16"]
+[ext_resource type="Texture2D" uid="uid://b65jx50xbr8nx" path="res://assets/art/tiny_arrow.png" id="8_88dbw"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_88dbw"]
+atlas = ExtResource("8_88dbw")
+region = Rect2(0, 0, 64, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2xuh0"]
+atlas = ExtResource("8_88dbw")
+region = Rect2(0, 24, 64, 24)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_rns37"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_88dbw")
+}],
+"loop": true,
+"name": &"RESET",
+"speed": 3.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2xuh0")
+}, {
+"duration": 4.0,
+"texture": SubResource("AtlasTexture_88dbw")
+}],
+"loop": true,
+"name": &"arrows",
+"speed": 3.0
+}]
 
 [sub_resource type="Texture2D" id="Texture2D_88dbw"]
 resource_local_to_scene = false
@@ -99,6 +130,20 @@ text = "Pick a Side"
 label_settings = ExtResource("3_vv4gq")
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="Arrows0" type="AnimatedSprite2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(959.99994, 416)
+scale = Vector2(10, 10)
+sprite_frames = SubResource("SpriteFrames_rns37")
+animation = &"arrows"
+
+[node name="Arrows1" type="AnimatedSprite2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(959.99994, 704)
+scale = Vector2(10, 10)
+sprite_frames = SubResource("SpriteFrames_rns37")
+animation = &"arrows"
 
 [node name="Confirm0" type="Node2D" parent="."]
 unique_name_in_owner = true
@@ -230,6 +275,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0)
+metadata/_edit_lock_ = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 unique_name_in_owner = true

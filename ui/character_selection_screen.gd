@@ -21,6 +21,7 @@ var _state_readys: Array[bool] = [false, false]
 
 @onready var _controllers: Array[CharacterSelectionController] = [%Controller0, %Controller1]
 @onready var _controller_markers: Array[Marker2D] = [%ControllerMarker0, %ControllerMarker1]
+@onready var _arrows: Array[AnimatedSprite2D] = [%Arrows0, %Arrows1]
 @onready var _character_markers: Array[Marker2D] = [%CharacterMarker0, %CharacterMarker1]
 @onready var _confirm_nodes: Array[Node2D] = [%Confirm0, %Confirm1]
 @onready var _confirm_icon_sprites: Array[Sprite2D] = [%ConfirmIconSprite0, %ConfirmIconSprite1]
@@ -40,6 +41,9 @@ func _ready() -> void:
 
 	_back_button.pressed.connect(_back_button_pressed)
 
+	_arrows[0].play("arrows")
+	_arrows[1].play("arrows")
+
 	MultiplayerManager.message_received.connect(_message_received)
 
 	if is_game_host:
@@ -53,6 +57,7 @@ func _update() -> void:
 	_update_player(CLIENT_INDEX)
 
 	_update_ready_prompts()
+	_update_arrows()
 
 	if not false in _state_readys:
 		_animation.play("ready")
@@ -156,10 +161,25 @@ func _local_multiplayer_input(event: InputEvent) -> void:
 		else:
 			canceled.emit()
 
-	if event.is_action_pressed("ui_cancel1") and !event.is_echo():
+	elif event.is_action_pressed("ui_cancel1") and !event.is_echo():
 		if _state_character_selections[CLIENT_INDEX] != CharacterSelection.NONE:
 			_apply_input(CLIENT_INDEX, HOST_INDEX, "ui_cancel")
 			_update()
+		else:
+			canceled.emit()
+
+	elif event.is_action_pressed("ui_cancel") and !event.is_echo():
+		if (
+			_state_character_selections[HOST_INDEX] != CharacterSelection.NONE
+			or _state_character_selections[CLIENT_INDEX] != CharacterSelection.NONE
+		):
+			# On keyboard both players share a cancel button so just reset if either presses cancel.
+			_state_character_selections[HOST_INDEX] = CharacterSelection.NONE
+			_state_character_selections[CLIENT_INDEX] = CharacterSelection.NONE
+			_state_readys[HOST_INDEX] = false
+			_state_readys[CLIENT_INDEX] = false
+			_update()
+
 		else:
 			canceled.emit()
 
@@ -224,6 +244,13 @@ func _update_ready_prompts() -> void:
 					texture.path = "ui_accept0"
 				elif _state_character_selections[CLIENT_INDEX] == selection:
 					texture.path = "ui_accept1"
+
+
+func _update_arrows() -> void:
+	_arrows[HOST_INDEX].visible = _state_character_selections[HOST_INDEX] == CharacterSelection.NONE
+	_arrows[CLIENT_INDEX].visible = (
+		_state_character_selections[CLIENT_INDEX] == CharacterSelection.NONE
+	)
 
 
 func _apply_input(player: int, other_player: int, action: String) -> void:
