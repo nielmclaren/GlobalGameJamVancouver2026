@@ -1,26 +1,26 @@
 [gd_scene load_steps=9 format=3 uid="uid://b1uaili0kp6u1"]
 
 [ext_resource type="Script" uid="uid://p4fjqjucqti4" path="res://game_objects/mask.gd" id="1_7oty3"]
-[ext_resource type="Texture2D" uid="uid://dtpoo8b1d1n11" path="res://assets/art/MattSheet.png" id="2_7oty3"]
+[ext_resource type="Texture2D" uid="uid://bvhitlfcuoxva" path="res://assets/art/MattSheet2.png" id="2_7oty3"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_emyr1"]
 radius = 42.0
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_3n6ma"]
 atlas = ExtResource("2_7oty3")
-region = Rect2(120, 144, 24, 24)
+region = Rect2(168, 288, 24, 24)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_g8pl1"]
 atlas = ExtResource("2_7oty3")
-region = Rect2(96, 144, 24, 24)
+region = Rect2(144, 288, 24, 24)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_qb6og"]
 atlas = ExtResource("2_7oty3")
-region = Rect2(144, 144, 24, 24)
+region = Rect2(0, 312, 24, 24)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_0jnui"]
 atlas = ExtResource("2_7oty3")
-region = Rect2(168, 144, 24, 24)
+region = Rect2(24, 312, 24, 24)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_kdtim"]
 animations = [{

@@ -157,8 +157,6 @@ func _host_join_canceled() -> void:
 
 
 func _host_join_completed(is_game_host: bool) -> void:
-	print("Host join completed. is_game_host=", is_game_host)
-	print("Character selection.")
 	_is_game_host = is_game_host
 	_sm.change_state(_character_selection_state_enter)
 

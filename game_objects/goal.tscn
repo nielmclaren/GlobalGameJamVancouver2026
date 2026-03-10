@@ -1,14 +1,14 @@
 [gd_scene load_steps=5 format=3 uid="uid://bwf4svsbu18fc"]
 
 [ext_resource type="Script" uid="uid://cerc06pxu5m5u" path="res://game_objects/goal.gd" id="1_6tyjl"]
-[ext_resource type="Texture2D" uid="uid://dtpoo8b1d1n11" path="res://assets/art/MattSheet.png" id="2_7epht"]
+[ext_resource type="Texture2D" uid="uid://bvhitlfcuoxva" path="res://assets/art/MattSheet2.png" id="2_7epht"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_722m3"]
 radius = 18.027756
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_6ls8a"]
 atlas = ExtResource("2_7epht")
-region = Rect2(48, 144, 24, 24)
+region = Rect2(96, 288, 24, 24)
 
 [node name="Goal" type="Area2D"]
 collision_layer = 2

@@ -40,16 +40,12 @@ var is_stealthed: bool = false:
 				_animation.play("destealth")
 
 var color_index: int = -1
-var score: int = 0:
-	get():
-		return score
-	set(v):
-		score = v
-		_crown_animated_sprite.visible = v > 0
+var score: int = 0
 
 var _game: Game
 var _direction: Vector2
 var _prev_direction: Vector2
+var _direction_y: int
 
 # Buffer player input for game client to play back over position updates received from game host.
 var _local_input_buffer: Array[PlayerInput]
@@ -76,6 +72,8 @@ var _ready_ticks: int = 0
 @onready var _art: Node2D = %Art
 @onready var _animated_sprite: AnimatedSprite2D = %AnimatedSprite2D
 @onready var _crown_animated_sprite: AnimatedSprite2D = %CrownAnimatedSprite
+@onready var _back_crown_animated_sprite: AnimatedSprite2D = %BackCrownAnimatedSprite
+@onready var _front_crown_animated_sprite: AnimatedSprite2D = %FrontCrownAnimatedSprite
 @onready var _weapon_animated_sprite: AnimatedSprite2D = %WeaponAnimatedSprite
 @onready var _attack_area: Area2D = %AttackArea
 @onready var _animation: AnimationPlayer = %AnimationPlayer
@@ -88,8 +86,11 @@ func _ready() -> void:
 	_ready_ticks = Time.get_ticks_msec()
 
 	_attack_area.body_entered.connect(_attack_area_body_entered)
-	_crown_animated_sprite.visible = false
 	_weapon_animated_sprite.play("weapon%d" % player_index)
+
+	_crown_animated_sprite.hide()
+	_front_crown_animated_sprite.hide()
+	_back_crown_animated_sprite.hide()
 
 	MultiplayerManager.message_received.connect(_message_received)
 
@@ -190,30 +191,59 @@ func _process(_delta: float) -> void:
 	if !_direction.is_zero_approx():
 		_weapon.global_rotation = _direction.angle()
 
+		if !is_zero_approx(_direction.y) and abs(_direction.y) > abs(_direction.x):
+			_direction_y = sign(_direction.y)
+		elif !is_zero_approx(_direction.x):
+			_direction_y = 0
+
 		if _direction.x < 0:
 			_art.scale.x = -1
 		elif _direction.x > 0:
 			_art.scale.x = 1
 
+	var is_idle: bool = _direction.is_zero_approx()
+
 	var player_form: String = "base"
 	if color_index >= 0:
 		player_form = Constants.PLAYER_FORMS[color_index]
 	var target_animation: String = "%s_walk" % player_form
-	if _direction.is_zero_approx():
+	if is_idle:
 		target_animation = "%s_idle" % player_form
 
-	if _direction.y < 0:
+	if _direction_y < 0:
 		target_animation += "_back"
-	elif _direction.y > 0:
+	elif _direction_y > 0:
 		target_animation += "_front"
 
 	if _animated_sprite.animation != target_animation:
 		_animated_sprite.play(target_animation)
 
-		if _direction.is_zero_approx():
-			_crown_animated_sprite.play("default")
+	_update_crown()
+
+
+func _update_crown() -> void:
+	_crown_animated_sprite.hide()
+	_front_crown_animated_sprite.hide()
+	_back_crown_animated_sprite.hide()
+
+	if score > 0:
+		var crown_sprite: AnimatedSprite2D = _crown_animated_sprite
+		if _direction_y < 0:
+			crown_sprite = _back_crown_animated_sprite
+			_back_crown_animated_sprite.show()
+
+		elif _direction_y > 0:
+			crown_sprite = _front_crown_animated_sprite
+			_front_crown_animated_sprite.show()
+
 		else:
-			_crown_animated_sprite.play("walk")
+			crown_sprite = _crown_animated_sprite
+			_crown_animated_sprite.show()
+
+		if _direction.is_zero_approx():
+			crown_sprite.play("idle")
+		else:
+			crown_sprite.play("walk")
 
 
 func setup(game: Game) -> Player:
@@ -222,7 +252,6 @@ func setup(game: Game) -> Player:
 
 
 func take_hit() -> void:
-	print("Player %d got hit." % player_index)
 	_animation.play("hit")
 	hitted.emit()
 
