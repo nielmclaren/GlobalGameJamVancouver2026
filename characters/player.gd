@@ -79,6 +79,7 @@ var _ready_ticks: int = 0
 @onready var _animation: AnimationPlayer = %AnimationPlayer
 @onready var _weapon: Node2D = %Weapon
 @onready var _weapon_sound: AudioStreamPlayer2D = %WeaponSound
+@onready var _hit_timer: Timer = %HitTimer
 @onready var _sync_timer: Timer = %SyncTimer
 
 
@@ -91,6 +92,8 @@ func _ready() -> void:
 	_crown_animated_sprite.hide()
 	_front_crown_animated_sprite.hide()
 	_back_crown_animated_sprite.hide()
+
+	_hit_timer.timeout.connect(_hit_timeout)
 
 	MultiplayerManager.message_received.connect(_message_received)
 
@@ -253,7 +256,17 @@ func setup(game: Game) -> Player:
 
 func take_hit() -> void:
 	_animation.play("hit")
+
+	is_stunned = true
+	_unmask()
+
+	_hit_timer.start()
 	hitted.emit()
+
+
+func _hit_timeout() -> void:
+	is_stunned = false
+	_mask()
 
 
 func _get_input(delta: float) -> PlayerInput:

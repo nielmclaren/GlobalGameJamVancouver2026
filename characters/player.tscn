@@ -8,7 +8,7 @@
 [ext_resource type="AudioStream" uid="uid://bfgeqd6eyrqh7" path="res://assets/sfx/Slash.wav" id="6_h1q25"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_3eadt"]
-radius = 36.013885
+radius = 30.016663
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_mjkfq"]
 atlas = ExtResource("5_evndh")
@@ -973,35 +973,6 @@ tracks/0/keys = {
 "update": 1,
 "values": [true, false, true, false, true, false]
 }
-tracks/1/type = "method"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath(".")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 1.4),
-"transitions": PackedFloat32Array(1, 1),
-"values": [{
-"args": [],
-"method": &"_unmask"
-}, {
-"args": [],
-"method": &"_mask"
-}]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath(".:is_stunned")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0, 1.4),
-"transitions": PackedFloat32Array(1, 1),
-"update": 1,
-"values": [true, false]
-}
 
 [sub_resource type="Animation" id="Animation_evndh"]
 resource_name = "stealth"
@@ -1048,6 +1019,7 @@ collision_mask = 5
 script = ExtResource("1_dnjla")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -6)
 shape = SubResource("CircleShape2D_3eadt")
 
 [node name="Weapon" type="Node2D" parent="."]
@@ -1087,6 +1059,7 @@ unique_name_in_owner = true
 
 [node name="BackCrownAnimatedSprite" type="AnimatedSprite2D" parent="Art"]
 unique_name_in_owner = true
+visible = false
 position = Vector2(0, -32)
 scale = Vector2(4, 4)
 sprite_frames = SubResource("SpriteFrames_ys5vl")
@@ -1096,12 +1069,12 @@ animation = &"idle"
 unique_name_in_owner = true
 scale = Vector2(4, 4)
 sprite_frames = SubResource("SpriteFrames_h1q25")
-animation = &"base_idle"
+animation = &"fire_idle_back"
 autoplay = "default"
-frame_progress = 0.42949584
 
 [node name="FrontCrownAnimatedSprite" type="AnimatedSprite2D" parent="Art"]
 unique_name_in_owner = true
+visible = false
 position = Vector2(0, -24)
 scale = Vector2(4, 4)
 sprite_frames = SubResource("SpriteFrames_ys5vl")
@@ -1109,6 +1082,7 @@ animation = &"idle"
 
 [node name="CrownAnimatedSprite" type="AnimatedSprite2D" parent="Art"]
 unique_name_in_owner = true
+visible = false
 position = Vector2(12, -28)
 scale = Vector2(4, 4)
 sprite_frames = SubResource("SpriteFrames_ys5vl")
@@ -1139,3 +1113,8 @@ bus = &"Sfx"
 unique_name_in_owner = true
 wait_time = 0.2
 autostart = true
+
+[node name="HitTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 1.4
+one_shot = true

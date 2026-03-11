@@ -8,11 +8,11 @@
 [ext_resource type="Script" uid="uid://bgxvk5kxd13ru" path="res://addons/controller_icons/objects/ControllerIconTexture.gd" id="5_1jkf2"]
 [ext_resource type="LabelSettings" uid="uid://hqbhvhrjtu51" path="res://ui/controller_icon_label.tres" id="7_8m47r"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_eow3j"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_8m47r"]
 atlas = ExtResource("1_b2gjs")
 region = Rect2(168, 0, 24, 24)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_j5wjh"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_8u3hs"]
 atlas = ExtResource("1_b2gjs")
 region = Rect2(24, 72, 24, 24)
 
@@ -32,7 +32,7 @@ region = Rect2(120, 96, 24, 24)
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_eow3j")
+"texture": SubResource("AtlasTexture_8m47r")
 }],
 "loop": true,
 "name": &"base",
@@ -40,7 +40,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_j5wjh")
+"texture": SubResource("AtlasTexture_8u3hs")
 }],
 "loop": true,
 "name": &"fire",
@@ -75,9 +75,9 @@ animations = [{
 atlas = ExtResource("1_b2gjs")
 region = Rect2(0, 0, 24, 24)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_lc2xo"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_65euu"]
 atlas = ExtResource("1_b2gjs")
-region = Rect2(120, 48, 24, 24)
+region = Rect2(96, 48, 24, 24)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_e8heu"]
 atlas = ExtResource("1_b2gjs")
@@ -87,9 +87,9 @@ region = Rect2(0, 120, 24, 24)
 atlas = ExtResource("1_b2gjs")
 region = Rect2(48, 24, 24, 24)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_rvswv"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_5nv4s"]
 atlas = ExtResource("1_b2gjs")
-region = Rect2(168, 72, 24, 24)
+region = Rect2(144, 72, 24, 24)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_boyg6"]
 animations = [{
@@ -103,7 +103,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_lc2xo")
+"texture": SubResource("AtlasTexture_65euu")
 }],
 "loop": true,
 "name": &"fire",
@@ -127,7 +127,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_rvswv")
+"texture": SubResource("AtlasTexture_5nv4s")
 }],
 "loop": true,
 "name": &"wood",
