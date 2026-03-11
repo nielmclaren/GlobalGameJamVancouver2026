@@ -79,6 +79,7 @@ var _ready_ticks: int = 0
 @onready var _animation: AnimationPlayer = %AnimationPlayer
 @onready var _weapon: Node2D = %Weapon
 @onready var _weapon_sound: AudioStreamPlayer2D = %WeaponSound
+@onready var _attack_timer: Timer = %AttackTimer
 @onready var _hit_timer: Timer = %HitTimer
 @onready var _sync_timer: Timer = %SyncTimer
 
@@ -93,6 +94,7 @@ func _ready() -> void:
 	_front_crown_animated_sprite.hide()
 	_back_crown_animated_sprite.hide()
 
+	_attack_timer.timeout.connect(_attack_timeout)
 	_hit_timer.timeout.connect(_hit_timeout)
 
 	MultiplayerManager.message_received.connect(_message_received)
@@ -308,19 +310,31 @@ func _get_input_vector() -> Vector2:
 
 
 func _try_attack() -> void:
-	if !_animation.is_playing():
-		_animation.play("attack")
-		_perform_attack()
+	if _animation.is_playing():
+		return
 
-
-func _perform_attack() -> void:
 	var bodies: Array[Node2D] = _attack_area.get_overlapping_bodies()
 	for body: Node2D in bodies:
 		if body is Player and body != self:
 			var player: Player = body
-			player.take_hit()
+			_perform_attack(player)
+			break
 
+
+func _perform_attack(victim: Player) -> void:
+	victim.take_hit()
+
+	_animation.play("attack")
 	_weapon_sound.play()
+
+	_attack_timer.start()
+	is_stunned = true
+	_unmask()
+
+
+func _attack_timeout() -> void:
+	is_stunned = false
+	_mask()
 
 
 func _unmask() -> void:
