@@ -202,9 +202,8 @@ func _process(_delta: float) -> void:
 		elif !is_zero_approx(_direction.x):
 			_direction_y = 0
 
-		else:
-			if !is_zero_approx(_direction.x):
-				_art.scale.x = sign(_direction.x)
+		if !is_zero_approx(_direction.x):
+			_art.scale.x = sign(_direction.x)
 
 	# Hit recovery should override controller direction.
 	if _is_hit_recovery():
