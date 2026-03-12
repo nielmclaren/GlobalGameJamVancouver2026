@@ -46,6 +46,7 @@ var _game: Game
 var _direction: Vector2
 var _prev_direction: Vector2
 var _direction_y: int
+var _hit_direction: Vector2
 
 # Buffer player input for game client to play back over position updates received from game host.
 var _local_input_buffer: Array[PlayerInput]
@@ -201,29 +202,44 @@ func _process(_delta: float) -> void:
 		elif !is_zero_approx(_direction.x):
 			_direction_y = 0
 
-		if _direction.x < 0:
-			_art.scale.x = -1
-		elif _direction.x > 0:
-			_art.scale.x = 1
+		else:
+			if !is_zero_approx(_direction.x):
+				_art.scale.x = sign(_direction.x)
 
-	var is_idle: bool = _direction.is_zero_approx()
+	# Hit recovery should override controller direction.
+	if _is_hit_recovery():
+		if !is_zero_approx(_hit_direction.x):
+			_art.scale.x = sign(_hit_direction.x)
 
-	var player_form: String = "base"
-	if color_index >= 0:
-		player_form = Constants.PLAYER_FORMS[color_index]
-	var target_animation: String = "%s_walk" % player_form
-	if is_idle:
-		target_animation = "%s_idle" % player_form
-
-	if _direction_y < 0:
-		target_animation += "_back"
-	elif _direction_y > 0:
-		target_animation += "_front"
-
+	var target_animation: String = _get_animation(_direction_y)
 	if _animated_sprite.animation != target_animation:
 		_animated_sprite.play(target_animation)
 
 	_update_crown()
+
+
+func _get_animation(direction_y: int) -> String:
+	var player_form: String = "base"
+	if color_index >= 0:
+		player_form = Constants.PLAYER_FORMS[color_index]
+
+	var result: String
+	if _is_hit_recovery():
+		result = player_form + "_hit"
+
+	else:
+		var is_idle: bool = _direction.is_zero_approx()
+		if is_idle:
+			result = player_form + "_idle"
+		else:
+			result = player_form + "_walk"
+
+		if direction_y < 0:
+			result += "_back"
+		elif direction_y > 0:
+			result += "_front"
+
+	return result
 
 
 func _update_crown() -> void:
@@ -256,14 +272,18 @@ func setup(game: Game) -> Player:
 	return self
 
 
-func take_hit() -> void:
-	_animation.play("hit")
-
+func take_hit(attacker_position: Vector2) -> void:
 	is_stunned = true
 	_unmask()
 
+	_hit_direction = attacker_position - global_position
+
 	_hit_timer.start()
 	hitted.emit()
+
+
+func _is_hit_recovery() -> bool:
+	return !_hit_timer.is_stopped()
 
 
 func _hit_timeout() -> void:
@@ -322,7 +342,7 @@ func _try_attack() -> void:
 
 
 func _perform_attack(victim: Player) -> void:
-	victim.take_hit()
+	victim.take_hit(global_position)
 
 	_animation.play("attack")
 	_weapon_sound.play()
