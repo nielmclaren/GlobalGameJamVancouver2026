@@ -75,6 +75,7 @@ var _ready_ticks: int = 0
 @onready var _crown_animated_sprite: AnimatedSprite2D = %CrownAnimatedSprite
 @onready var _back_crown_animated_sprite: AnimatedSprite2D = %BackCrownAnimatedSprite
 @onready var _front_crown_animated_sprite: AnimatedSprite2D = %FrontCrownAnimatedSprite
+@onready var _crown_drop_particles: CPUParticles2D = %CrownDropParticles
 @onready var _weapon_animated_sprite: AnimatedSprite2D = %WeaponAnimatedSprite
 @onready var _attack_area: Area2D = %AttackArea
 @onready var _animation: AnimationPlayer = %AnimationPlayer
@@ -278,6 +279,13 @@ func take_hit(attacker_position: Vector2) -> void:
 	_hit_direction = attacker_position - global_position
 
 	_hit_timer.start()
+
+	_animation.play("hit")
+
+	if score > 0:
+		_crown_drop_particles.amount = score
+		_crown_drop_particles.restart()
+
 	hitted.emit()
 
 
