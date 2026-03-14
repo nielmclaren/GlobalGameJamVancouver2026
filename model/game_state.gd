@@ -2,8 +2,13 @@ class_name GameState
 extends RefCounted
 
 var masks: Array[MaskState] = []
+var goal_coord: Vector2i = Vector2i(-1, -1)
 var ticks: int = -1
 var message_num: int = -1
+
+
+func has_goal() -> bool:
+	return goal_coord.x >= 0
 
 
 static func filter_after(min_ticks: int) -> Callable:
@@ -14,7 +19,9 @@ func serialize() -> String:
 	var masks_str: String = JSON.stringify(
 		masks.map(func(d: MaskState) -> String: return d.serialize())
 	)
-	return JSON.stringify([str(ticks), str(message_num), masks_str])
+	return JSON.stringify(
+		[str(ticks), str(message_num), masks_str, Utils.vector2i_to_string(goal_coord)]
+	)
 
 
 static func deserialize(message: String) -> GameState:
@@ -26,4 +33,5 @@ static func deserialize(message: String) -> GameState:
 	var mask_strs: Array = JSON.parse_string(parts[2])
 	input.masks.assign(mask_strs.map(func(d: String) -> MaskState: return MaskState.deserialize(d)))
 
+	input.goal_coord = Utils.string_to_vector2i(parts[3])
 	return input
