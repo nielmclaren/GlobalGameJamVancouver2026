@@ -47,6 +47,7 @@ var _direction: Vector2
 var _prev_direction: Vector2
 var _direction_y: int
 var _hit_direction: Vector2
+var _is_moved_after_hit: bool = true
 
 # Buffer player input for game client to play back over position updates received from game host.
 var _local_input_buffer: Array[PlayerInput]
@@ -121,6 +122,9 @@ func _physics_process_online_multiplayer(delta: float) -> void:
 			return
 
 		_direction = _get_input_vector()
+		if !_direction.is_zero_approx():
+			_is_moved_after_hit = true
+
 		if _direction.length_squared() > 0 or _prev_direction.length_squared() > 0:
 			_prev_direction = _direction
 
@@ -146,6 +150,8 @@ func _physics_process_online_multiplayer(delta: float) -> void:
 					_local_input_buffer.pop_front()
 
 	else:
+		var prev_position: Vector2 = position
+
 		if is_game_host:
 			for received_input: PlayerInput in _input_receive_buffer:
 				if received_input.ticks <= now - GAME_HOST_TICKS_OFFSET:
@@ -180,12 +186,18 @@ func _physics_process_online_multiplayer(delta: float) -> void:
 			)
 			_position_changed()
 
+		if prev_position != position:
+			_is_moved_after_hit = true
+
 
 func _physics_process_local_multiplayer(delta: float) -> void:
 	if is_stunned:
 		return
 
 	_direction = _get_input_vector()
+	if !_direction.is_zero_approx():
+		_is_moved_after_hit = true
+
 	if _direction.length_squared() > 0 or _prev_direction.length_squared() > 0:
 		_prev_direction = _direction
 
@@ -211,35 +223,37 @@ func _process(_delta: float) -> void:
 		if !is_zero_approx(_hit_direction.x):
 			_art.scale.x = sign(_hit_direction.x)
 
-	var target_animation: String = _get_animation(_direction_y)
-	if _animated_sprite.animation != target_animation:
-		_animated_sprite.play(target_animation)
+	if _is_moved_after_hit:
+		# Hit recovery handles its own animation. Everything else handled here.
+		var target_animation: String = _get_animation(_direction_y)
+		if _animated_sprite.animation != target_animation:
+			_animated_sprite.play(target_animation)
 
 	_update_crown()
 
 
 func _get_animation(direction_y: int) -> String:
-	var player_form: String = "base"
-	if color_index >= 0:
-		player_form = Constants.PLAYER_FORMS[color_index]
+	var player_form: String = _get_player_form(color_index)
 
 	var result: String
-	if _is_hit_recovery():
-		result = player_form + "_hit"
-
+	var is_idle: bool = _direction.is_zero_approx()
+	if is_idle:
+		result = player_form + "_idle"
 	else:
-		var is_idle: bool = _direction.is_zero_approx()
-		if is_idle:
-			result = player_form + "_idle"
-		else:
-			result = player_form + "_walk"
+		result = player_form + "_walk"
 
-		if direction_y < 0:
-			result += "_back"
-		elif direction_y > 0:
-			result += "_front"
+	if direction_y < 0:
+		result += "_back"
+	elif direction_y > 0:
+		result += "_front"
 
 	return result
+
+
+func _get_player_form(mask_index: int) -> String:
+	if mask_index >= 0:
+		return Constants.PLAYER_FORMS[mask_index]
+	return "base"
 
 
 func _update_crown() -> void:
@@ -279,8 +293,16 @@ func take_hit(attacker_position: Vector2) -> void:
 	_hit_direction = attacker_position - global_position
 
 	_hit_timer.start()
+	_is_moved_after_hit = false
 
+	if _animation.current_animation == "hit":
+		_animation.seek(0)
 	_animation.play("hit")
+
+	var animation_key: String = _get_player_form(color_index) + "_hit"
+	if _animated_sprite.animation == animation_key:
+		_animated_sprite.stop()
+	_animated_sprite.play(animation_key)
 
 	if score > 0:
 		_crown_drop_particles.amount = score
