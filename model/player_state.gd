@@ -1,10 +1,10 @@
 class_name PlayerState
 extends RefCounted
 
-@export var direction: Vector2
-@export var position: Vector2
-@export var ticks: int = -1
-@export var message_num: int = -1
+var direction: Vector2
+var position: Vector2
+var ticks: int = -1
+var message_num: int = -1
 
 
 static func filter_after(min_ticks: int) -> Callable:
@@ -12,28 +12,16 @@ static func filter_after(min_ticks: int) -> Callable:
 
 
 func serialize() -> String:
-	return (
-		_vector2_to_string(direction)
-		+ "|"
-		+ _vector2_to_string(position)
-		+ "|%d|%d" % [ticks, message_num]
+	return JSON.stringify(
+		[Utils.vector2_to_string(direction, 3), Utils.vector2_to_string(position, 3), str(ticks), str(message_num)]
 	)
 
 
 static func deserialize(message: String) -> PlayerState:
-	var parts: PackedStringArray = message.split("|")
+	var parts: PackedStringArray = JSON.parse_string(message)
 	var input: PlayerState = PlayerState.new()
-	input.direction = _string_to_vector2(parts[0])
-	input.position = _string_to_vector2(parts[1])
+	input.direction = Utils.string_to_vector2(parts[0])
+	input.position = Utils.string_to_vector2(parts[1])
 	input.ticks = int(parts[2])
 	input.message_num = int(parts[3])
 	return input
-
-
-static func _string_to_vector2(value: String) -> Vector2:
-	var parts: PackedStringArray = value.substr(1, value.length() - 2).split(", ")
-	return Vector2(float(parts[0]), float(parts[1]))
-
-
-func _vector2_to_string(value: Vector2) -> String:
-	return "(%.3f, %.3f)" % [value.x, value.y]

@@ -10,12 +10,12 @@ static func deserialize(message: String) -> MultiplayerMessage:
 	var parts: PackedStringArray = message.split(":")
 	var result: MultiplayerMessage = MultiplayerMessage.new(parts[0], parts[1])
 	if parts.size() > 2 and parts[2]:
-		result.args = parts[2].split(";")
+		result.args = JSON.parse_string(parts[2])
 	return result
 
 
 func serialize() -> String:
-	var args_str: String = "" if args.is_empty() else ";".join(args)
+	var args_str: String = JSON.stringify(args)
 	return path + ":" + name + ":" + args_str
 
 

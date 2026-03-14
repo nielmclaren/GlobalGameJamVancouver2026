@@ -454,10 +454,6 @@ func _sync() -> void:
 			MultiplayerManager.send(message)
 
 
-func _vector2_to_string(value: Vector2) -> String:
-	return "(%.3f, %.3f)" % [value.x, value.y]
-
-
 func _game_client_receive_state(message: MultiplayerMessage) -> void:
 	if !message.matches_path(get_path()):
 		return

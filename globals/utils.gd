@@ -44,3 +44,15 @@ func string_to_vector2(value: String) -> Vector2:
 func string_to_vector2i(value: String) -> Vector2i:
 	var parts: PackedStringArray = value.substr(1, value.length() - 2).split(", ")
 	return Vector2i(parts[0].to_int(), parts[1].to_int())
+
+
+func vector2_to_string(value: Vector2, decimals: int = -1) -> String:
+	if decimals < 0:
+		return "(%f, %f)" % [value.x, value.y]
+	if decimals == 0:
+		return "(%d, %d)" % [value.x, value.y]
+	return ("(%." + str(decimals) + "f, %." + str(decimals) + "f)") % [value.x, value.y]
+
+
+func vector2i_to_string(value: Vector2i) -> String:
+	return str(value)
