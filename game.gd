@@ -17,6 +17,7 @@ var _id_to_mask: Dictionary  # mask ID -> Mask
 var _next_mask_id: AutoIncrement = AutoIncrement.new()
 var _goal: Goal
 var _scores: Array[int] = [0, 0]
+var _next_message_num: AutoIncrement = AutoIncrement.new()
 
 @onready var _clip_tilemap_player0: TileMapLayer = %ClipTileMapPlayer0
 @onready var _player_container0: Node2D = %ClipMaskPlayer0
@@ -438,10 +439,15 @@ func _game_host_send_player_mask_state() -> void:
 
 
 func _game_host_send_mask_state() -> void:
-	var message: MultiplayerMessage = MultiplayerMessage.new(get_path(), "mask_state")
-	message.append_int(_id_to_mask.size())
-	for mask: Mask in _id_to_mask.values():
-		message.append_int(mask.id).append_vector2i(mask.coord).append_int(mask.color_index)
+	var game_state: GameState = GameState.new()
+	game_state.masks.assign(
+		_id_to_mask.values().map(func(d: Mask) -> MaskState: return d.to_mask_state())
+	)
+	game_state.ticks = Time.get_ticks_msec()
+	game_state.message_num = _next_message_num.next()
+
+	var message: MultiplayerMessage = MultiplayerMessage.new(get_path(), "game_state")
+	message.append_string(game_state.serialize())
 	MultiplayerManager.send(message)
 
 
@@ -564,7 +570,7 @@ func _message_received(message: MultiplayerMessage) -> void:
 			_level_ready_timer.stop()
 			_spawn_player(message.get_int(0), message.get_vector2(1))
 
-		"mask_state":
+		"game_state":
 			_sync_mask_state(message)
 
 		"player_mask_state":
@@ -590,13 +596,10 @@ func _sync_mask_state(message: MultiplayerMessage) -> void:
 	var doomed_mask_ids: Array[int]
 	doomed_mask_ids.assign(_id_to_mask.keys())
 
-	var num_masks: int = message.get_int(0)
-	for i: int in range(num_masks):
-		var id: int = message.get_int(3 * i + 1)
-		var coord: Vector2i = message.get_vector2i(3 * i + 2)
-		var color_index: int = message.get_int(3 * i + 3)
-		_spawn_update_mask(id, coord, color_index)
-		doomed_mask_ids.erase(id)
+	var game_state: GameState = GameState.deserialize(message.get_string(0))
+	for mask_state: MaskState in game_state.masks:
+		_spawn_update_mask(mask_state.id, mask_state.coord, mask_state.color_index)
+		doomed_mask_ids.erase(mask_state.id)
 
 	for id: int in doomed_mask_ids:
 		_despawn_mask(id)

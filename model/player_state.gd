@@ -13,7 +13,12 @@ static func filter_after(min_ticks: int) -> Callable:
 
 func serialize() -> String:
 	return JSON.stringify(
-		[Utils.vector2_to_string(direction, 3), Utils.vector2_to_string(position, 3), str(ticks), str(message_num)]
+		[
+			Utils.vector2_to_string(direction, 3),
+			Utils.vector2_to_string(position, 3),
+			str(ticks),
+			str(message_num)
+		]
 	)
 
 

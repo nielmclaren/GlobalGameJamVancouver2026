@@ -23,3 +23,11 @@ func _process(_delta: float) -> void:
 		if body is Player:
 			var player: Player = body
 			picked_up.emit(player)
+
+
+func to_mask_state() -> MaskState:
+	var result: MaskState = MaskState.new()
+	result.id = id
+	result.coord = coord
+	result.color_index = color_index
+	return result
