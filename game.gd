@@ -138,7 +138,6 @@ func _map_regen_timeout() -> void:
 	for player: Player in _players:
 		_update_clip_tilemap(player)
 		player.is_stealthed = is_in_stealth_tile(player)
-		player.is_stunned = false
 
 
 func _is_player_tile_overlap(player: Player, coord: Vector2i) -> bool:

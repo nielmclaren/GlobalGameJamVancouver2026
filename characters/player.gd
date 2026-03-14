@@ -35,9 +35,9 @@ var is_stealthed: bool = false:
 		if v != is_stealthed:
 			is_stealthed = v
 			if is_stealthed:
-				_animation.play("stealth")
+				_stealth_animation.play("stealth")
 			else:
-				_animation.play("destealth")
+				_stealth_animation.play("destealth")
 
 var color_index: int = -1
 var score: int = 0
@@ -80,6 +80,7 @@ var _ready_ticks: int = 0
 @onready var _weapon_animated_sprite: AnimatedSprite2D = %WeaponAnimatedSprite
 @onready var _attack_area: Area2D = %AttackArea
 @onready var _animation: AnimationPlayer = %AnimationPlayer
+@onready var _stealth_animation: AnimationPlayer = %StealthAnimationPlayer
 @onready var _weapon: Node2D = %Weapon
 @onready var _weapon_sound: AudioStreamPlayer2D = %WeaponSound
 @onready var _attack_timer: Timer = %AttackTimer

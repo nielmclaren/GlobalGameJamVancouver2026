@@ -1174,6 +1174,12 @@ libraries = {
 &"": SubResource("AnimationLibrary_x0jl3")
 }
 
+[node name="StealthAnimationPlayer" type="AnimationPlayer" parent="."]
+unique_name_in_owner = true
+libraries = {
+&"": SubResource("AnimationLibrary_x0jl3")
+}
+
 [node name="WeaponSound" type="AudioStreamPlayer2D" parent="."]
 unique_name_in_owner = true
 stream = ExtResource("6_h1q25")
