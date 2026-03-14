@@ -4,6 +4,6 @@ extends RefCounted
 var _value: int = -1
 
 
-func value() -> int:
+func next() -> int:
 	_value += 1
 	return _value

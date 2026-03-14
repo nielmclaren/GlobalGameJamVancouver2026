@@ -63,7 +63,7 @@ var _state_send_buffer: Array[PlayerState]
 var _state_receive_buffer: Array[PlayerState]
 
 # The message num that will be assigned to the next player input.
-var _next_message_num: int = 0
+var _next_message_num: AutoIncrement = AutoIncrement.new()
 
 # The message num of the latest player input to have been applied on the game host.
 var _processed_message_num: int = -1
@@ -138,8 +138,7 @@ func _physics_process_online_multiplayer(delta: float) -> void:
 				state.direction = _direction
 				state.position = position
 				state.ticks = now
-				state.message_num = _next_message_num
-				_next_message_num += 1
+				state.message_num = _next_message_num.next()
 
 				_state_send_buffer.append(state)
 
@@ -326,8 +325,7 @@ func _get_input(delta: float) -> PlayerInput:
 	result.direction = _direction
 	result.delta = delta
 	result.ticks = Time.get_ticks_msec() - _ready_ticks
-	result.message_num = _next_message_num
-	_next_message_num += 1
+	result.message_num = _next_message_num.next()
 	return result
 
 

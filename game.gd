@@ -338,11 +338,11 @@ func _spawn_first_masks() -> void:
 
 	coord = [Vector2i(0, Constants.NUM_ROWS - 2), Vector2i(1, Constants.NUM_ROWS - 1)].pick_random()
 	color_index = available_mask_color_indices.pop_back()
-	_spawn_update_mask(_next_mask_id.value(), coord, color_index)
+	_spawn_update_mask(_next_mask_id.next(), coord, color_index)
 
 	coord = [Vector2i(Constants.NUM_COLS - 2, 0), Vector2i(Constants.NUM_COLS - 1, 1)].pick_random()
 	color_index = available_mask_color_indices.pop_back()
-	_spawn_update_mask(_next_mask_id.value(), coord, color_index)
+	_spawn_update_mask(_next_mask_id.next(), coord, color_index)
 
 
 func _delay_spawn_mask() -> void:
@@ -366,7 +366,7 @@ func _try_spawn_mask() -> bool:
 	var coord: Vector2i = available_coords.pick_random()
 	var color_index: int = available_mask_color_indices.pick_random()
 
-	_spawn_update_mask(_next_mask_id.value(), coord, color_index)
+	_spawn_update_mask(_next_mask_id.next(), coord, color_index)
 
 	return true
 
