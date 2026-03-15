@@ -310,15 +310,7 @@ func _scores_changed() -> void:
 		_players[1].score = _scores[1]
 
 	if is_online_multiplayer and is_game_host:
-		_game_host_send_score_state()
-
-
-func _game_host_send_score_state() -> void:
-	MultiplayerManager.send(
-		MultiplayerMessage.new(get_path(), "score_state").append_int(_scores[0]).append_int(
-			_scores[1]
-		)
-	)
+		_game_host_send_game_state()
 
 
 func _spawn_first_masks() -> void:
@@ -420,15 +412,7 @@ func _mask_picked_up(player: Player, mask: Mask) -> void:
 		_update_clip_tilemap(player)
 
 	if is_online_multiplayer and is_game_host:
-		_game_host_send_player_mask_state()
 		_game_host_send_game_state()
-
-
-func _game_host_send_player_mask_state() -> void:
-	var message: MultiplayerMessage = MultiplayerMessage.new(get_path(), "player_mask_state")
-	for player: Player in _players:
-		message.append_int(player.color_index)
-	MultiplayerManager.send(message)
 
 
 func _game_host_send_game_state() -> void:
@@ -440,6 +424,7 @@ func _game_host_send_game_state() -> void:
 	if _goal:
 		game_state.goal_coord = _goal.coord
 
+	game_state.scores = _scores
 	game_state.ticks = Time.get_ticks_msec()
 	game_state.message_num = _next_message_num.next()
 
@@ -571,15 +556,6 @@ func _message_received(message: MultiplayerMessage) -> void:
 			var game_state: GameState = GameState.deserialize(message.get_string(0))
 			_sync_game_state(game_state)
 
-		"player_mask_state":
-			_players[0].color_index = message.get_int(0)
-			_players[1].color_index = message.get_int(1)
-
-		"score_state":
-			_scores[0] = message.get_int(0)
-			_scores[1] = message.get_int(1)
-			_scores_changed()
-
 		"game_over":
 			completed.emit(message.get_int(0), message.get_int(1), message.get_int(2))
 
@@ -599,3 +575,8 @@ func _sync_game_state(game_state: GameState) -> void:
 		_spawn_update_goal(game_state.goal_coord)
 	else:
 		_despawn_goal()
+
+	if _scores[0] != game_state.scores[0] or _scores[1] != game_state.scores[1]:
+		_scores[0] = game_state.scores[0]
+		_scores[1] = game_state.scores[1]
+		_scores_changed()

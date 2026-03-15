@@ -137,6 +137,7 @@ func _physics_process_online_multiplayer(delta: float) -> void:
 				var state: PlayerState = PlayerState.new()
 				state.direction = _direction
 				state.position = position
+				state.color_index = color_index
 				state.ticks = now
 				state.message_num = _next_message_num.next()
 
@@ -166,6 +167,7 @@ func _physics_process_online_multiplayer(delta: float) -> void:
 			var state: PlayerState = PlayerState.new()
 			state.direction = _direction
 			state.position = position
+			state.color_index = color_index
 			state.ticks = now
 			state.message_num = _processed_message_num
 
@@ -177,6 +179,7 @@ func _physics_process_online_multiplayer(delta: float) -> void:
 				if received_state.ticks <= now - GAME_CLIENT_TICKS_OFFSET:
 					_direction = received_state.direction
 					position = received_state.position
+					color_index = received_state.color_index
 					_processed_message_num = received_state.message_num
 
 			_state_receive_buffer.assign(
@@ -478,6 +481,8 @@ func _game_client_receive_state(message: MultiplayerMessage) -> void:
 
 		# Reset to position provided by game host.
 		position = state.position
+
+		color_index = state.color_index
 
 		# Replay local inputs that weren't taken into consideration when the game host calculated that position.
 		_local_input_buffer = _local_input_buffer.filter(
