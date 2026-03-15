@@ -12,9 +12,6 @@ signal hitted
 
 const SPEED: float = 20000
 
-# The number of player inputs to store.
-const INPUT_BUFFER_SIZE: int = 120
-
 var is_online_multiplayer: bool = false
 var is_game_host: bool = false
 var is_local_player: bool = false
@@ -38,26 +35,12 @@ var color_index: int = -1
 var score: int = 0
 
 var _game: Game
+var _state_sync: StateSynchronizer
 var _direction: Vector2
 var _prev_direction: Vector2
 var _direction_y: int
 var _hit_direction: Vector2
 var _is_moved_after_hit: bool = true
-
-# Buffer player input for game client to play back over position updates received from game host.
-var _local_input_buffer: Array[PlayerInput]
-
-# Buffer player input for sending from game client to game host.
-var _input_send_buffer: Array[PlayerInput]
-
-# Buffer player input received from game client for replay on the game host.
-var _input_receive_buffer: Array[PlayerInput]
-
-# Buffer player state for sending from game host to game client.
-var _state_send_buffer: Array[PlayerState]
-
-# Buffer player state received from game host for replay on the game client.
-var _state_receive_buffer: Array[PlayerState]
 
 # The message num that will be assigned to the next player input.
 var _next_message_num: AutoIncrement = AutoIncrement.new()
@@ -87,6 +70,9 @@ var _ready_ticks: int = 0
 
 func _ready() -> void:
 	_ready_ticks = Time.get_ticks_msec()
+
+	_state_sync = StateSynchronizer.new().setup(_get_state, _apply_state, _apply_input)
+	add_child(_state_sync, true)
 
 	_attack_area.body_entered.connect(_attack_area_body_entered)
 	_weapon_animated_sprite.play("weapon%d" % player_index)
@@ -131,62 +117,28 @@ func _physics_process_online_multiplayer(delta: float) -> void:
 			_position_changed()
 
 			if is_game_host:
-				var state: PlayerState = PlayerState.new()
-				state.direction = _direction
-				state.position = position
-				state.color_index = color_index
-				state.ticks = now
+				var state: PlayerState = _get_state()
 				state.message_num = _next_message_num.next()
-
-				_state_send_buffer.append(state)
+				_state_sync.host_send_state(state)
 
 			else:
-				_input_send_buffer.append(input)
-
-				_local_input_buffer.append(input)
-				while _local_input_buffer.size() > INPUT_BUFFER_SIZE:
-					_local_input_buffer.pop_front()
+				_state_sync.client_send_input(input)
 
 	else:
 		var prev_position: Vector2 = position
 
 		if is_game_host:
-			for received_input: PlayerInput in _input_receive_buffer:
-				if received_input.ticks <= now - Constants.GAME_HOST_TICKS_OFFSET:
-					_apply_input(received_input)
-					_processed_message_num = received_input.message_num
-
-			_input_receive_buffer.assign(
-				_input_receive_buffer.filter(
-					PlayerInput.filter_after(now - Constants.GAME_HOST_TICKS_OFFSET)
-				)
-			)
-			_position_changed()
-
-			var state: PlayerState = PlayerState.new()
-			state.direction = _direction
-			state.position = position
-			state.color_index = color_index
-			state.ticks = now
-			state.message_num = _processed_message_num
-
-			# Game host should only send one state for the game client's player.
-			_state_send_buffer = [state]
+			_state_sync.name_me_please(now - Constants.GAME_HOST_TICKS_OFFSET)
 
 		else:
-			for received_state: PlayerState in _state_receive_buffer:
-				if received_state.ticks <= now - Constants.GAME_CLIENT_TICKS_OFFSET:
-					_direction = received_state.direction
-					position = received_state.position
-					color_index = received_state.color_index
-					_processed_message_num = received_state.message_num
-
-			_state_receive_buffer.assign(
-				_state_receive_buffer.filter(
-					PlayerState.filter_after(now - Constants.GAME_CLIENT_TICKS_OFFSET)
-				)
+			# TODO: Only need to apply the most recent state.
+			var received_states: Array[PlayerState] = _state_sync.process_received_states_until(
+				now - Constants.GAME_CLIENT_TICKS_OFFSET
 			)
-			_position_changed()
+			for received_state: PlayerState in received_states:
+				_apply_state(received_state)
+
+		_position_changed()
 
 		if prev_position != position:
 			_is_moved_after_hit = true
@@ -338,6 +290,22 @@ func _apply_input(input: PlayerInput) -> void:
 		move_and_slide()
 
 
+func _get_state() -> PlayerState:
+	var result: PlayerState = PlayerState.new()
+	result.direction = _direction
+	result.position = position
+	result.color_index = color_index
+	result.ticks = Time.get_ticks_msec() - _ready_ticks
+	return result
+
+
+func _apply_state(state: PlayerState) -> void:
+	_direction = state.direction
+	position = state.position
+	color_index = state.color_index
+	_processed_message_num = state.message_num
+
+
 func _position_changed() -> void:
 	is_stealthed = _game.is_in_stealth_tile(self)
 
@@ -433,27 +401,14 @@ func _game_host_receive_input(message: MultiplayerMessage) -> void:
 	var num_inputs: int = message.get_int(0)
 	for i: int in range(num_inputs):
 		var input: PlayerInput = PlayerInput.deserialize(message.get_string(i + 1))
-		_input_receive_buffer.append(input)
+		_state_sync.host_receive_input(input)
 
 
 func _sync() -> void:
 	if is_game_host:
-		if !_state_send_buffer.is_empty():
-			var message: MultiplayerMessage = MultiplayerMessage.new(get_path(), "state")
-			message.append_int(_state_send_buffer.size())
-			for state: PlayerState in _state_send_buffer:
-				message.append_string(state.serialize())
-			_state_send_buffer.clear()
-			MultiplayerManager.send(message)
-
+		_state_sync.host_sync()
 	else:
-		if !_input_send_buffer.is_empty():
-			var message: MultiplayerMessage = MultiplayerMessage.new(get_path(), "input")
-			message.append_int(_input_send_buffer.size())
-			for input: PlayerInput in _input_send_buffer:
-				message.append_string(input.serialize())
-			_input_send_buffer.clear()
-			MultiplayerManager.send(message)
+		_state_sync.client_sync()
 
 
 func _game_client_receive_state(message: MultiplayerMessage) -> void:
@@ -477,22 +432,14 @@ func _game_client_receive_state(message: MultiplayerMessage) -> void:
 			return
 
 		var state: PlayerState = PlayerState.deserialize(message.get_string(1))
-
-		# Reset to position provided by game host.
-		position = state.position
-
-		color_index = state.color_index
+		_apply_state(state)
 
 		# Replay local inputs that weren't taken into consideration when the game host calculated that position.
-		_local_input_buffer = _local_input_buffer.filter(
-			func(input: PlayerInput) -> bool: return input.message_num > state.message_num
-		)
-		for input: PlayerInput in _local_input_buffer:
-			_apply_input(input)
+		_state_sync.apply_inputs_after(state.message_num)
 		_position_changed()
 
 	else:
 		var num_states: int = message.get_int(0)
 		for i: int in range(num_states):
 			var state: PlayerState = PlayerState.deserialize(message.get_string(i + 1))
-			_state_receive_buffer.append(state)
+			_state_sync.client_receive_state(state)
