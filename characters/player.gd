@@ -41,15 +41,7 @@ var _prev_direction: Vector2
 var _direction_y: int
 var _hit_direction: Vector2
 var _is_moved_after_hit: bool = true
-
-# The message num that will be assigned to the next player input.
-var _next_message_num: AutoIncrement = AutoIncrement.new()
-
-# The message num of the latest player input to have been applied on the game host.
-var _processed_message_num: int = -1
-
-# Ticks msec when ready was called.
-var _ready_ticks: int = 0
+var _is_position_changed: bool = false
 
 @onready var _art: Node2D = %Art
 @onready var _animated_sprite: AnimatedSprite2D = %AnimatedSprite2D
@@ -68,10 +60,15 @@ var _ready_ticks: int = 0
 @onready var _sync_timer: Timer = %SyncTimer
 
 
-func _ready() -> void:
-	_ready_ticks = Time.get_ticks_msec()
+func setup(game: Game) -> Player:
+	_game = game
+	return self
 
-	_state_sync = StateSynchronizer.new().setup(_get_state, _apply_state, _apply_input)
+
+func _ready() -> void:
+	_state_sync = StateSynchronizer.new().setup(
+		is_game_host, is_local_player, _get_state, _apply_state, _get_input, _apply_input
+	)
 	add_child(_state_sync, true)
 
 	_attack_area.body_entered.connect(_attack_area_body_entered)
@@ -84,11 +81,11 @@ func _ready() -> void:
 	_attack_timer.timeout.connect(_attack_timeout)
 	_hit_timer.timeout.connect(_hit_timeout)
 
-	MultiplayerManager.message_received.connect(_message_received)
-
 	if is_online_multiplayer:
-		_sync_timer.timeout.connect(_sync)
-		_sync_timer.start()
+		if is_game_host:
+			_sync_timer.timeout.connect(_state_sync.host_sync)
+		else:
+			_sync_timer.timeout.connect(_state_sync.client_sync)
 
 
 func _physics_process(delta: float) -> void:
@@ -100,48 +97,21 @@ func _physics_process(delta: float) -> void:
 
 
 func _physics_process_online_multiplayer(delta: float) -> void:
-	var now: int = Time.get_ticks_msec() - _ready_ticks
+	var prev_position: Vector2 = position
 	if is_local_player:
 		if is_stunned:
 			return
 
 		_direction = _get_input_vector()
-		if !_direction.is_zero_approx():
-			_is_moved_after_hit = true
-
 		if _direction.length_squared() > 0 or _prev_direction.length_squared() > 0:
 			_prev_direction = _direction
-
-			var input: PlayerInput = _get_input(delta)
-			_apply_input(input)
-			_position_changed()
-
-			if is_game_host:
-				var state: PlayerState = _get_state()
-				state.message_num = _next_message_num.next()
-				_state_sync.host_send_state(state)
-
-			else:
-				_state_sync.client_send_input(input)
+			_state_sync.process_local_player(delta)
 
 	else:
-		var prev_position: Vector2 = position
+		_state_sync.process_remote_player(delta)
 
-		if is_game_host:
-			_state_sync.name_me_please(now - Constants.GAME_HOST_TICKS_OFFSET)
-
-		else:
-			# TODO: Only need to apply the most recent state.
-			var received_states: Array[PlayerState] = _state_sync.process_received_states_until(
-				now - Constants.GAME_CLIENT_TICKS_OFFSET
-			)
-			for received_state: PlayerState in received_states:
-				_apply_state(received_state)
-
-		_position_changed()
-
-		if prev_position != position:
-			_is_moved_after_hit = true
+	if prev_position != position:
+		_is_moved_after_hit = true
 
 
 func _physics_process_local_multiplayer(delta: float) -> void:
@@ -157,7 +127,6 @@ func _physics_process_local_multiplayer(delta: float) -> void:
 
 		var input: PlayerInput = _get_input(delta)
 		_apply_input(input)
-		_position_changed()
 
 
 func _process(_delta: float) -> void:
@@ -184,6 +153,35 @@ func _process(_delta: float) -> void:
 			_animated_sprite.play(target_animation)
 
 	_update_crown()
+
+	if _is_position_changed:
+		_is_position_changed = false
+		is_stealthed = _game.is_in_stealth_tile(self)
+
+
+func take_hit(attacker_position: Vector2) -> void:
+	is_stunned = true
+	_unmask()
+
+	_hit_direction = attacker_position - global_position
+
+	_hit_timer.start()
+	_is_moved_after_hit = false
+
+	if _animation.current_animation == "hit":
+		_animation.seek(0)
+	_animation.play("hit")
+
+	var animation_key: String = _get_player_form(color_index) + "_hit"
+	if _animated_sprite.animation == animation_key:
+		_animated_sprite.stop()
+	_animated_sprite.play(animation_key)
+
+	if score > 0:
+		_crown_drop_particles.amount = score
+		_crown_drop_particles.restart()
+
+	hitted.emit()
 
 
 func _get_animation(direction_y: int) -> String:
@@ -235,34 +233,16 @@ func _update_crown() -> void:
 			crown_sprite.play("walk")
 
 
-func setup(game: Game) -> Player:
-	_game = game
-	return self
-
-
-func take_hit(attacker_position: Vector2) -> void:
-	is_stunned = true
-	_unmask()
-
-	_hit_direction = attacker_position - global_position
-
-	_hit_timer.start()
-	_is_moved_after_hit = false
-
-	if _animation.current_animation == "hit":
-		_animation.seek(0)
-	_animation.play("hit")
-
-	var animation_key: String = _get_player_form(color_index) + "_hit"
-	if _animated_sprite.animation == animation_key:
-		_animated_sprite.stop()
-	_animated_sprite.play(animation_key)
-
-	if score > 0:
-		_crown_drop_particles.amount = score
-		_crown_drop_particles.restart()
-
-	hitted.emit()
+func _get_input_vector() -> Vector2:
+	var suffix: String = ""
+	if !is_online_multiplayer:
+		suffix = str(device_index)
+	return Input.get_vector(
+		"move_left%s" % suffix,
+		"move_right%s" % suffix,
+		"move_up%s" % suffix,
+		"move_down%s" % suffix
+	)
 
 
 func _is_hit_recovery() -> bool:
@@ -278,8 +258,6 @@ func _get_input(delta: float) -> PlayerInput:
 	var result: PlayerInput = PlayerInput.new()
 	result.direction = _direction
 	result.delta = delta
-	result.ticks = Time.get_ticks_msec() - _ready_ticks
-	result.message_num = _next_message_num.next()
 	return result
 
 
@@ -289,42 +267,29 @@ func _apply_input(input: PlayerInput) -> void:
 		velocity = input.direction * SPEED * input.delta
 		move_and_slide()
 
+		_is_position_changed = true
+
 
 func _get_state() -> PlayerState:
 	var result: PlayerState = PlayerState.new()
 	result.direction = _direction
 	result.position = position
 	result.color_index = color_index
-	result.ticks = Time.get_ticks_msec() - _ready_ticks
 	return result
 
 
 func _apply_state(state: PlayerState) -> void:
-	_direction = state.direction
+	if !is_stunned:
+		_direction = state.direction
 	position = state.position
 	color_index = state.color_index
-	_processed_message_num = state.message_num
 
-
-func _position_changed() -> void:
-	is_stealthed = _game.is_in_stealth_tile(self)
+	_is_position_changed = true
 
 
 func _attack_area_body_entered(body: Node2D) -> void:
 	if body is Player and body != self:
 		_try_attack()
-
-
-func _get_input_vector() -> Vector2:
-	var suffix: String = ""
-	if !is_online_multiplayer:
-		suffix = str(device_index)
-	return Input.get_vector(
-		"move_left%s" % suffix,
-		"move_right%s" % suffix,
-		"move_up%s" % suffix,
-		"move_down%s" % suffix
-	)
 
 
 func _try_attack() -> void:
@@ -378,68 +343,3 @@ func _set_stealth_mode(v: bool) -> void:
 	set_collision_mask_value(Constants.ATTACK_LAYER, !v)
 	_attack_area.monitoring = !v
 	_attack_area.monitorable = !v
-
-
-func _message_received(message: MultiplayerMessage) -> void:
-	if is_game_host:
-		_game_host_receive_input(message)
-
-	else:
-		_game_client_receive_state(message)
-
-
-func _game_host_receive_input(message: MultiplayerMessage) -> void:
-	if !message.matches_path(get_path()):
-		return
-
-	if message.name != "input":
-		push_error(
-			"Game host received unexpected message. Expected 'input'. Got '%s'." % message.name
-		)
-		return
-
-	var num_inputs: int = message.get_int(0)
-	for i: int in range(num_inputs):
-		var input: PlayerInput = PlayerInput.deserialize(message.get_string(i + 1))
-		_state_sync.host_receive_input(input)
-
-
-func _sync() -> void:
-	if is_game_host:
-		_state_sync.host_sync()
-	else:
-		_state_sync.client_sync()
-
-
-func _game_client_receive_state(message: MultiplayerMessage) -> void:
-	if !message.matches_path(get_path()):
-		return
-
-	if message.name != "state":
-		push_error(
-			"Game client received unexpected message. Expected 'state'. Got '%s'." % message.name
-		)
-		return
-
-	if is_local_player:
-		if message.get_int(0) != 1:
-			push_error(
-				(
-					"Game host sent too many states for game client local player. num_states=%d"
-					% message.get_int(0)
-				)
-			)
-			return
-
-		var state: PlayerState = PlayerState.deserialize(message.get_string(1))
-		_apply_state(state)
-
-		# Replay local inputs that weren't taken into consideration when the game host calculated that position.
-		_state_sync.apply_inputs_after(state.message_num)
-		_position_changed()
-
-	else:
-		var num_states: int = message.get_int(0)
-		for i: int in range(num_states):
-			var state: PlayerState = PlayerState.deserialize(message.get_string(i + 1))
-			_state_sync.client_receive_state(state)

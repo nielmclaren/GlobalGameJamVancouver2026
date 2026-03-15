@@ -414,9 +414,10 @@ func _spawn_update_mask(id: int, coord: Vector2i, color_index: int) -> Mask:
 
 
 func _despawn_mask(id: int) -> void:
-	var mask: Mask = _id_to_mask[id]
-	mask.queue_free()
-	_id_to_mask.erase(id)
+	if id in _id_to_mask:
+		var mask: Mask = _id_to_mask[id]
+		mask.queue_free()
+		_id_to_mask.erase(id)
 
 	if is_online_multiplayer and is_game_host:
 		_state_send_buffer.append(_get_game_state())
