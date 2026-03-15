@@ -298,12 +298,12 @@ func _goal_picked_up(player: Player) -> void:
 	Tracer.trace("Player %d scored!" % player.player_index)
 	print("Player %d scored!" % player.player_index)
 
+	_scores[player.player_index] += 1
+	_scores_changed()
+
+	_despawn_goal()
+
 	if !is_online_multiplayer or is_game_host:
-		_scores[player.player_index] += 1
-		_scores_changed()
-
-		_despawn_goal()
-
 		if _scores[player.player_index] >= Constants.MAX_SCORE:
 			print("Player %d won!" % player.player_index)
 			var other_player: Player = _players[1 - player.player_index]
@@ -436,14 +436,14 @@ func _get_available_mask_color_indices() -> Array[int]:
 
 
 func _mask_picked_up(player: Player, mask: Mask) -> void:
+	player.color_index = mask.color_index
+
+	_despawn_mask(mask.id)
+
 	if !is_online_multiplayer or is_game_host:
-		player.color_index = mask.color_index
-
-		_despawn_mask(mask.id)
-
 		_delay_spawn_mask()
 
-		_update_clip_tilemap(player)
+	_update_clip_tilemap(player)
 
 	if is_online_multiplayer and is_game_host:
 		_state_send_buffer.append(_get_game_state())
