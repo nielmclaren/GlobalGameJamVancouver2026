@@ -36,3 +36,9 @@ const ATTACK_LAYER: int = 3
 
 # Number of points needed to win.
 const MAX_SCORE: int = 5
+
+# Delay applying states received from the game host on the game client (ms).
+const GAME_CLIENT_TICKS_OFFSET: int = 200
+
+# Delay applying inputs received from the game client on the game host (ms).
+const GAME_HOST_TICKS_OFFSET: int = 200

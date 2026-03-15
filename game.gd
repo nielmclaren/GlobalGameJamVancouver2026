@@ -19,6 +19,12 @@ var _goal: Goal
 var _scores: Array[int] = [0, 0]
 var _next_message_num: AutoIncrement = AutoIncrement.new()
 
+# Buffer game state for sending from game host to game client.
+var _state_send_buffer: Array[GameState]
+
+# Buffer game state received from game host for replay on game client.
+var _state_receive_buffer: Array[GameState]
+
 @onready var _clip_tilemap_player0: TileMapLayer = %ClipTileMapPlayer0
 @onready var _player_container0: Node2D = %ClipMaskPlayer0
 @onready var _clip_tilemap_player1: TileMapLayer = %ClipTileMapPlayer1
@@ -30,6 +36,7 @@ var _next_message_num: AutoIncrement = AutoIncrement.new()
 @onready var _map_regen_timer: Timer = %MapRegenTimer
 @onready var _score_sound: AudioStreamPlayer = %ScoreSound
 @onready var _level_ready_timer: Timer = %LevelReadyTimer
+@onready var _sync_timer: Timer = %SyncTimer
 
 
 func _ready() -> void:
@@ -39,6 +46,9 @@ func _ready() -> void:
 		MultiplayerManager.message_received.connect(_message_received)
 
 	_map_regen_timer.timeout.connect(_map_regen_timeout)
+
+	if is_online_multiplayer and is_game_host:
+		_sync_timer.timeout.connect(_sync_timeout)
 
 	_init_clip_tiles()
 
@@ -52,6 +62,30 @@ func _ready() -> void:
 			func _level_ready_timeout() -> void:
 				MultiplayerManager.send(MultiplayerMessage.new(get_path(), "ready"))
 		)
+
+
+func _process(_delta: float) -> void:
+	if !is_online_multiplayer or is_game_host:
+		return
+
+	if _state_receive_buffer.is_empty():
+		return
+
+	var ticks: int = Time.get_ticks_msec() - Constants.GAME_CLIENT_TICKS_OFFSET
+	var index: int = _state_receive_buffer.find_custom(
+		func(d: GameState) -> bool: return d.ticks > ticks
+	)
+	if index < 0:
+		index = _state_receive_buffer.size() - 1
+	elif index == 0:
+		return
+	else:
+		index -= 1
+
+	var received_state: GameState = _state_receive_buffer[index]
+	_apply_game_state(received_state)
+
+	_state_receive_buffer.assign(_state_receive_buffer.filter(GameState.filter_after(ticks)))
 
 
 func start() -> void:
@@ -248,7 +282,7 @@ func _spawn_update_goal(coord: Vector2i) -> void:
 	_goal.position = _tilemap.map_to_local(coord)
 
 	if is_online_multiplayer and is_game_host:
-		_game_host_send_game_state()
+		_state_send_buffer.append(_get_game_state())
 
 
 func _despawn_goal() -> void:
@@ -257,7 +291,7 @@ func _despawn_goal() -> void:
 		_goal = null
 
 	if is_online_multiplayer and is_game_host:
-		_game_host_send_game_state()
+		_state_send_buffer.append(_get_game_state())
 
 
 func _goal_picked_up(player: Player) -> void:
@@ -310,7 +344,7 @@ func _scores_changed() -> void:
 		_players[1].score = _scores[1]
 
 	if is_online_multiplayer and is_game_host:
-		_game_host_send_game_state()
+		_state_send_buffer.append(_get_game_state())
 
 
 func _spawn_first_masks() -> void:
@@ -374,7 +408,7 @@ func _spawn_update_mask(id: int, coord: Vector2i, color_index: int) -> Mask:
 	mask.position = _tilemap.map_to_local(coord)
 
 	if is_online_multiplayer and is_game_host:
-		_game_host_send_game_state()
+		_state_send_buffer.append(_get_game_state())
 
 	return mask
 
@@ -385,7 +419,7 @@ func _despawn_mask(id: int) -> void:
 	_id_to_mask.erase(id)
 
 	if is_online_multiplayer and is_game_host:
-		_game_host_send_game_state()
+		_state_send_buffer.append(_get_game_state())
 
 
 func _get_available_mask_color_indices() -> Array[int]:
@@ -412,25 +446,33 @@ func _mask_picked_up(player: Player, mask: Mask) -> void:
 		_update_clip_tilemap(player)
 
 	if is_online_multiplayer and is_game_host:
-		_game_host_send_game_state()
+		_state_send_buffer.append(_get_game_state())
 
 
-func _game_host_send_game_state() -> void:
-	var game_state: GameState = GameState.new()
-	game_state.masks.assign(
+func _get_game_state() -> GameState:
+	var result: GameState = GameState.new()
+
+	result.masks.assign(
 		_id_to_mask.values().map(func(d: Mask) -> MaskState: return d.to_mask_state())
 	)
 
 	if _goal:
-		game_state.goal_coord = _goal.coord
+		result.goal_coord = _goal.coord
 
-	game_state.scores = _scores
-	game_state.ticks = Time.get_ticks_msec()
-	game_state.message_num = _next_message_num.next()
+	result.scores = _scores
+	result.ticks = Time.get_ticks_msec()
+	result.message_num = _next_message_num.next()
 
-	var message: MultiplayerMessage = MultiplayerMessage.new(get_path(), "game_state")
-	message.append_string(game_state.serialize())
-	MultiplayerManager.send(message)
+	return result
+
+
+func _sync_timeout() -> void:
+	if !_state_send_buffer.is_empty():
+		var message: MultiplayerMessage = MultiplayerMessage.new(get_path(), "state")
+		for state: GameState in _state_send_buffer:
+			message.append_string(state.serialize())
+		_state_send_buffer.clear()
+		MultiplayerManager.send(message)
 
 
 func _get_diagonal_coords() -> Array[Vector2i]:
@@ -552,15 +594,20 @@ func _message_received(message: MultiplayerMessage) -> void:
 			_level_ready_timer.stop()
 			_spawn_player(message.get_int(0), message.get_vector2(1))
 
-		"game_state":
-			var game_state: GameState = GameState.deserialize(message.get_string(0))
-			_sync_game_state(game_state)
+		"state":
+			_receive_game_states(message)
 
 		"game_over":
 			completed.emit(message.get_int(0), message.get_int(1), message.get_int(2))
 
 
-func _sync_game_state(game_state: GameState) -> void:
+func _receive_game_states(message: MultiplayerMessage) -> void:
+	for i: int in range(message.arg_size()):
+		var game_state: GameState = GameState.deserialize(message.get_string(i))
+		_state_receive_buffer.append(game_state)
+
+
+func _apply_game_state(game_state: GameState) -> void:
 	var doomed_mask_ids: Array[int]
 	doomed_mask_ids.assign(_id_to_mask.keys())
 

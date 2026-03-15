@@ -15,11 +15,6 @@ const SPEED: float = 20000
 # The number of player inputs to store.
 const INPUT_BUFFER_SIZE: int = 120
 
-# Delay applying player inputs received from the game client on the game host (ms).
-const GAME_HOST_TICKS_OFFSET: int = 200
-# Delay applying player states received from the game host on the game client (ms).
-const GAME_CLIENT_TICKS_OFFSET: int = 200
-
 var is_online_multiplayer: bool = false
 var is_game_host: bool = false
 var is_local_player: bool = false
@@ -58,8 +53,10 @@ var _input_send_buffer: Array[PlayerInput]
 # Buffer player input received from game client for replay on the game host.
 var _input_receive_buffer: Array[PlayerInput]
 
+# Buffer player state for sending from game host to game client.
 var _state_send_buffer: Array[PlayerState]
 
+# Buffer player state received from game host for replay on the game client.
 var _state_receive_buffer: Array[PlayerState]
 
 # The message num that will be assigned to the next player input.
@@ -155,12 +152,14 @@ func _physics_process_online_multiplayer(delta: float) -> void:
 
 		if is_game_host:
 			for received_input: PlayerInput in _input_receive_buffer:
-				if received_input.ticks <= now - GAME_HOST_TICKS_OFFSET:
+				if received_input.ticks <= now - Constants.GAME_HOST_TICKS_OFFSET:
 					_apply_input(received_input)
 					_processed_message_num = received_input.message_num
 
 			_input_receive_buffer.assign(
-				_input_receive_buffer.filter(PlayerInput.filter_after(now - GAME_HOST_TICKS_OFFSET))
+				_input_receive_buffer.filter(
+					PlayerInput.filter_after(now - Constants.GAME_HOST_TICKS_OFFSET)
+				)
 			)
 			_position_changed()
 
@@ -176,7 +175,7 @@ func _physics_process_online_multiplayer(delta: float) -> void:
 
 		else:
 			for received_state: PlayerState in _state_receive_buffer:
-				if received_state.ticks <= now - GAME_CLIENT_TICKS_OFFSET:
+				if received_state.ticks <= now - Constants.GAME_CLIENT_TICKS_OFFSET:
 					_direction = received_state.direction
 					position = received_state.position
 					color_index = received_state.color_index
@@ -184,7 +183,7 @@ func _physics_process_online_multiplayer(delta: float) -> void:
 
 			_state_receive_buffer.assign(
 				_state_receive_buffer.filter(
-					PlayerState.filter_after(now - GAME_CLIENT_TICKS_OFFSET)
+					PlayerState.filter_after(now - Constants.GAME_CLIENT_TICKS_OFFSET)
 				)
 			)
 			_position_changed()

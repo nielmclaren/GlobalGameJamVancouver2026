@@ -170,3 +170,8 @@ metadata/_custom_type_script = "uid://b6xjkpxjv77pk"
 unique_name_in_owner = true
 stream = ExtResource("9_vef74")
 bus = &"Sfx"
+
+[node name="SyncTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 0.2
+autostart = true
