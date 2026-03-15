@@ -35,7 +35,6 @@ var color_index: int = -1
 var score: int = 0
 
 var _game: Game
-var _state_sync: StateSynchronizer
 var _direction: Vector2
 var _prev_direction: Vector2
 var _direction_y: int
@@ -57,7 +56,7 @@ var _is_position_changed: bool = false
 @onready var _weapon_sound: AudioStreamPlayer2D = %WeaponSound
 @onready var _attack_timer: Timer = %AttackTimer
 @onready var _hit_timer: Timer = %HitTimer
-@onready var _sync_timer: Timer = %SyncTimer
+@onready var _state_sync: StateSynchronizer = %StateSynchronizer
 
 
 func setup(game: Game) -> Player:
@@ -66,10 +65,8 @@ func setup(game: Game) -> Player:
 
 
 func _ready() -> void:
-	_state_sync = StateSynchronizer.new().setup(
-		is_game_host, is_local_player, _get_state, _apply_state, _get_input, _apply_input
-	)
-	add_child(_state_sync, true)
+	if is_online_multiplayer:
+		_state_sync.setup(is_game_host, is_local_player)
 
 	_attack_area.body_entered.connect(_attack_area_body_entered)
 	_weapon_animated_sprite.play("weapon%d" % player_index)
@@ -80,12 +77,6 @@ func _ready() -> void:
 
 	_attack_timer.timeout.connect(_attack_timeout)
 	_hit_timer.timeout.connect(_hit_timeout)
-
-	if is_online_multiplayer:
-		if is_game_host:
-			_sync_timer.timeout.connect(_state_sync.host_sync)
-		else:
-			_sync_timer.timeout.connect(_state_sync.client_sync)
 
 
 func _physics_process(delta: float) -> void:
@@ -125,8 +116,8 @@ func _physics_process_local_multiplayer(delta: float) -> void:
 	if _direction.length_squared() > 0 or _prev_direction.length_squared() > 0:
 		_prev_direction = _direction
 
-		var input: PlayerInput = _get_input(delta)
-		_apply_input(input)
+		var input: PlayerInput = get_input(delta)
+		apply_input(input)
 
 
 func _process(_delta: float) -> void:
@@ -254,14 +245,14 @@ func _hit_timeout() -> void:
 	_mask()
 
 
-func _get_input(delta: float) -> PlayerInput:
+func get_input(delta: float) -> PlayerInput:
 	var result: PlayerInput = PlayerInput.new()
 	result.direction = _direction
 	result.delta = delta
 	return result
 
 
-func _apply_input(input: PlayerInput) -> void:
+func apply_input(input: PlayerInput) -> void:
 	_direction = input.direction
 	if !input.direction.is_zero_approx():
 		velocity = input.direction * SPEED * input.delta
@@ -270,7 +261,7 @@ func _apply_input(input: PlayerInput) -> void:
 		_is_position_changed = true
 
 
-func _get_state() -> PlayerState:
+func get_state() -> PlayerState:
 	var result: PlayerState = PlayerState.new()
 	result.direction = _direction
 	result.position = position
@@ -278,7 +269,7 @@ func _get_state() -> PlayerState:
 	return result
 
 
-func _apply_state(state: PlayerState) -> void:
+func apply_state(state: PlayerState) -> void:
 	if !is_stunned:
 		_direction = state.direction
 	position = state.position

@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://dl4pghot2qfxy"]
+
+[ext_resource type="Script" uid="uid://bh0xasxyj8afr" path="res://managers/state_synchronizer.gd" id="1_i4t46"]
+
+[node name="StateSynchronizer" type="Node"]
+script = ExtResource("1_i4t46")
+
+[node name="SyncTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 0.2
+autostart = true

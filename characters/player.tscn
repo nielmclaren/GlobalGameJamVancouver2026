@@ -1,4 +1,4 @@
-[gd_scene load_steps=113 format=3 uid="uid://sv3ef6geyb32"]
+[gd_scene load_steps=114 format=3 uid="uid://sv3ef6geyb32"]
 
 [ext_resource type="Script" uid="uid://d0illkgwut2ge" path="res://characters/player.gd" id="1_dnjla"]
 [ext_resource type="Texture2D" uid="uid://dtpoo8b1d1n11" path="res://assets/art/MattSheet.png" id="2_tory2"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://bswkr0grt2wt2" path="res://assets/art/wearing_crown_sheet.png" id="4_x0jl3"]
 [ext_resource type="Texture2D" uid="uid://bvhitlfcuoxva" path="res://assets/art/MattSheet2.png" id="5_evndh"]
 [ext_resource type="AudioStream" uid="uid://bfgeqd6eyrqh7" path="res://assets/sfx/Slash.wav" id="6_h1q25"]
+[ext_resource type="PackedScene" uid="uid://dl4pghot2qfxy" path="res://managers/state_synchronizer.tscn" id="7_j31ep"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_3eadt"]
 radius = 30.016663
@@ -1186,11 +1187,6 @@ stream = ExtResource("6_h1q25")
 volume_db = 12.0
 bus = &"Sfx"
 
-[node name="SyncTimer" type="Timer" parent="."]
-unique_name_in_owner = true
-wait_time = 0.2
-autostart = true
-
 [node name="HitTimer" type="Timer" parent="."]
 unique_name_in_owner = true
 wait_time = 1.4
@@ -1200,3 +1196,7 @@ one_shot = true
 unique_name_in_owner = true
 wait_time = 0.6
 one_shot = true
+
+[node name="StateSynchronizer" parent="." node_paths=PackedStringArray("player") instance=ExtResource("7_j31ep")]
+unique_name_in_owner = true
+player = NodePath("..")

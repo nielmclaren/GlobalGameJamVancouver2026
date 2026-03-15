@@ -1,11 +1,7 @@
 class_name StateSynchronizer
 extends Node
 
-var _is_setup: bool = false
-
-var _is_game_host: bool
-
-var _is_local_player: bool
+@export var player: Player
 
 var _get_state: Callable
 
@@ -14,6 +10,10 @@ var _apply_state: Callable
 var _get_input: Callable
 
 var _apply_input: Callable
+
+var _is_game_host: bool
+
+var _is_local_player: bool
 
 # Buffer player input for game client to play back over position updates received from game host.
 var _local_input_buffer: Array[PlayerInput]
@@ -39,35 +39,36 @@ var _processed_message_num: int = -1
 # Ticks msec when ready was called.
 var _ready_ticks: int = 0
 
+@onready var _sync_timer: Timer = %SyncTimer
+
 
 func setup(
 	is_game_host: bool,
 	is_local_player: bool,
-	get_state: Callable,
-	apply_state: Callable,
-	get_input: Callable,
-	apply_input: Callable
 ) -> StateSynchronizer:
-	_is_setup = true
 	_is_game_host = is_game_host
 	_is_local_player = is_local_player
-	_get_state = get_state
-	_apply_state = apply_state
-	_get_input = get_input
-	_apply_input = apply_input
-	return self
 
-
-func _ready() -> void:
-	if !_is_setup:
-		push_error("Call setup()")
-
-	_ready_ticks = Time.get_ticks_msec()
+	if _is_game_host:
+		_sync_timer.timeout.connect(_host_sync)
+	else:
+		_sync_timer.timeout.connect(_client_sync)
 
 	if _is_game_host:
 		MultiplayerManager.message_received.connect(_game_host_receive_input)
 	else:
 		MultiplayerManager.message_received.connect(_game_client_receive_state)
+
+	return self
+
+
+func _ready() -> void:
+	_ready_ticks = Time.get_ticks_msec()
+
+	_get_state = player.get_state
+	_apply_state = player.apply_state
+	_get_input = player.get_input
+	_apply_input = player.apply_input
 
 
 func process_local_player(delta: float) -> void:
@@ -148,7 +149,7 @@ func process_received_inputs_until(ticks: int) -> Array[PlayerInput]:
 	return result
 
 
-func host_sync() -> void:
+func _host_sync() -> void:
 	if !_state_send_buffer.is_empty():
 		var message: MultiplayerMessage = MultiplayerMessage.new(get_path(), "state")
 		for state: PlayerState in _state_send_buffer:
@@ -157,7 +158,7 @@ func host_sync() -> void:
 		MultiplayerManager.send(message)
 
 
-func client_sync() -> void:
+func _client_sync() -> void:
 	if !_input_send_buffer.is_empty():
 		var message: MultiplayerMessage = MultiplayerMessage.new(get_path(), "input")
 		for input: PlayerInput in _input_send_buffer:
