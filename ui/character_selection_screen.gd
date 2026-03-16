@@ -5,11 +5,13 @@ signal canceled
 signal completed(local_player_index: int)
 
 enum CharacterSelection { NONE = -1, LEFT = 0, RIGHT = 1 }
+
 const HOST_INDEX: int = 0
 const CLIENT_INDEX: int = 1
 
-var is_game_host: bool = false
 var is_online_multiplayer: bool = false
+var is_game_host: bool = false
+var local_player_index: int = -1
 
 var _debouncers: Array[bool] = [true, true]
 
@@ -41,6 +43,7 @@ func _ready() -> void:
 
 	_back_button.pressed.connect(_back_button_pressed)
 
+	# Call play here instead of autoplay to keep them synchronized.
 	_arrows[0].play("arrows")
 	_arrows[1].play("arrows")
 
@@ -341,9 +344,9 @@ func _game_client_receive_state(message: MultiplayerMessage) -> void:
 		return
 
 	_state_character_selections[HOST_INDEX] = message.get_int(0) as CharacterSelection
-	_state_readys[HOST_INDEX] = message.get_int(1) > 0
+	_state_readys[HOST_INDEX] = message.get_bool(1)
 	_state_character_selections[CLIENT_INDEX] = message.get_int(2) as CharacterSelection
-	_state_readys[CLIENT_INDEX] = message.get_int(3) > 0
+	_state_readys[CLIENT_INDEX] = message.get_bool(3)
 	_update()
 
 

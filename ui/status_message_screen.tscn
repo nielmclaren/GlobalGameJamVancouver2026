@@ -18,7 +18,7 @@ metadata/_custom_type_script = "uid://bgxvk5kxd13ru"
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_yt2up"]
 atlas = ExtResource("2_tk638")
-region = Rect2(0, 0, 24, 24)
+region = Rect2(26, 0, 23, 23)
 
 [node name="StatusMessageScreen" type="Node2D"]
 script = ExtResource("1_yt2up")
@@ -70,5 +70,5 @@ label_settings = ExtResource("6_kpxvr")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(256, 832)
-scale = Vector2(-16, 16)
+scale = Vector2(16, 16)
 texture = SubResource("AtlasTexture_yt2up")

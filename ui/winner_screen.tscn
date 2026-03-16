@@ -1,12 +1,12 @@
-[gd_scene load_steps=21 format=3 uid="uid://3efa0tr7o67v"]
+[gd_scene load_steps=25 format=3 uid="uid://3efa0tr7o67v"]
 
 [ext_resource type="Texture2D" uid="uid://midrd8nyfk00" path="res://assets/art/win_lose_sheet.png" id="1_b2gjs"]
 [ext_resource type="Script" uid="uid://bi4hrb43gvpb8" path="res://ui/winner_screen.gd" id="1_ljvke"]
 [ext_resource type="LabelSettings" uid="uid://dh5nkilieny34" path="res://ui/player_one_two_wins.tres" id="2_ljvke"]
+[ext_resource type="LabelSettings" uid="uid://b4lsvhnlevmc4" path="res://ui/character_selection_ready_label_settings.tres" id="4_8u3hs"]
 [ext_resource type="AudioStream" uid="uid://vwbewj7g1kge" path="res://assets/music/Pause Effect.ogg" id="4_640aj"]
-[ext_resource type="Theme" uid="uid://dikqu2u0jnhof" path="res://ui/button_theme.tres" id="4_iahek"]
 [ext_resource type="Script" uid="uid://bgxvk5kxd13ru" path="res://addons/controller_icons/objects/ControllerIconTexture.gd" id="5_1jkf2"]
-[ext_resource type="LabelSettings" uid="uid://hqbhvhrjtu51" path="res://ui/controller_icon_label.tres" id="7_8m47r"]
+[ext_resource type="PackedScene" uid="uid://elq4i50qnekt" path="res://ui/smart_back_button.tscn" id="6_8m47r"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8m47r"]
 atlas = ExtResource("1_b2gjs")
@@ -134,13 +134,82 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="Texture2D" id="Texture2D_8m47r"]
+[sub_resource type="Texture2D" id="Texture2D_65euu"]
 resource_local_to_scene = false
 resource_name = ""
 script = ExtResource("5_1jkf2")
-path = "ui_accept"
-show_mode = 2
+path = "ui_accept0"
 metadata/_custom_type_script = "uid://bgxvk5kxd13ru"
+
+[sub_resource type="Texture2D" id="Texture2D_5nv4s"]
+resource_local_to_scene = false
+resource_name = ""
+script = ExtResource("5_1jkf2")
+path = "ui_accept1"
+metadata/_custom_type_script = "uid://bgxvk5kxd13ru"
+
+[sub_resource type="Animation" id="Animation_7iokj"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Fader:color:a")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Fader:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_2672o"]
+resource_name = "ready"
+step = 0.25
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Fader:color:a")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 1.0]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(1),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"_emit_completed"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_vv4gq"]
+_data = {
+&"RESET": SubResource("Animation_7iokj"),
+&"ready": SubResource("Animation_2672o")
+}
 
 [node name="WinnerScreen" type="Node2D"]
 script = ExtResource("1_ljvke")
@@ -158,24 +227,24 @@ scale = Vector2(1, -1)
 
 [node name="WinnerAnimatedSprite" type="AnimatedSprite2D" parent="WinnerLoserArt"]
 unique_name_in_owner = true
-position = Vector2(-448, 640)
-scale = Vector2(48, 48)
+position = Vector2(-608.00006, 447.99997)
+scale = Vector2(28, 28)
 sprite_frames = SubResource("SpriteFrames_j5wjh")
 animation = &"wood"
 
 [node name="LoserAnimatedSprite" type="AnimatedSprite2D" parent="WinnerLoserArt"]
 unique_name_in_owner = true
-position = Vector2(608, 704.0001)
+position = Vector2(639.99994, 544.00006)
 scale = Vector2(-16, 16)
 sprite_frames = SubResource("SpriteFrames_boyg6")
 animation = &"base"
 
 [node name="WinnerLabel0" type="Label" parent="."]
 unique_name_in_owner = true
-offset_left = 1152.0
-offset_top = 256.0
-offset_right = 1786.0
-offset_bottom = 491.0
+offset_left = 800.0
+offset_top = 192.0
+offset_right = 1434.0
+offset_bottom = 427.0
 text = "Player one
 wins!"
 label_settings = ExtResource("2_ljvke")
@@ -184,46 +253,129 @@ vertical_alignment = 1
 
 [node name="WinnerLabel1" type="Label" parent="."]
 unique_name_in_owner = true
-offset_left = 128.0
-offset_top = 256.0
-offset_right = 781.0
-offset_bottom = 491.0
+offset_left = 480.0
+offset_top = 192.0
+offset_right = 1133.0
+offset_bottom = 427.0
 text = "Player two
 wins!"
 label_settings = ExtResource("2_ljvke")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ContinueButton" type="Node2D" parent="."]
-
-[node name="MouseContent" type="Node2D" parent="ContinueButton"]
+[node name="Confirm0" type="Node2D" parent="."]
 unique_name_in_owner = true
+position = Vector2(384, 544)
 
-[node name="ContinueButton" type="Button" parent="ContinueButton/MouseContent"]
+[node name="Label" type="Label" parent="Confirm0"]
+offset_left = -224.0
+offset_top = 160.0
+offset_right = 224.0
+offset_bottom = 217.0
+text = "Ready?"
+label_settings = ExtResource("4_8u3hs")
+horizontal_alignment = 1
+
+[node name="ConfirmIconSprite0" type="Sprite2D" parent="Confirm0"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(240, 60)
-offset_left = 1616.0
-offset_top = 966.0
-offset_right = 1856.0
-offset_bottom = 1026.0
-theme = ExtResource("4_iahek")
-text = "Rematch"
-metadata/_edit_use_anchors_ = true
+position = Vector2(0, 288)
+texture = SubResource("Texture2D_65euu")
 
-[node name="ControllerContent" type="Node2D" parent="ContinueButton"]
+[node name="Confirm1" type="Node2D" parent="."]
 unique_name_in_owner = true
+position = Vector2(1536, 544)
 
-[node name="ButtonIcon" type="Sprite2D" parent="ContinueButton/ControllerContent"]
-position = Vector2(1531, 998)
-texture = SubResource("Texture2D_8m47r")
+[node name="Label" type="Label" parent="Confirm1"]
+offset_left = -224.0
+offset_top = 160.0
+offset_right = 224.0
+offset_bottom = 217.0
+text = "Ready?"
+label_settings = ExtResource("4_8u3hs")
+horizontal_alignment = 1
 
-[node name="Label" type="Label" parent="ContinueButton/ControllerContent"]
-offset_left = 1595.0
-offset_top = 968.0
-offset_right = 1854.0
-offset_bottom = 1026.0
-text = "Rematch"
-label_settings = ExtResource("7_8m47r")
+[node name="ConfirmIconSprite1" type="Sprite2D" parent="Confirm1"]
+unique_name_in_owner = true
+position = Vector2(0, 288)
+texture = SubResource("Texture2D_5nv4s")
+
+[node name="Ready0" type="Node2D" parent="."]
+unique_name_in_owner = true
+visible = false
+position = Vector2(384, 544)
+
+[node name="Label" type="Label" parent="Ready0"]
+offset_left = -224.0
+offset_top = 160.0
+offset_right = 224.0
+offset_bottom = 217.0
+text = "Ready!"
+label_settings = ExtResource("4_8u3hs")
+horizontal_alignment = 1
+
+[node name="OtherReady0" type="Node2D" parent="."]
+unique_name_in_owner = true
+visible = false
+position = Vector2(384, 544)
+
+[node name="Label" type="Label" parent="OtherReady0"]
+offset_left = -224.0
+offset_top = 160.0
+offset_right = 224.0
+offset_bottom = 217.0
+text = "Ready!"
+label_settings = ExtResource("4_8u3hs")
+horizontal_alignment = 1
+
+[node name="Ready1" type="Node2D" parent="."]
+unique_name_in_owner = true
+visible = false
+position = Vector2(1536, 544)
+
+[node name="Label" type="Label" parent="Ready1"]
+offset_left = -224.0
+offset_top = 160.0
+offset_right = 224.0
+offset_bottom = 217.0
+text = "Ready!"
+label_settings = ExtResource("4_8u3hs")
+horizontal_alignment = 1
+
+[node name="OtherReady1" type="Node2D" parent="."]
+unique_name_in_owner = true
+visible = false
+position = Vector2(1536, 544)
+
+[node name="Label" type="Label" parent="OtherReady1"]
+offset_left = -224.0
+offset_top = 160.0
+offset_right = 224.0
+offset_bottom = 217.0
+text = "Ready!"
+label_settings = ExtResource("4_8u3hs")
+horizontal_alignment = 1
+
+[node name="SmartBackButton" parent="." instance=ExtResource("6_8m47r")]
+unique_name_in_owner = true
+position = Vector2(0, 1080)
+
+[node name="Fader" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 1920.0
+offset_bottom = 1080.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0)
+metadata/_edit_lock_ = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+unique_name_in_owner = true
+libraries = {
+&"": SubResource("AnimationLibrary_vv4gq")
+}
 
 [node name="WinSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("4_640aj")

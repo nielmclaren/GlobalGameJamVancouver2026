@@ -202,6 +202,10 @@ func _winner_completed() -> void:
 	_sm.change_state(_game_state_enter)
 
 
+func _winner_canceled() -> void:
+	_sm.change_state(_title_state_enter)
+
+
 func _status_message_completed() -> void:
 	_status_message = ""
 	_sm.change_state(_title_state_enter)
@@ -401,7 +405,11 @@ func _game_state_leave() -> void:
 
 func _winner_state_enter() -> void:
 	_winner_screen = winner_scene.instantiate()
+	_winner_screen.canceled.connect(_winner_canceled)
 	_winner_screen.completed.connect(_winner_completed)
+	_winner_screen.is_online_multiplayer = _is_online_multiplayer
+	_winner_screen.is_game_host = _is_game_host
+	_winner_screen.local_player_index = _local_player_index
 	_winner_screen.winner_player_index = _winner_player_index
 	_winner_screen.winner_color_index = _winner_color_index
 	_winner_screen.loser_color_index = _loser_color_index
