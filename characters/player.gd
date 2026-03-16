@@ -1,12 +1,6 @@
 class_name Player
 extends CharacterBody2D
 
-# Emitted when the player reveals themselves, e.g., by attacking.
-signal unmasked
-
-# Emitted when the player goes back into hiding, e.g., after attack.
-signal masked
-
 # Emitted when player gets hit.
 signal hitted
 
@@ -152,7 +146,6 @@ func _process(_delta: float) -> void:
 
 func take_hit(attacker_position: Vector2) -> void:
 	is_stunned = true
-	_unmask()
 
 	_hit_direction = attacker_position - global_position
 
@@ -242,7 +235,6 @@ func _is_hit_recovery() -> bool:
 
 func _hit_timeout() -> void:
 	is_stunned = false
-	_mask()
 
 
 func get_input(delta: float) -> PlayerInput:
@@ -254,10 +246,14 @@ func get_input(delta: float) -> PlayerInput:
 
 func apply_input(input: PlayerInput) -> void:
 	_direction = input.direction
-	if !input.direction.is_zero_approx():
-		velocity = input.direction * SPEED * input.delta
-		move_and_slide()
+	if _direction.is_zero_approx():
+		return
 
+	velocity = _direction * SPEED * input.delta
+	var prev_position: Vector2 = position
+	move_and_slide()
+
+	if prev_position != position:
 		_is_position_changed = true
 
 
@@ -272,10 +268,14 @@ func get_state() -> PlayerState:
 func apply_state(state: PlayerState) -> void:
 	if !is_stunned:
 		_direction = state.direction
+
+	var prev_position: Vector2 = position
 	position = state.position
+
 	color_index = state.color_index
 
-	_is_position_changed = true
+	if prev_position != position:
+		_is_position_changed = true
 
 
 func _attack_area_body_entered(body: Node2D) -> void:
@@ -303,20 +303,10 @@ func _perform_attack(victim: Player) -> void:
 
 	_attack_timer.start()
 	is_stunned = true
-	_unmask()
 
 
 func _attack_timeout() -> void:
 	is_stunned = false
-	_mask()
-
-
-func _unmask() -> void:
-	unmasked.emit()
-
-
-func _mask() -> void:
-	masked.emit()
 
 
 func _activate_stealth_mode() -> void:

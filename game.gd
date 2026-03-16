@@ -25,10 +25,7 @@ var _state_send_buffer: Array[GameState]
 # Buffer game state received from game host for replay on game client.
 var _state_receive_buffer: Array[GameState]
 
-@onready var _clip_tilemap_player0: TileMapLayer = %ClipTileMapPlayer0
-@onready var _player_container0: Node2D = %ClipMaskPlayer0
-@onready var _clip_tilemap_player1: TileMapLayer = %ClipTileMapPlayer1
-@onready var _player_container1: Node2D = %ClipMaskPlayer1
+@onready var _player_container: Node2D = %PlayerContainer
 @onready var _goal_container: Node2D = %GoalContainer
 @onready var _mask_container: Node2D = %MaskContainer
 @onready var _tilemap: TileMapLayer = %TileMapLayer
@@ -49,8 +46,6 @@ func _ready() -> void:
 
 	if is_online_multiplayer and is_game_host:
 		_sync_timer.timeout.connect(_sync_timeout)
-
-	_init_clip_tiles()
 
 	if !is_online_multiplayer:
 		# Local game can start right away.
@@ -135,14 +130,9 @@ func _spawn_player(player_index: int, initial_position: Vector2) -> Player:
 		player.is_local_player = true
 		player.device_index = player_index if local_player_index == 0 else 1 - player_index
 
-	player.masked.connect(_mask_player.bind(player))
-	player.unmasked.connect(_unmask_player.bind(player))
 	player.hitted.connect(_player_hitted.bind(player))
 
-	if player_index == 0:
-		_player_container0.add_child(player)
-	else:
-		_player_container1.add_child(player)
+	_player_container.add_child(player)
 
 	player.name = "Player%d" % player_index
 
@@ -169,10 +159,6 @@ func _map_regen_timeout() -> void:
 	Tracer.trace("Map regen timeout.")
 	var rand_seed: int = randi()
 	_randomize_tiles(rand_seed)
-
-	for player: Player in _players:
-		_update_clip_tilemap(player)
-		player.is_stealthed = is_in_stealth_tile(player)
 
 
 func _is_player_tile_overlap(player: Player, coord: Vector2i) -> bool:
@@ -215,6 +201,10 @@ func _randomize_tiles(rand_seed: int) -> void:
 			var coord: Vector2i = Vector2i(c, r)
 			_tilemap.set_cell(coord, 1, tile)
 
+	# Refresh stealth status after map change.
+	for player: Player in _players:
+		player.is_stealthed = is_in_stealth_tile(player)
+
 	if is_online_multiplayer and is_game_host:
 		_game_host_send_randomize_tiles(rand_seed)
 
@@ -223,24 +213,6 @@ func _game_host_send_randomize_tiles(rand_seed: int) -> void:
 	MultiplayerManager.send(
 		MultiplayerMessage.new(get_path(), "randomize_tiles").append_int(rand_seed)
 	)
-
-
-func _init_clip_tiles() -> void:
-	# Enable all clip tiles.
-	var atlas_coord: Vector2i = Vector2i(0, 0)
-	for c: int in range(Constants.NUM_COLS):
-		for r: int in range(Constants.NUM_ROWS):
-			var coord: Vector2i = Vector2i(c, r)
-			_clip_tilemap_player0.set_cell(coord, 0, atlas_coord)
-			_clip_tilemap_player1.set_cell(coord, 0, atlas_coord)
-
-
-func _mask_player(player: Player) -> void:
-	_update_clip_tilemap(player)
-
-
-func _unmask_player(player: Player) -> void:
-	_reveal_clip_tilemap(player)
 
 
 func _player_hitted(player: Player) -> void:
@@ -444,8 +416,6 @@ func _mask_picked_up(player: Player, mask: Mask) -> void:
 	if !is_online_multiplayer or is_game_host:
 		_delay_spawn_mask()
 
-	_update_clip_tilemap(player)
-
 	if is_online_multiplayer and is_game_host:
 		_state_send_buffer.append(_get_game_state())
 
@@ -541,32 +511,6 @@ func _is_coord_empty(coord: Vector2i) -> bool:
 
 func _get_random_coord() -> Vector2i:
 	return Vector2i(randi() % Constants.NUM_COLS, randi() % Constants.NUM_ROWS)
-
-
-func _reveal_clip_tilemap(player: Player) -> void:
-	var clip_tilemap: TileMapLayer = _get_clip_tilemap(player)
-	for c: int in range(Constants.NUM_COLS):
-		for r: int in range(Constants.NUM_ROWS):
-			var coord: Vector2i = Vector2i(c, r)
-			clip_tilemap.set_cell(coord, 0, Vector2i(0, 0))
-
-
-func _update_clip_tilemap(player: Player) -> void:
-	var clip_tilemap: TileMapLayer = _get_clip_tilemap(player)
-	for c: int in range(Constants.NUM_COLS):
-		for r: int in range(Constants.NUM_ROWS):
-			var coord: Vector2i = Vector2i(c, r)
-			if _get_coord_color_index(coord) == player.color_index:
-				# Erase the cell.
-				clip_tilemap.set_cell(coord, -1)
-			else:
-				clip_tilemap.set_cell(coord, 0, Vector2i(0, 0))
-
-
-func _get_clip_tilemap(player: Player) -> TileMapLayer:
-	if player.player_index == 0:
-		return _clip_tilemap_player0
-	return _clip_tilemap_player1
 
 
 func _get_coord_color_index(coord: Vector2i) -> int:

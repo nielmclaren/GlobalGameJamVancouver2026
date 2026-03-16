@@ -3,16 +3,22 @@ extends Node
 
 @export var player: Player
 
+# Player's method for getting the current player state.
 var _get_state: Callable
 
+# Player's method for applying the given player state.
 var _apply_state: Callable
 
+# Player's method for getting the player input.
 var _get_input: Callable
 
+# Player's method for applying the given player input.
 var _apply_input: Callable
 
+# True iff this Godot instance is hosting the online multiplayer game (server authority).
 var _is_game_host: bool
 
+# True iff the person running this Godot instance is controlling this player.
 var _is_local_player: bool
 
 # Buffer player input for game client to play back over position updates received from game host.
