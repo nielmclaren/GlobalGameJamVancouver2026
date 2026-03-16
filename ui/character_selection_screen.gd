@@ -34,6 +34,11 @@ var _state_readys: Array[bool] = [false, false]
 
 
 func _ready() -> void:
+	Tracer.trace(
+		"Character selection screen ready.",
+		{"is_online_multiplayer": is_online_multiplayer, "is_game_host": is_game_host}
+	)
+
 	_confirm_nodes[0].hide()
 	_confirm_nodes[1].hide()
 	_ready_nodes[0].hide()
@@ -162,14 +167,14 @@ func _local_multiplayer_input(event: InputEvent) -> void:
 			_apply_input(HOST_INDEX, CLIENT_INDEX, "ui_cancel")
 			_update()
 		else:
-			canceled.emit()
+			_back_button_pressed()
 
 	elif event.is_action_pressed("ui_cancel1") and !event.is_echo():
 		if _state_character_selections[CLIENT_INDEX] != CharacterSelection.NONE:
 			_apply_input(CLIENT_INDEX, HOST_INDEX, "ui_cancel")
 			_update()
 		else:
-			canceled.emit()
+			_back_button_pressed()
 
 	elif event.is_action_pressed("ui_cancel") and !event.is_echo():
 		if (
@@ -184,7 +189,7 @@ func _local_multiplayer_input(event: InputEvent) -> void:
 			_update()
 
 		else:
-			canceled.emit()
+			_back_button_pressed()
 
 
 func _update_player(index: int) -> void:
@@ -368,6 +373,8 @@ func _emit_completed() -> void:
 
 
 func _back_button_pressed() -> void:
+	Tracer.trace("Canceled.")
+
 	if is_online_multiplayer:
 		MultiplayerManager.leave_room()
 

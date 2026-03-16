@@ -12,6 +12,8 @@ var message: String
 
 
 func _ready() -> void:
+	Tracer.trace("Status message screen ready.", {"message": message})
+
 	_continue_button.pressed.connect(_continue_button_pressed)
 
 	ControllerIcons.input_type_changed.connect(_input_type_changed)
@@ -38,5 +40,5 @@ func _input_type_changed(input_type: ControllerIcons.InputType, _controller: int
 
 
 func _continue_button_pressed() -> void:
-	Tracer.trace("Winner screen: continue button pressed.")
+	Tracer.trace("Continue.")
 	completed.emit()

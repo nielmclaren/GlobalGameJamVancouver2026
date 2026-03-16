@@ -29,9 +29,10 @@ func open() -> void:
 
 	_message_handler = _handle_handshake
 
+	Tracer.trace("Connecting to socket URL.", {"socket_url": _socket_url})
 	var err: int = _socket.connect_to_url(_socket_url)
 	if err == OK:
-		print("Connecting to %s" % _socket_url)
+		Tracer.trace("Connected.")
 
 		# TODO: Can I wait for the connection itself?
 		await get_tree().create_timer(2).timeout
@@ -40,6 +41,7 @@ func open() -> void:
 		set_process(true)
 
 	else:
+		Tracer.trace("Connection failed.")
 		_set_status_message(StatusMessage.DISCONNECTED)
 		set_process(false)
 
@@ -51,6 +53,7 @@ func is_open() -> bool:
 func close() -> void:
 	var s: int = _socket.get_ready_state()
 	if s != WebSocketPeer.STATE_CLOSED and s != WebSocketPeer.STATE_CLOSING:
+		Tracer.trace("Closing connection.")
 		_socket.close(1000)
 
 
@@ -93,6 +96,7 @@ func _process(_delta: float) -> void:
 					_message_handler.call(payload)
 
 			else:
+				Tracer.warn("Expected string and received binary data. Closing socket.")
 				push_warning("Expected string and received binary data. Closing socket.")
 				_socket.close(1003)
 
@@ -101,7 +105,7 @@ func _process(_delta: float) -> void:
 
 	elif state == WebSocketPeer.STATE_CLOSED:
 		var code: int = _socket.get_close_code()
-		print("WebSocket closed with code: %d" % code)
+		Tracer.trace("WebSocket closed with code: %d" % code)
 		set_process(false)
 
 		_set_status_message(StatusMessage.DISCONNECTED)
@@ -119,7 +123,7 @@ func _send_raw(message: String) -> void:
 
 	else:
 		var code: int = _socket.get_close_code()
-		print("Send failed. WebSocket closed with code: %d" % code)
+		Tracer.warn("Send failed. WebSocket closed with code: %d" % code)
 		set_process(false)
 
 		_set_status_message(StatusMessage.DISCONNECTED)
@@ -128,6 +132,7 @@ func _send_raw(message: String) -> void:
 
 func _handle_handshake(payload: String) -> void:
 	if !RegEx.create_from_string(r"^\d+$").search(payload):
+		Tracer.warn("Expected ID string.", {"received": payload})
 		push_warning("Expected ID string. instead=%s" % payload)
 		set_process(false)
 		return
@@ -140,11 +145,12 @@ func _handle_handshake(payload: String) -> void:
 
 func _handle_create_room(payload: String) -> void:
 	if !payload.begins_with("room_created:"):
+		Tracer.trace("Expected room_created:<ROOM_ID>.", {"received": payload})
 		push_warning("Expected room_created:<ROOM_ID>. Received %s" % payload)
 		return
 
 	var room_id: String = payload.split(":")[1]
-	print("Created room ID. %s" % room_id)
+	Tracer.trace("Created room.", {"room_id": room_id})
 
 	_message_handler = _handle_room_waiting_for_client
 
@@ -161,25 +167,25 @@ func _handle_join_room(payload: String) -> void:
 		return
 
 	if !payload.begins_with("room_joined:"):
+		Tracer.trace("Received unexpected message.", {"received": payload})
 		push_warning("Received unexpected message %s" % payload)
 		return
 
 	var room_id: String = payload.split(":")[1]
-	print("Joined room ID. %s" % room_id)
+	Tracer.trace("Joined room. Room is ready.", {"room_id": room_id})
 
 	_message_handler = _handle_relay
-
-	print("Joined. Room ready.")
 
 	room_ready.emit()
 
 
 func _handle_room_waiting_for_client(payload: String) -> void:
 	if payload != "room_ready":
+		Tracer.trace("Expected room_ready.", {"received": payload})
 		push_warning("Expected room_ready. Received %s" % payload)
 		return
 
-	print("Ready. Room ready.")
+	Tracer.trace("Client has joined room. Room is ready.")
 
 	_message_handler = _handle_relay
 

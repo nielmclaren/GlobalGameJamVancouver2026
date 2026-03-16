@@ -21,3 +21,8 @@ shape = SubResource("CircleShape2D_722m3")
 [node name="Sprite2D" type="Sprite2D" parent="."]
 scale = Vector2(3, 3)
 texture = SubResource("AtlasTexture_6ls8a")
+
+[node name="DebounceTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 0.5
+one_shot = true

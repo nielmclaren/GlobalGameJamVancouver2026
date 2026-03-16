@@ -37,7 +37,10 @@ var _state_receive_buffer: Array[GameState]
 
 
 func _ready() -> void:
-	Tracer.trace("Game ready.")
+	Tracer.trace(
+		"Game ready.",
+		{"is_online_multiplayer": is_online_multiplayer, "is_game_host": is_game_host}
+	)
 
 	if is_online_multiplayer:
 		MultiplayerManager.message_received.connect(_message_received)
@@ -157,6 +160,7 @@ func _game_host_send_spawn_player(player: Player) -> void:
 
 func _map_regen_timeout() -> void:
 	Tracer.trace("Map regen timeout.")
+
 	var rand_seed: int = randi()
 	_randomize_tiles(rand_seed)
 
@@ -219,6 +223,11 @@ func _player_hitted(player: Player) -> void:
 	_scores[player.player_index] = 0
 	_scores_changed()
 
+	Tracer.trace(
+		"Player %d hit player %d." % [1 - player.player_index, player.player_index],
+		{"scores": _scores}
+	)
+
 
 func _delay_spawn_goal() -> void:
 	await get_tree().create_timer(Constants.GOAL_SPAWN_DELAY_S).timeout
@@ -267,17 +276,16 @@ func _despawn_goal() -> void:
 
 
 func _goal_picked_up(player: Player) -> void:
-	Tracer.trace("Player %d scored!" % player.player_index)
-	print("Player %d scored!" % player.player_index)
-
 	_scores[player.player_index] += 1
 	_scores_changed()
+
+	Tracer.trace("Player %d scored!" % player.player_index, {"scores": _scores})
 
 	_despawn_goal()
 
 	if !is_online_multiplayer or is_game_host:
 		if _scores[player.player_index] >= Constants.MAX_SCORE:
-			print("Player %d won!" % player.player_index)
+			Tracer.trace("Player %d won!" % player.player_index, {"scores": _scores})
 			var other_player: Player = _players[1 - player.player_index]
 			completed.emit(player.player_index, player.color_index, other_player.color_index)
 

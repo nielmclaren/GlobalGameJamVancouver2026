@@ -13,6 +13,8 @@ var _is_online_pressed: bool = false
 
 
 func _ready() -> void:
+	Tracer.trace("Local online screen ready.")
+
 	MultiplayerManager.connected.connect(_connected)
 	MultiplayerManager.disconnected.connect(_disconnected)
 
@@ -26,20 +28,25 @@ func _ready() -> void:
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel") and !event.is_echo():
-		canceled.emit()
+		_back_button_pressed()
 
 
 func _local_button_pressed() -> void:
+	Tracer.trace("Local button pressed.")
 	completed.emit(false)
 
 
 func _online_button_pressed() -> void:
+	Tracer.trace("Online button pressed.")
+
 	_is_online_pressed = true
 
 	if MultiplayerManager.is_open():
 		completed.emit(true)
 
 	else:
+		Tracer.trace("Server was not connected. Connecting...")
+
 		_local_button.disabled = true
 		_online_button.disabled = true
 
@@ -50,12 +57,16 @@ func _online_button_pressed() -> void:
 
 func _connected() -> void:
 	if MultiplayerManager.is_open() and _is_online_pressed:
+		Tracer.trace("Connected to server.")
+
 		_message_label.text = "Connected."
 
 		completed.emit(true)
 
 
 func _disconnected() -> void:
+	Tracer.trace("Server disconnected.")
+
 	_local_button.disabled = false
 
 	_message_label.text = "Server is offline."
@@ -65,4 +76,6 @@ func _disconnected() -> void:
 
 
 func _back_button_pressed() -> void:
+	Tracer.trace("Canceled.")
+
 	canceled.emit()

@@ -56,6 +56,7 @@ func _init() -> void:
 func _ready() -> void:
 	TracerIntegration.init()
 	get_tree().set_auto_accept_quit(false)
+	Tracer.trace("Main ready.")
 
 	MultiplayerManager.message_received.connect(_message_received)
 	MultiplayerManager.partner_left.connect(_partner_left)

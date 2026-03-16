@@ -18,6 +18,8 @@ var _is_game_host: bool = false
 
 
 func _ready() -> void:
+	Tracer.trace("Host join screen ready.")
+
 	MultiplayerManager.room_gone.connect(_room_gone)
 	MultiplayerManager.room_full.connect(_room_full)
 	MultiplayerManager.room_created.connect(_room_created)
@@ -38,7 +40,7 @@ func _ready() -> void:
 
 	_join_error_label.text = ""
 
-	_back_button.pressed.connect(canceled.emit)
+	_back_button.pressed.connect(_back_button_pressed)
 
 	_host_button.grab_focus.call_deferred()
 
@@ -49,7 +51,7 @@ func _input(event: InputEvent) -> void:
 			_host_cancel_button_pressed()
 
 		else:
-			canceled.emit()
+			_back_button_pressed()
 
 
 func _host_button_pressed() -> void:
@@ -146,3 +148,9 @@ func _enable_join_ui(show_ui: bool, enable_ui: bool) -> void:
 	_join_disable_mask.visible = !show_ui
 	_join_code_input.editable = enable_ui
 	_join_button.disabled = !enable_ui
+
+
+func _back_button_pressed() -> void:
+	Tracer.trace("Canceled.")
+
+	canceled.emit()
