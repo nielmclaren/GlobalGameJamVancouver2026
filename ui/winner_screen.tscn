@@ -71,31 +71,31 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_vef74"]
-atlas = ExtResource("1_b2gjs")
-region = Rect2(0, 0, 24, 24)
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_65euu"]
 atlas = ExtResource("1_b2gjs")
-region = Rect2(96, 48, 24, 24)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_e8heu"]
-atlas = ExtResource("1_b2gjs")
-region = Rect2(0, 120, 24, 24)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_iotsf"]
-atlas = ExtResource("1_b2gjs")
-region = Rect2(48, 24, 24, 24)
+region = Rect2(24, 0, 24, 24)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_5nv4s"]
 atlas = ExtResource("1_b2gjs")
-region = Rect2(144, 72, 24, 24)
+region = Rect2(120, 48, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_peqsc"]
+atlas = ExtResource("1_b2gjs")
+region = Rect2(24, 120, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_m8f41"]
+atlas = ExtResource("1_b2gjs")
+region = Rect2(72, 24, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_arrsh"]
+atlas = ExtResource("1_b2gjs")
+region = Rect2(168, 72, 24, 24)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_boyg6"]
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_vef74")
+"texture": SubResource("AtlasTexture_65euu")
 }],
 "loop": true,
 "name": &"base",
@@ -103,7 +103,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_65euu")
+"texture": SubResource("AtlasTexture_5nv4s")
 }],
 "loop": true,
 "name": &"fire",
@@ -111,7 +111,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_e8heu")
+"texture": SubResource("AtlasTexture_peqsc")
 }],
 "loop": true,
 "name": &"grass",
@@ -119,7 +119,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_iotsf")
+"texture": SubResource("AtlasTexture_m8f41")
 }],
 "loop": true,
 "name": &"water",
@@ -127,7 +127,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_5nv4s")
+"texture": SubResource("AtlasTexture_arrsh")
 }],
 "loop": true,
 "name": &"wood",
@@ -161,12 +161,12 @@ unique_name_in_owner = true
 position = Vector2(-448, 640)
 scale = Vector2(48, 48)
 sprite_frames = SubResource("SpriteFrames_j5wjh")
-animation = &"base"
+animation = &"wood"
 
 [node name="LoserAnimatedSprite" type="AnimatedSprite2D" parent="WinnerLoserArt"]
 unique_name_in_owner = true
 position = Vector2(608, 704.0001)
-scale = Vector2(16, 16)
+scale = Vector2(-16, 16)
 sprite_frames = SubResource("SpriteFrames_boyg6")
 animation = &"base"
 

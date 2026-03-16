@@ -48,7 +48,8 @@ script = ExtResource("1_ed0b0")
 
 [node name="Sprite2D2" type="Sprite2D" parent="."]
 position = Vector2(1664, 608)
-scale = Vector2(24, 24)
+rotation = 0.25002536
+scale = Vector2(-24, 24)
 texture = SubResource("AtlasTexture_2tuqu")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
