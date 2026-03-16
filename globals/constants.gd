@@ -30,9 +30,10 @@ const GOAL_SPAWN_RETRY_S: float = 0.2
 const TILE_SIZE: int = 128
 const TILE_HALF_SIZE: int = 64
 
-const COLLISION_LAYER: int = 1
-const PICKUP_LAYER: int = 2
-const ATTACK_LAYER: int = 3
+const WORLD_LAYER: int = 1
+const CHARACTER_LAYER: int = 2
+const PICKUP_LAYER: int = 3
+const ATTACK_LAYER: int = 4
 
 # Number of points needed to win.
 const MAX_SCORE: int = 5

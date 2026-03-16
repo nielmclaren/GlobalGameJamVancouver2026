@@ -13,7 +13,6 @@ var is_local_player: bool = false
 var player_index: int = 0
 var device_index: int = 0
 
-var is_stunned: bool = false
 var is_stealthed: bool = false:
 	get():
 		return is_stealthed
@@ -29,11 +28,30 @@ var color_index: int = -1
 var score: int = 0
 
 var _game: Game
+
 var _direction: Vector2
 var _prev_direction: Vector2
 var _direction_y: int
 var _hit_direction: Vector2
+
+var _is_stunned: bool = false
+
+var _is_stealthed: bool = false:
+	set(v):
+		if _is_stealthed != v:
+			_is_stealthed = v
+			_is_collision_layers_changed = true
+
+var _is_invincible: bool = false:
+	set(v):
+		if _is_invincible != v:
+			_is_invincible = v
+			_is_collision_layers_changed = true
+
+var _is_collision_layers_changed: bool = false
+
 var _is_moved_after_hit: bool = true
+
 var _is_position_changed: bool = false
 
 @onready var _art: Node2D = %Art
@@ -50,6 +68,7 @@ var _is_position_changed: bool = false
 @onready var _weapon_sound: AudioStreamPlayer2D = %WeaponSound
 @onready var _attack_timer: Timer = %AttackTimer
 @onready var _hit_timer: Timer = %HitTimer
+@onready var _hit_invincibility_timer: Timer = %HitInvincibilityTimer
 @onready var _state_sync: StateSynchronizer = %StateSynchronizer
 
 
@@ -71,6 +90,7 @@ func _ready() -> void:
 
 	_attack_timer.timeout.connect(_attack_timeout)
 	_hit_timer.timeout.connect(_hit_timeout)
+	_hit_invincibility_timer.timeout.connect(_hit_invincibility_timeout)
 
 
 func _physics_process(delta: float) -> void:
@@ -80,11 +100,14 @@ func _physics_process(delta: float) -> void:
 	else:
 		_physics_process_local_multiplayer(delta)
 
+	if _is_collision_layers_changed:
+		_validate_collision_layers()
+
 
 func _physics_process_online_multiplayer(delta: float) -> void:
 	var prev_position: Vector2 = position
 	if is_local_player:
-		if is_stunned:
+		if _is_stunned:
 			return
 
 		_direction = _get_input_vector()
@@ -100,7 +123,7 @@ func _physics_process_online_multiplayer(delta: float) -> void:
 
 
 func _physics_process_local_multiplayer(delta: float) -> void:
-	if is_stunned:
+	if _is_stunned:
 		return
 
 	_direction = _get_input_vector()
@@ -145,12 +168,15 @@ func _process(_delta: float) -> void:
 
 
 func take_hit(attacker_position: Vector2) -> void:
-	is_stunned = true
+	_is_stunned = true
 
 	_hit_direction = attacker_position - global_position
 
 	_hit_timer.start()
 	_is_moved_after_hit = false
+
+	_hit_invincibility_timer.start()
+	_is_invincible = true
 
 	if _animation.current_animation == "hit":
 		_animation.seek(0)
@@ -234,7 +260,11 @@ func _is_hit_recovery() -> bool:
 
 
 func _hit_timeout() -> void:
-	is_stunned = false
+	_is_stunned = false
+
+
+func _hit_invincibility_timeout() -> void:
+	_is_invincible = false
 
 
 func get_input(delta: float) -> PlayerInput:
@@ -266,7 +296,7 @@ func get_state() -> PlayerState:
 
 
 func apply_state(state: PlayerState) -> void:
-	if !is_stunned:
+	if !_is_stunned:
 		_direction = state.direction
 
 	var prev_position: Vector2 = position
@@ -302,24 +332,27 @@ func _perform_attack(victim: Player) -> void:
 	_weapon_sound.play()
 
 	_attack_timer.start()
-	is_stunned = true
+	_is_stunned = true
 
 
 func _attack_timeout() -> void:
-	is_stunned = false
+	_is_stunned = false
 
 
 func _activate_stealth_mode() -> void:
-	_set_stealth_mode(true)
+	_is_stealthed = true
 
 
 func _deactivate_stealth_mode() -> void:
-	_set_stealth_mode(false)
+	_is_stealthed = false
 
 
-func _set_stealth_mode(v: bool) -> void:
-	set_collision_layer_value(Constants.COLLISION_LAYER, !v)
-	set_collision_mask_value(Constants.COLLISION_LAYER, !v)
+func _validate_collision_layers() -> void:
+	_is_collision_layers_changed = false
+
+	var v: bool = _is_stealthed or _is_invincible
+	set_collision_layer_value(Constants.CHARACTER_LAYER, !v)
+	set_collision_mask_value(Constants.CHARACTER_LAYER, !v)
 	set_collision_layer_value(Constants.ATTACK_LAYER, !v)
 	set_collision_mask_value(Constants.ATTACK_LAYER, !v)
 	_attack_area.monitoring = !v
