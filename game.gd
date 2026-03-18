@@ -25,6 +25,8 @@ var _state_send_buffer: Array[GameState]
 # Buffer game state received from game host for replay on game client.
 var _state_receive_buffer: Array[GameState]
 
+var _ready_ticks: int = 0
+
 @onready var _player_container: Node2D = %PlayerContainer
 @onready var _goal_container: Node2D = %GoalContainer
 @onready var _mask_container: Node2D = %MaskContainer
@@ -37,6 +39,8 @@ var _state_receive_buffer: Array[GameState]
 
 
 func _ready() -> void:
+	_ready_ticks = Time.get_ticks_msec()
+
 	Tracer.trace(
 		"Game ready.",
 		{"is_online_multiplayer": is_online_multiplayer, "is_game_host": is_game_host}
@@ -69,7 +73,7 @@ func _process(_delta: float) -> void:
 	if _state_receive_buffer.is_empty():
 		return
 
-	var ticks: int = Time.get_ticks_msec() - Constants.GAME_CLIENT_TICKS_OFFSET
+	var ticks: int = Time.get_ticks_msec() - _ready_ticks - Constants.GAME_CLIENT_TICKS_OFFSET
 	var index: int = _state_receive_buffer.find_custom(
 		func(d: GameState) -> bool: return d.ticks > ticks
 	)
@@ -439,7 +443,7 @@ func _get_game_state() -> GameState:
 		result.goal_coord = _goal.coord
 
 	result.scores = _scores
-	result.ticks = Time.get_ticks_msec()
+	result.ticks = Time.get_ticks_msec() - _ready_ticks
 	result.message_num = _next_message_num.next()
 
 	return result
