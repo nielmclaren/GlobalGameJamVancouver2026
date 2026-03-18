@@ -319,6 +319,7 @@ func _title_state_enter() -> void:
 	_title_screen.play_pressed.connect(_play_pressed)
 	_title_screen.credits_pressed.connect(_show_credits_pressed)
 	_title_screen.exit_pressed.connect(_exit_pressed)
+	_title_screen.fullscreen_pressed.connect(_toggle_fullscreen)
 	screen_container.add_child(_title_screen)
 
 	_show_message_if_disconnected = false
